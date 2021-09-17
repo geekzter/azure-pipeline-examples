@@ -1,4 +1,11 @@
 jobs:
+- job: macOS10.15
+  pool:
+    vmImage: 'macOS-10.15'
+  steps:
+  - bash: |
+      echo hello from macOS Catalina
+      sw_vers
 - job: macOS11
   pool:
     vmImage: 'macOS-11'
@@ -6,13 +13,13 @@ jobs:
   - bash: |
       echo hello from macOS Big Sur
       sw_vers
-- job: macOS12
-  pool:
-    vmImage: 'macOS-12'
-  steps:
-  - bash: |
-      echo hello from macOS Monterey
-      sw_vers
+# - job: macOS12
+#   pool:
+#     vmImage: 'macOS-12'
+#   steps:
+#   - bash: |
+#       echo hello from macOS Monterey
+#       sw_vers
 - job: macOSlatest
   pool:
     vmImage: 'macOS-latest'
