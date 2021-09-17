@@ -1,5 +1,5 @@
 jobs:
-- job: macOS10.15
+- job: macOS1015
   pool:
     vmImage: 'macOS-1015'
   steps:
