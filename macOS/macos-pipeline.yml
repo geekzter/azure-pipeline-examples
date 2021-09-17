@@ -1,7 +1,7 @@
 jobs:
 - job: macOS10.15
   pool:
-    vmImage: 'macOS-10.15'
+    vmImage: 'macOS-1015'
   steps:
   - bash: |
       echo hello from macOS Catalina
