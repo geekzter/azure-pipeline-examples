@@ -38,7 +38,7 @@ jobs:
       Get-ComputerInfo | Select-Object WindowsProductName
 
 - job: 'windows2022'
-  displayName: 'windows-2019 image'
+  displayName: 'windows-2022 image'
   pool:
     vmImage: 'windows-2022'
   steps:
@@ -47,7 +47,7 @@ jobs:
       Get-ComputerInfo | Select-Object WindowsProductName
 
 - job: 'windowslatest'
-  displayName: 'windows-2019 image'
+  displayName: 'windows-latest image'
   pool:
     vmImage: 'windows-latest'
   steps:
