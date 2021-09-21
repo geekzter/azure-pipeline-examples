@@ -6,46 +6,51 @@ jobs:
   pool:
     name: 'Hosted VS2017'
   steps:
-- pwsh: |
-    Write-Host "hello from Windows 2016 with Visual Studio 2017"
-    Get-ComputerInfo | Select-Object WindowsProductName
+  - pwsh: |
+      Write-Host "hello from Windows 2016 with Visual Studio 2017"
+      Get-ComputerInfo | Select-Object WindowsProductName
 
 - job: 'windows2016'
   displayName: 'vs2017-win2016 image'
   pool:
     vmImage: 'vs2017-win2016'
-- pwsh: |
-    Write-Host "hello from Windows 2016 with Visual Studio 2017"
-    Get-ComputerInfo | Select-Object WindowsProductName
+  steps:
+  - pwsh: |
+      Write-Host "hello from Windows 2016 with Visual Studio 2017"
+      Get-ComputerInfo | Select-Object WindowsProductName
 
 - job: 'hosted'
   displayName: 'Hosted pool'
   pool:
     name: 'Hosted'
-- pwsh: |
-    Write-Host "hello from Windows 2016 with Visual Studio 2017"
-    Get-ComputerInfo | Select-Object WindowsProductName
+  steps:
+  - pwsh: |
+      Write-Host "hello from Windows 2016 with Visual Studio 2017"
+      Get-ComputerInfo | Select-Object WindowsProductName
 
 - job: 'windows2019'
   displayName: 'windows-2019 image'
   pool:
     vmImage: 'windows-2019'
-- pwsh: |
-    Write-Host "hello from Windows 2019 with Visual Studio 2019"
-    Get-ComputerInfo | Select-Object WindowsProductName
+  steps:
+  - pwsh: |
+      Write-Host "hello from Windows 2019 with Visual Studio 2019"
+      Get-ComputerInfo | Select-Object WindowsProductName
 
 - job: 'windows2022'
   displayName: 'windows-2019 image'
   pool:
     vmImage: 'windows-2022'
-- pwsh: |
-    Write-Host "hello from Windows 2022 with Visual Studio 2022"
-    Get-ComputerInfo | Select-Object WindowsProductName
+  steps:
+  - pwsh: |
+      Write-Host "hello from Windows 2022 with Visual Studio 2022"
+      Get-ComputerInfo | Select-Object WindowsProductName
 
 - job: 'windowslatest'
   displayName: 'windows-2019 image'
   pool:
     vmImage: 'windows-latest'
-- pwsh: |
-    Write-Host "hello from the latest version of Windows available"
-    Get-ComputerInfo | Select-Object WindowsProductName
+  steps:
+  - pwsh: |
+      Write-Host "hello from the latest version of Windows available"
+      Get-ComputerInfo | Select-Object WindowsProductName
