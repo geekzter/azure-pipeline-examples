@@ -11,19 +11,19 @@ jobs:
     vmImage: 'macOS-11'
   steps:
   - bash: |
-      echo hello from macOS Big Sur
+      echo Hello from macOS Big Sur
       sw_vers
 # - job: macOS12
 #   pool:
 #     vmImage: 'macOS-12'
 #   steps:
 #   - bash: |
-#       echo hello from macOS Monterey
+#       echo Hello from macOS Monterey
 #       sw_vers
 - job: macOSlatest
   pool:
     vmImage: 'macOS-latest'
   steps:
   - bash: |
-      echo hello from the latest version of macOS available
+      echo Hello from the latest version of macOS available
       sw_vers
