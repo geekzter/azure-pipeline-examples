@@ -1,3 +1,5 @@
+name: windows-images
+
 jobs:
 - job: 'hostedvs2017'
   displayName: 'Hosted VS2017 pool'

@@ -1,3 +1,5 @@
+name: macOS-images
+
 jobs:
 - job: macOS1015
   pool:
