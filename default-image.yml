@@ -1,0 +1,8 @@
+name: default-image
+
+jobs:
+- job: 'default'
+  displayName: 'Default image'
+  steps:
+  - pwsh: |
+      dir
