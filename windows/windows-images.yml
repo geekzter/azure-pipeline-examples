@@ -1,5 +1,13 @@
 name: windows-images
 
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
 jobs:
 - job: 'hostedvs2017'
   displayName: 'Hosted VS2017 pool'

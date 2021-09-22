@@ -1,12 +1,27 @@
 name: macOS-images
 
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
 jobs:
-- job: macOS1015
+- job: macOS1014
   pool:
-    vmImage: 'macOS-1015'
+    vmImage: 'macOS-10.14'
   steps:
   - bash: |
-      echo hello from macOS Catalina
+      echo Hello from macOS Mojave
+      sw_vers
+- job: macOS1015
+  pool:
+    vmImage: 'macOS-10.15'
+  steps:
+  - bash: |
+      echo Hello from macOS Catalina
       sw_vers
 - job: macOS11
   pool:

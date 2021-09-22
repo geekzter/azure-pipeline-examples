@@ -1,0 +1,77 @@
+name: ubuntu-images
+
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: 'defaultImage'
+  displayName: 'Default image'
+  steps:
+  - bash: |
+      echo Hello from Ubuntu $(lsb_release -r -s)
+      lsb_release
+- job: ubuntu1604
+  pool:
+    vmImage: 'ubuntu-16.04'
+  steps:
+  - bash: |
+      echo Hello from Ubuntu 16.04
+      lsb_release
+- job: 'hostedubuntu1604'
+  displayName: 'Hosted Ubuntu 16.04 pool'
+  pool:
+    name: 'Hosted Ubuntu 1604'
+  steps:
+  - bash: |
+      echo Hello from Ubuntu 16.04
+      lsb_release
+- job: ubuntu1804
+  pool:
+    vmImage: 'ubuntu-18.04'
+  steps:
+  - bash: |
+      echo Hello from Ubuntu 20.04
+      lsb_release
+- job: 'hostedubuntu1804'
+  displayName: 'Hosted Ubuntu 18.04 pool'
+  pool:
+    name: 'Hosted Ubuntu 1804'
+  steps:
+  - bash: |
+      echo Hello from Ubuntu 18.04
+      lsb_release
+- job: ubuntu2004
+  pool:
+    vmImage: 'ubuntu-20.04'
+  steps:
+  - bash: |
+      echo Hello from Ubuntu 20.04
+      lsb_release
+- job: 'hostedubuntu2004'
+  displayName: 'Hosted Ubuntu 20.04 pool'
+  pool:
+    name: 'Hosted Ubuntu 2004'
+  steps:
+  - bash: |
+      echo Hello from Ubuntu 20.04
+      lsb_release
+- job: ubuntulatest
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - bash: |
+      echo Hello from the latest version of Ubuntu available
+      lsb_release
+- job: 'hostedubuntu'
+  displayName: 'Hosted Ubuntu pool'
+  pool:
+    name: 'Hosted Ubuntu'
+  steps:
+  - bash: |
+      echo Hello from the latest version of Ubuntu available
+      lsb_release
