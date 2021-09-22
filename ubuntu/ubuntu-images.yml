@@ -44,11 +44,3 @@ jobs:
   - bash: |
       echo Hello from the latest version of Ubuntu available
       lsb_release
-- job: 'hostedubuntu'
-  displayName: 'Hosted Ubuntu pool'
-  pool:
-    name: 'Hosted Ubuntu'
-  steps:
-  - bash: |
-      echo Hello from the latest version of Ubuntu available
-      lsb_release
