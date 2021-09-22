@@ -5,4 +5,4 @@ jobs:
   displayName: 'Default image'
   steps:
   - pwsh: |
-      dir
+      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
