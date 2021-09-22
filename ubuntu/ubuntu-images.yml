@@ -37,14 +37,6 @@ jobs:
   - bash: |
       echo Hello from Ubuntu 20.04
       lsb_release
-- job: 'hostedubuntu2004'
-  displayName: 'Hosted Ubuntu 20.04 pool'
-  pool:
-    name: 'Hosted Ubuntu 2004'
-  steps:
-  - bash: |
-      echo Hello from Ubuntu 20.04
-      lsb_release
 - job: ubuntulatest
   pool:
     vmImage: 'ubuntu-latest'
