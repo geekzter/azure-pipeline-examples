@@ -1,8 +1,16 @@
 name: default-image
 
 jobs:
-- job: 'default'
+- job: 'defaultImage'
   displayName: 'Default image'
+  steps:
+  - pwsh: |
+      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+
+- job: 'hosted'
+  displayName: 'Hosted pool'
+  pool:
+    name: 'Hosted'
   steps:
   - pwsh: |
       Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
