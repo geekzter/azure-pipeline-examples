@@ -30,13 +30,6 @@ jobs:
   - bash: |
       echo Hello from Ubuntu 16.04
       lsb_release
-- job: ubuntu1804
-  pool:
-    vmImage: 'ubuntu-18.04'
-  steps:
-  - bash: |
-      echo Hello from Ubuntu 20.04
-      lsb_release
 - job: ubuntu2004
   pool:
     vmImage: 'ubuntu-20.04'
