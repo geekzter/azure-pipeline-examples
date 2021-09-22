@@ -1,5 +1,6 @@
 name: default-image
 
+trigger: none
 schedules:
 - cron: '0 1 * * *'
   displayName: 'Nightly build (UTC)'
