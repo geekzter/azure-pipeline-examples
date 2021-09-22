@@ -1,5 +1,13 @@
 name: default-image
 
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
 jobs:
 - job: 'defaultImage'
   displayName: 'Default image'
