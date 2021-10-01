@@ -1,0 +1,23 @@
+name: reference-step-output
+
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+- job: ubuntulatest
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - bash: |
+      echo "##vso[task.setvariable variable=foo;isOutput=true]bar"
+    name: stepA
+  - bash: |
+      echo "foo=$(stepA.foo)"
+      echo "foo=$[ variables['stepA.foo'] ]
+      echo "foo=$[ variables['foo'] ]
+    name: stepB
