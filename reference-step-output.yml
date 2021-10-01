@@ -10,14 +10,14 @@ schedules:
     - main
 
 jobs:
-- job: ubuntulatest
+- job: stepoutput
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-  - bash: |
+  - pwsh: |
       echo "##vso[task.setvariable variable=foo;isOutput=true]bar"
     name: stepA
-  - bash: |
+  - pwsh: |
       echo "foo=$(stepA.foo)"
       echo "foo=$[ variables['stepA.foo'] ]
       echo "foo=$[ variables['foo'] ]
