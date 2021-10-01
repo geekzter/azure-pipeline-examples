@@ -19,14 +19,8 @@ jobs:
     name: stepA
   - pwsh: |
       echo "foo=$(stepA.foo)"
-      echo "foo=$[ variables['stepA.foo'] ]
-      echo "foo=$[ variables['foo'] ]
     name: stepB
   - pwsh: |
       echo "foo=$(stepA.foo)"
     name: stepC
     condition: eq(coalesce(variables['stepA.foo'],'null'),'bar')
-  - pwsh: |
-      echo "foo=$(stepA.foo)"
-    name: stepD
-    condition: eq(coalesce(variables['foo'],'null'),'bar')
