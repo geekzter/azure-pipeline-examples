@@ -9,6 +9,7 @@ schedules:
     include:
     - main
 
+jobs:
 - job: ubuntulatest
   pool:
     vmImage: 'ubuntu-latest'
