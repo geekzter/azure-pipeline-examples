@@ -1,0 +1,65 @@
+name: windows-images
+
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: 'hostedvs2017'
+  displayName: 'Hosted VS2017 pool'
+  pool:
+    name: 'Hosted VS2017'
+  steps:
+  - pwsh: |
+      Write-Host "hello from Windows 2016 with Visual Studio 2017"
+      Get-ComputerInfo | Select-Object WindowsProductName
+
+- job: 'windows2016'
+  displayName: 'vs2017-win2016 image'
+  pool:
+    vmImage: 'vs2017-win2016'
+  steps:
+  - pwsh: |
+      Write-Host "hello from Windows 2016 with Visual Studio 2017"
+      Get-ComputerInfo | Select-Object WindowsProductName
+
+- job: 'hosted'
+  displayName: 'Hosted pool'
+  pool:
+    name: 'Hosted'
+  steps:
+  - pwsh: |
+      Write-Host "hello from Windows 2016 with Visual Studio 2017"
+      Get-ComputerInfo | Select-Object WindowsProductName
+
+- job: 'windows2019'
+  displayName: 'windows-2019 image'
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  - pwsh: |
+      Write-Host "hello from Windows 2019 with Visual Studio 2019"
+      Get-ComputerInfo | Select-Object WindowsProductName
+
+- job: 'windows2022'
+  displayName: 'windows-2022 image'
+  pool:
+    vmImage: 'windows-2022'
+  steps:
+  - pwsh: |
+      Write-Host "hello from Windows 2022 with Visual Studio 2022"
+      Get-ComputerInfo | Select-Object WindowsProductName
+
+- job: 'windowslatest'
+  displayName: 'windows-latest image'
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - pwsh: |
+      Write-Host "hello from the latest version of Windows available"
+      Get-ComputerInfo | Select-Object WindowsProductName

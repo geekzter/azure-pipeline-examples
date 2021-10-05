@@ -1,0 +1,26 @@
+name: reference-step-output
+
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: stepoutput
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - pwsh: |
+      echo "##vso[task.setvariable variable=foo;isOutput=true]bar"
+    name: stepA
+  - pwsh: |
+      echo "foo=$(stepA.foo)"
+    name: stepB
+  - pwsh: |
+      echo "foo=$(stepA.foo)"
+    name: stepC
+    condition: eq(coalesce(variables['stepA.foo'],'null'),'bar')
