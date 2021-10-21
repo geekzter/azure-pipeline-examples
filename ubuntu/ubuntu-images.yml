@@ -10,27 +10,27 @@ schedules:
     - main
 
 jobs:
-- job: 'defaultImage'
-  displayName: 'Default image'
-  steps:
-  - bash: |
-      echo Hello from Ubuntu $(lsb_release -r -s)
-      lsb_release -d
-- job: ubuntu1604
-  pool:
-    vmImage: 'ubuntu-16.04'
-  steps:
-  - bash: |
-      echo Hello from Ubuntu 16.04
-      lsb_release -d
-- job: 'hostedubuntu1604'
-  displayName: 'Hosted Ubuntu 16.04 pool'
-  pool:
-    name: 'Hosted Ubuntu 1604'
-  steps:
-  - bash: |
-      echo Hello from Ubuntu 16.04
-      lsb_release -d
+# - job: 'defaultImage'
+#   displayName: 'Default image'
+#   steps:
+#   - bash: |
+#       echo Hello from Ubuntu $(lsb_release -r -s)
+#       lsb_release -d
+# - job: ubuntu1604
+#   pool:
+#     vmImage: 'ubuntu-16.04'
+#   steps:
+#   - bash: |
+#       echo Hello from Ubuntu 16.04
+#       lsb_release -d
+# - job: 'hostedubuntu1604'
+#   displayName: 'Hosted Ubuntu 16.04 pool'
+#   pool:
+#     name: 'Hosted Ubuntu 1604'
+#   steps:
+#   - bash: |
+#       echo Hello from Ubuntu 16.04
+#       lsb_release -d
 - job: 'hostedubuntu1804'
   displayName: 'Hosted Ubuntu 18.04 pool'
   pool:
