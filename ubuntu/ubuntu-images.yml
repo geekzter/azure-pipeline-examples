@@ -31,14 +31,14 @@ jobs:
 #   - bash: |
 #       echo Hello from Ubuntu 16.04
 #       lsb_release -d
-- job: 'hostedubuntu1804'
-  displayName: 'Hosted Ubuntu 18.04 pool'
-  pool:
-    name: 'Hosted Ubuntu 1804'
-  steps:
-  - bash: |
-      echo Hello from Ubuntu 18.04
-      lsb_release -d
+# - job: 'hostedubuntu1804'
+#   displayName: 'Hosted Ubuntu 18.04 pool'
+#   pool:
+#     name: 'Hosted Ubuntu 1804'
+#   steps:
+#   - bash: |
+#       echo Hello from Ubuntu 18.04
+#       lsb_release -d
 - job: ubuntu1804
   pool:
     vmImage: 'ubuntu-18.04'
