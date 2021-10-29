@@ -1,0 +1,48 @@
+name: terraform-service-connection
+
+parameters:
+- name: serviceConnection
+  displayName: Azure Service Connection Name
+  type: string
+  default: my-azure-subscription
+
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: terraform
+  displayName: 'Invoke Terraform with Azure CLI inherited service connection'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+    - task: TerraformInstaller@0
+      displayName: 'Install Terraform'
+      inputs:
+        terraformVersion: 'latest'
+    - task: AzureCLI@2
+      displayName: 'Terraform'
+      inputs:
+        azureSubscription: '${{ parameters.serviceConnection }}'
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          # Inherit Azure CLI service connection
+          export ARM_CLIENT_ID=$servicePrincipalId
+          export ARM_CLIENT_SECRET=$servicePrincipalKey
+          export ARM_TENANT_ID=$tenantId
+          export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+          env | grep "^ARM_" # SPN values will be masked
+
+          terraform init
+          terraform apply -auto-approve
+
+        addSpnToEnvironment: true
+        useGlobalConfig: true
+        failOnStandardError: true
+        workingDirectory: '$(Build.SourcesDirectory)/ubuntu/terraform-service-connection'
