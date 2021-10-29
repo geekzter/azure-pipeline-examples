@@ -10,12 +10,6 @@ schedules:
     - main
 
 jobs:
-- job: 'defaultImage'
-  displayName: 'Default image'
-  steps:
-  - pwsh: |
-      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
-
 - job: 'hosted'
   displayName: 'Hosted pool'
   pool:
