@@ -1,0 +1,45 @@
+name: terraform-service-connection
+
+parameters:
+- name: serviceConnection
+  displayName: Service Connection Name
+  type: string
+
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: ubuntulatest
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+    - task: TerraformInstaller@0
+      displayName: 'Install Terraform'
+      inputs:
+        terraformVersion: 'latest'
+    - task: AzureCLI@2
+      displayName: 'Terraform'
+      inputs:
+        azureSubscription: '$(subscriptionConnection)'
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          ARM_CLIENT_ID       = $servicePrincipalId
+          ARM_CLIENT_SECRET   = $servicePrincipalKey
+          ARM_TENANT_ID       = $tenantId
+          ARM_SUBSCRIPTION_ID = $(az account show --query id -o tsv)
+          env | grep "^ARM_" # SPN values will be masked
+
+          terraform init
+          terraform apply -auto-approve
+
+        addSpnToEnvironment: true
+        useGlobalConfig: true
+        failOnStandardError: true
+        workingDirectory: '$(Build.SourcesDirectory)/ubuntu/terraform-service-connection'

@@ -1,0 +1,2 @@
+# Hide local tfenv dependency
+.terraform-version
