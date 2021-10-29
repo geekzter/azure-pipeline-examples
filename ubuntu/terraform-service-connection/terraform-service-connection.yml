@@ -16,7 +16,7 @@ schedules:
     - main
 
 jobs:
-- job: terraform-service-connection
+- job: terraform
   pool:
     vmImage: 'ubuntu-latest'
   steps:
