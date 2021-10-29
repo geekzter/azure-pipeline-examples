@@ -17,6 +17,7 @@ schedules:
 
 jobs:
 - job: terraform
+  displayName: 'Invoke Terraform with Azure CLI inherited service connection'
   pool:
     vmImage: 'ubuntu-latest'
   steps:
@@ -31,6 +32,7 @@ jobs:
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
+          # Inherit Azure CLI service connection
           export ARM_CLIENT_ID=$servicePrincipalId
           export ARM_CLIENT_SECRET=$servicePrincipalKey
           export ARM_TENANT_ID=$tenantId
