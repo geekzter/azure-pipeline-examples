@@ -58,6 +58,7 @@ jobs:
         terraformVersion: 'latest'
     - task: AzureCLI@2
       displayName: 'Azure CLI'
+      name: azureCLI
       inputs:
         azureSubscription: '${{ parameters.serviceConnection }}'
         scriptType: bash
@@ -72,10 +73,10 @@ jobs:
         useGlobalConfig: true
         failOnStandardError: true
     - bash: |
-        export ARM_CLIENT_ID=$(ARM_CLIENT_ID)
-        export ARM_CLIENT_SECRET=$(ARM_CLIENT_SECRET)
-        export ARM_TENANT_ID=$(ARM_TENANT_ID)
-        export ARM_SUBSCRIPTION_ID=$(ARM_SUBSCRIPTION_ID)
+        export ARM_CLIENT_ID=$(azureCLI.ARM_CLIENT_ID)
+        export ARM_CLIENT_SECRET=$(azureCLI.ARM_CLIENT_SECRET)
+        export ARM_TENANT_ID=$(azureCLI.ARM_TENANT_ID)
+        export ARM_SUBSCRIPTION_ID=$(azureCLI.ARM_SUBSCRIPTION_ID)
         env | grep "^ARM_" # SPN values will be masked
 
         terraform init
