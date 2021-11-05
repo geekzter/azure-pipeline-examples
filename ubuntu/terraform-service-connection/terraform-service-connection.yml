@@ -81,5 +81,4 @@ jobs:
         terraform init
         terraform apply -auto-approve
       displayName: Terraform
-      failOnStandardError: true
       workingDirectory: '$(Build.SourcesDirectory)/ubuntu/terraform-service-connection'
