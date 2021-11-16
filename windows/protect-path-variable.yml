@@ -16,10 +16,7 @@ jobs:
     vmImage: 'windows-latest'
   steps:
   - script: |
-      set
-      echo %PATH%
       echo ##vso[task.prependpath]%SYSTEM_ARTIFACTSDIRECTORY%
-      echo %PATH%
     displayName: update PATH
     name: trusted
   - script: |
@@ -32,14 +29,11 @@ jobs:
     vmImage: 'windows-latest'
   steps:
   - script: |
-      echo %PATH%
       echo ##vso[task.prependpath]%SYSTEM_ARTIFACTSDIRECTORY%
-      echo %PATH%
     displayName: update PATH
     name: untrusted
     target:
-      settableVariables:
-      - notPATH
+      settableVariables: none
   - script: |
       echo %PATH%
     displayName: PATH not modified
