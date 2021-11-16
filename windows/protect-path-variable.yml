@@ -1,0 +1,32 @@
+name: protect-path-variable
+
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: protectPATH
+  displayName: 'windows-latest image'
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - script: |
+      echo %PATH%
+      echo "##vso[task.prependpath]$(hostPath);$(Build.SourcesDirectory)"
+      echo %PATH%
+    name: update PATH
+  - script: |
+      echo %PATH%
+    displayName: PATH modified
+    name: stepB
+  - script: |
+      echo %PATH%
+    displayName: PATH not modified
+    target:
+      settableVariables:
+      - notPATH
