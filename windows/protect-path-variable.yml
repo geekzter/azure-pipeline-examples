@@ -19,7 +19,7 @@ jobs:
       echo %PATH%
       echo "##vso[task.prependpath]$(hostPath);$(Build.SourcesDirectory)"
       echo %PATH%
-    name: update PATH
+    displayName: update PATH
   - script: |
       echo %PATH%
     displayName: PATH modified
