@@ -11,13 +11,14 @@ schedules:
 
 jobs:
 - job: pathNotProtected
-  displayName: 'windows-latest image'
+  displayName: 'PATH not protected'
   pool:
     vmImage: 'windows-latest'
   steps:
   - script: |
+      set
       echo %PATH%
-      echo "##vso[task.prependpath]$(hostPath);C:\MyPrependedDir"
+      echo "##vso[task.prependpath]$(hostPath);C:\"
       echo %PATH%
     displayName: update PATH
   - script: |
@@ -25,13 +26,13 @@ jobs:
     displayName: PATH modified
   
 - job: pathProtected
-  displayName: 'windows-latest image'
+  displayName: 'PATH protected'
   pool:
     vmImage: 'windows-latest'
   steps:
   - script: |
       echo %PATH%
-      echo "##vso[task.prependpath]$(hostPath);C:\MyPrependedDir"
+      echo "##vso[task.prependpath]$(hostPath);C:\"
       echo %PATH%
     displayName: update PATH
     target:
