@@ -18,9 +18,10 @@ jobs:
   - script: |
       set
       echo %PATH%
-      echo "##vso[task.prependpath]%SYSTEM_ARTIFACTSDIRECTORY%"
+      echo ##vso[task.prependpath]%SYSTEM_ARTIFACTSDIRECTORY%
       echo %PATH%
     displayName: update PATH
+    name: trusted
   - script: |
       echo %PATH%
     displayName: PATH modified
@@ -32,9 +33,10 @@ jobs:
   steps:
   - script: |
       echo %PATH%
-      echo "##vso[task.prependpath]%SYSTEM_ARTIFACTSDIRECTORY%"
+      echo ##vso[task.prependpath]%SYSTEM_ARTIFACTSDIRECTORY%
       echo %PATH%
     displayName: update PATH
+    name: untrusted
     target:
       settableVariables:
       - notPATH
