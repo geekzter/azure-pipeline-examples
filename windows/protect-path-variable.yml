@@ -18,7 +18,7 @@ jobs:
   - script: |
       set
       echo %PATH%
-      echo "##vso[task.prependpath]$(hostPath);C:\"
+      echo "##vso[task.prependpath]%SYSTEM_ARTIFACTSDIRECTORY%"
       echo %PATH%
     displayName: update PATH
   - script: |
@@ -32,7 +32,7 @@ jobs:
   steps:
   - script: |
       echo %PATH%
-      echo "##vso[task.prependpath]$(hostPath);C:\"
+      echo "##vso[task.prependpath]%SYSTEM_ARTIFACTSDIRECTORY%"
       echo %PATH%
     displayName: update PATH
     target:
