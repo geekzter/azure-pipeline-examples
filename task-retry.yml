@@ -33,5 +33,5 @@ jobs:
       } else {
         throw "$randomNumber can't be divided by $divider"
       }
-    displayName: 'Divide by ${{ parameters.divider }} (${{ parameters.divider }} retry attempts)'
-    retryCountOnTaskFailure: ${{ parameters.divider }}
+    displayName: 'Divide by ${{ parameters.divider }} (${{ parameters.retryCount }} retry attempts)'
+    retryCountOnTaskFailure: ${{ parameters.retryCount }}
