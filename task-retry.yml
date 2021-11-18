@@ -1,5 +1,15 @@
 name: task-retry
 
+parameters:
+- name: divider
+  displayName: Random integer should be a multiple of
+  type: int
+  default: 5
+- name: retryCount
+  displayName: Retry count
+  type: int
+  default: 20
+
 trigger: none
 schedules:
 - cron: '0 1 * * *'
@@ -17,7 +27,8 @@ jobs:
   steps:
   - pwsh: |
       $randomNumber = (Get-Random -Minimum 0 -Maximum 100)
-      # if (!($randomNumber % 3)) {
-        throw "$randomNumber can't be divided by 3"
-      # }
-    # retryCountOnTaskFailure: 10
+      $divider = ${{ parameters.divider }}
+      if (!($randomNumber % $divider)) {
+        throw "$randomNumber can't be divided by $divider"
+      }
+    retryCountOnTaskFailure: ${{ parameters.divider }}
