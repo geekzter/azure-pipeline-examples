@@ -1,0 +1,23 @@
+name: task-retry
+
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: 'retry-demo'
+  displayName: 'Retry demo'
+  pool:
+    name: 'Hosted'
+  steps:
+  - pwsh: |
+      $randomNumber = (Get-Random -Minimum 0 -Maximum 100)
+      if (!($randomNumber % 3)) {
+        throw "$randomNumber can't be divided by 3"
+      }
+    retryCountOnTaskFailure: 10
