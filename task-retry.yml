@@ -3,7 +3,7 @@ name: task-retry
 parameters:
 - name: divider
   displayName: Random integer should be a multiple of
-  type: integer
+  type: number
   default: 5
 - name: retryCount
   displayName: Retry count
