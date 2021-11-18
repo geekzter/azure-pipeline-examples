@@ -3,11 +3,11 @@ name: task-retry
 parameters:
 - name: divider
   displayName: Random integer should be a multiple of
-  type: int
+  type: integer
   default: 5
 - name: retryCount
   displayName: Retry count
-  type: int
+  type: number
   default: 20
 
 trigger: none
