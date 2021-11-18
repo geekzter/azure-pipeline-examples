@@ -28,7 +28,9 @@ jobs:
   - pwsh: |
       $randomNumber = (Get-Random -Minimum 0 -Maximum 100)
       $divider = ${{ parameters.divider }}
-      if (!($randomNumber % $divider)) {
+      if ($randomNumber % $divider) {
+        Write-Host "$randomNumber can be divided by $divider"
+      } else {
         throw "$randomNumber can't be divided by $divider"
       }
     retryCountOnTaskFailure: ${{ parameters.divider }}
