@@ -10,7 +10,7 @@ schedules:
     - main
 
 jobs:
-- job: 'retry-demo'
+- job: retryDemo
   displayName: 'Retry demo'
   pool:
     name: 'Hosted'
