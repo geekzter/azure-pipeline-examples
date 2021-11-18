@@ -20,4 +20,4 @@ jobs:
       if (!($randomNumber % 3)) {
         throw "$randomNumber can't be divided by 3"
       }
-    retryCountOnTaskFailure: 10
+    # retryCountOnTaskFailure: 10
