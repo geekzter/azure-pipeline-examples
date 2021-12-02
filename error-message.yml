@@ -1,0 +1,30 @@
+name: error-message
+
+trigger: none
+# schedules:
+# - cron: '0 1 * * *'
+#   displayName: 'Nightly build (UTC)'
+#   always: 'true'
+#   branches:
+#     include:
+#     - main
+
+jobs:
+- job: 'error'
+  displayName: 'Error message 1'
+  pool:
+    name: 'Hosted'
+  steps:
+  - pwsh: |
+      echo "##[error]My error message"
+    displayName: '##[error]'
+    
+- job: 'logissue'
+  displayName: 'Error message 1'
+  pool:
+    name: 'Hosted'
+  steps:
+  - pwsh: |
+      echo "##vso[task.logissue type=error]My error message"
+    displayName: '"##vso[task.logissue type=error]'
+  
