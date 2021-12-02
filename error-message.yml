@@ -1,13 +1,13 @@
 name: error-message
 
 trigger: none
-# schedules:
-# - cron: '0 1 * * *'
-#   displayName: 'Nightly build (UTC)'
-#   always: 'true'
-#   branches:
-#     include:
-#     - main
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
 
 jobs:
 - job: 'error'
@@ -16,15 +16,15 @@ jobs:
     name: 'Hosted'
   steps:
   - pwsh: |
-      echo "##[error]My error message"
+      echo "##[error]This text will be rendered as an error"
     displayName: '##[error]'
     
 - job: 'logissue'
-  displayName: 'Error message 1'
+  displayName: 'Error message 2'
   pool:
     name: 'Hosted'
   steps:
   - pwsh: |
-      echo "##vso[task.logissue type=error]My error message"
-    displayName: '"##vso[task.logissue type=error]'
+      echo "##vso[task.logissue type=error]This text will be rendered as an error, and will be shown on the pipeline run summary"
+    displayName: '##vso[task.logissue type=error]'
   
