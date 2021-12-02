@@ -1,0 +1,37 @@
+name: task-retry
+
+parameters:
+- name: divider
+  displayName: Random integer should be a multiple of
+  type: number
+  default: 5
+- name: retryCount
+  displayName: Retry count
+  type: number
+  default: 20
+
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: retryDemo
+  displayName: 'Retry demo'
+  pool:
+    name: 'Hosted'
+  steps:
+  - pwsh: |
+      $randomNumber = (Get-Random -Minimum 0 -Maximum 100)
+      $divider = ${{ parameters.divider }}
+      if ($randomNumber % $divider -eq 0) {
+        Write-Host "$randomNumber can be divided by $divider"
+      } else {
+        throw "$randomNumber can't be divided by $divider"
+      }
+    displayName: 'Divide by ${{ parameters.divider }} (${{ parameters.retryCount }} retry attempts)'
+    retryCountOnTaskFailure: ${{ parameters.retryCount }}
