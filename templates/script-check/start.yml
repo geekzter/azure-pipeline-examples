@@ -19,8 +19,9 @@ jobs:
     - ${{ each pair in step }}:
         ${{ if eq(pair.value, 'CmdLine@2') }}:
           # '${{ pair.value }}': error
-          'CmdLine@2': error
+          # 'CmdLine@2': error
           # 'CmdLine@1': error
+          'NonExistingTask@0': error
         ${{ else }}:
           ${{ pair.key }}: ${{ pair.value }}
 
