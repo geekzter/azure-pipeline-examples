@@ -3,8 +3,12 @@ parameters:
 - name: usersteps
   type: stepList
   default: []
-steps:
-- ${{ each step in parameters.usersteps }}:
-  - ${{ each pair in step }}:
-    ${{ if ne(pair.key, 'script') }}:
-      ${{ pair.key }}: ${{ pair.value }}
+
+
+jobs:
+- job: secure_buildjob
+  steps:
+  - ${{ each step in parameters.usersteps }}:
+    - ${{ each pair in step }}:
+      ${{ if ne(pair.key, 'script') }}:
+        ${{ pair.key }}: ${{ pair.value }}
