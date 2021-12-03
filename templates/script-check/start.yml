@@ -19,7 +19,7 @@ stages:
       - ${{ each pair in step }}:
           ${{ if eq(pair.key, 'script') }}: 
             '${{ pair.value }}': error         
-          ${{ elseif eq(pair.value, 'CmdLine@@2') }}: 
+          ${{ elseif startsWith(pair.value, 'CmdLine') }}: 
             '${{ pair.value }}': error         
           ${{ else }}:
             ${{ pair.key }}: ${{ pair.value }}       
