@@ -10,17 +10,19 @@ parameters:
 jobs:
 - job: secure_buildjob
   steps:
-  # - script: echo This happens before code 
-  #   displayName: 'Base: Pre-build'
-  # - script: echo Building
-  #   displayName: 'Base: Build'
+  - script: echo This happens before code 
+    displayName: 'Base: Pre-build'
+  - script: echo Building
+    displayName: 'Base: Build'
 
   # - ${{ each step in parameters.buildSteps }}:
   #   - ${{ each pair in step }}:
-  #       ${{ if ne(pair.value, 'CmdLine@@2') }}:
-  #         ${{ pair.key }}: ${{ pair.value }}       
-  #       ${{ if eq(pair.value, 'CmdLine@@2') }}: 
-  #         '${{ pair.value }}': error         
+  #       ${{ if eq(pair.value, 'CmdLine@2') }}:
+  #         # '${{ pair.value }}': error
+  #         # 'CmdLine@2': error
+  #         'CmdLine@1': error
+  #       ${{ else }}:
+  #         ${{ pair.key }}: ${{ pair.value }}
 
   - ${{ each step in parameters.buildSteps }}:
     - ${{ each pair in step }}:
@@ -29,14 +31,11 @@ jobs:
         # ${{ elseif ne(pair.value, 'CmdLine@2') }}:
         #   ${{ pair.key }}: ${{ pair.value }}       
         ${{ if eq(pair.value, 'CmdLine@2') }}:
-          # ${{ pair.key }}: 'CmdLine@2'
-          # 'script': error         
-          # '${{ pair.value }}': error         
           'CmdLine@1': error         
         ${{ elseif eq(pair.key, 'script') }}:
           '${{ pair.value }}': error         
         ${{ else }}:
           ${{ pair.key }}: ${{ pair.value }}
 
-  # - script: echo This happens after code
-  #   displayName: 'Base: Signing'
+  - script: echo This happens after code
+    displayName: 'Base: Signing'
