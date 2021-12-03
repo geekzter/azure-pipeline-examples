@@ -8,11 +8,11 @@ extends:
   parameters:
     buildSteps:  
       - bash: echo Test #Passes
-        displayName: succeed
+        # displayName: succeed
       - bash: echo "Test"
-        displayName: succeed
+        # displayName: succeed
       # - task: CmdLine@2
       #   displayName: Test 3 - Will Fail
       #   inputs:
       #     script: echo "Script Test"
-      - script: Test 4 - Will Fail
+      - script: echo Test 4 - Will Fail
