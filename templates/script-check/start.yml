@@ -24,7 +24,7 @@ stages:
           #   # 'NonExistingTask@0': # raises similar error: Unexpected value 'NonExistingTask@0'
           # ${{ else }}:
           #   ${{ pair.key }}: ${{ pair.value }}
-          ${{ if ne(pair.value, 'CmdLine@2') }}:
+          # ${{ if ne(pair.value, 'CmdLine@2') }}:
             ${{ pair.key }}: ${{ pair.value }}
 
     - script: echo This happens after code
