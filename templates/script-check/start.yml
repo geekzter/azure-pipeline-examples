@@ -17,9 +17,9 @@ stages:
 
     - ${{ each step in parameters.buildSteps }}:
       - ${{ each pair in step }}:
-          ${{ if ne(pair.value, 'CmdLine@2') }}:
+          ${{ if ne(pair.value, 'CmdLine@@2') }}:
             ${{ pair.key }}: ${{ pair.value }}       
-          ${{ if eq(pair.value, 'CmdLine@2') }}: 
+          ${{ if eq(pair.value, 'CmdLine@@2') }}: 
             '${{ pair.value }}': error         
 
     - script: echo This happens after code
