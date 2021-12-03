@@ -17,10 +17,12 @@ stages:
 
     - ${{ each step in parameters.buildSteps }}:
       - ${{ each pair in step }}:
-          ${{ if ne(pair.value, 'CmdLine@@2') }}:
-            ${{ pair.key }}: ${{ pair.value }}       
-          ${{ if eq(pair.value, 'CmdLine@@2') }}: 
+          ${{ if eq(pair.key, 'script') }}: 
             '${{ pair.value }}': error         
+          ${{ elseif eq(pair.value, 'CmdLine@@2') }}: 
+            '${{ pair.value }}': error         
+          ${{ else }}:
+            ${{ pair.key }}: ${{ pair.value }}       
 
     - script: echo This happens after code
       displayName: 'Base: Signing'
