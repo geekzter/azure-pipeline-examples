@@ -15,12 +15,19 @@ jobs:
   # - script: echo Building
   #   displayName: 'Base: Build'
 
+  # - ${{ each step in parameters.buildSteps }}:
+  #   - ${{ each pair in step }}:
+  #       ${{ if ne(pair.value, 'CmdLine@@2') }}:
+  #         ${{ pair.key }}: ${{ pair.value }}       
+  #       ${{ if eq(pair.value, 'CmdLine@@2') }}: 
+  #         '${{ pair.value }}': error         
+
   - ${{ each step in parameters.buildSteps }}:
     - ${{ each pair in step }}:
-        ${{ if ne(pair.value, 'CmdLine@@2') }}:
-          ${{ pair.key }}: ${{ pair.value }}       
-        ${{ if eq(pair.value, 'CmdLine@@2') }}: 
-          '${{ pair.value }}': error         
+      ${{ if ne(pair.key, 'script') }}:
+        ${{ pair.key }}: ${{ pair.value }}
+      ${{ else }}:
+        '${{ pair.value }}': error         
 
   # - script: echo This happens after code
   #   displayName: 'Base: Signing'
