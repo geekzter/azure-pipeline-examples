@@ -24,10 +24,10 @@ jobs:
 
   - ${{ each step in parameters.buildSteps }}:
     - ${{ each pair in step }}:
-      ${{ if ne(pair.key, 'script') }}:
-        ${{ pair.key }}: ${{ pair.value }}
-      ${{ else }}:
-        '${{ pair.value }}': error         
+        ${{ if ne(pair.key, 'script') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+        ${{ else }}:
+          '${{ pair.value }}': error         
 
   # - script: echo This happens after code
   #   displayName: 'Base: Signing'
