@@ -16,12 +16,16 @@ stages:
       displayName: 'Base: Build'
 
     - ${{ each step in parameters.buildSteps }}:
+      # - ${{ each pair in step }}:
+      #     ${{ if eq(pair.key, 'script') }}: 
+      #       '${{ pair.value }}': error         
+      #     ${{ elseif startsWith(pair.value, 'CmdLine') }}: 
+      #       '${{ pair.value }}': error         
+      #     ${{ else }}:
+      #       ${{ pair.key }}: ${{ pair.value }}       
+
       - ${{ each pair in step }}:
-          ${{ if eq(pair.key, 'script') }}: 
-            '${{ pair.value }}': error         
-          ${{ elseif startsWith(pair.value, 'CmdLine') }}: 
-            '${{ pair.value }}': error         
-          ${{ else }}:
+          ${{ if ne(pair.key, 'script') }}: 
             ${{ pair.key }}: ${{ pair.value }}       
 
     - script: echo This happens after code
