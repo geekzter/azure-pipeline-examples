@@ -1,4 +1,9 @@
 # azure-pipelines.yml
+trigger:
+  branches:
+    include:
+    - '*'
+    
 extends:
   template: template.yml
   parameters:

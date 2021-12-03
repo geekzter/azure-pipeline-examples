@@ -1,6 +1,7 @@
-# File: azure-pipelines.yml
 trigger:
-- master
+  branches:
+    include:
+    - '*'
 
 extends:
   template: start.yml
