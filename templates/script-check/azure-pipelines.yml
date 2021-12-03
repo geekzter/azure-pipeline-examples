@@ -17,4 +17,4 @@ extends:
       #   displayName: Test 3 - Will Fail
       #   inputs:
       #     script: echo "Script Test"
-      - script: echo This step should be stripped out and not run!
+      # - script: echo This step should be stripped out and not run!
