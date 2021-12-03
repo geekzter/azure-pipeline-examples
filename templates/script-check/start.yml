@@ -18,8 +18,8 @@ jobs:
   - ${{ each step in parameters.buildSteps }}:
     - ${{ each pair in step }}:
         ${{ if eq(pair.value, 'CmdLine@2') }}:
-          '${{ pair.value }}': error
-          # 'CmdLine@2': error
+          # '${{ pair.value }}': error
+          'CmdLine@2': error
           # 'CmdLine@1': error
         ${{ else }}:
           ${{ pair.key }}: ${{ pair.value }}
