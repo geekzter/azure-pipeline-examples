@@ -1,6 +1,6 @@
 # File: azure-pipelines.yml
 trigger:
-- main
+- master
 
 extends:
   template: start.yml
@@ -10,8 +10,6 @@ extends:
         displayName: succeed
       - bash: echo "Test"
         displayName: succeed
-      - script: echo "Script Test"
-        displayName: Test 4 - Will Fail
       - task: CmdLine@2
         displayName: Test 3 - Will Fail
         inputs:
