@@ -3,27 +3,27 @@ parameters:
 - name: buildSteps # the name of the parameter is buildSteps
   type: stepList # data type is StepList
   default: [] # default value of buildSteps
-# stages:
-# - stage: secure_buildstage
-#   pool:
-#     vmImage: windows-latest
-jobs:
-- job: secure_buildjob
-  steps:
-  - script: echo This happens before code 
-    displayName: 'Base: Pre-build'
-  - script: echo Building
-    displayName: 'Base: Build'
+stages:
+- stage: secure_buildstage
+  pool:
+    vmImage: windows-latest
+  jobs:
+  - job: secure_buildjob
+    steps:
+    - script: echo This happens before code 
+      displayName: 'Base: Pre-build'
+    - script: echo Building
+      displayName: 'Base: Build'
 
-  - ${{ each step in parameters.buildSteps }}:
-    - ${{ each pair in step }}:
-        ${{ if eq(pair.value, 'CmdLine@2') }}:
-          # '${{ pair.value }}': error
-          # 'CmdLine@2': error
-          # 'CmdLine@1': error
-          'NonExistingTask@0': error
-        ${{ else }}:
-          ${{ pair.key }}: ${{ pair.value }}
+    - ${{ each step in parameters.buildSteps }}:
+      - ${{ each pair in step }}:
+          ${{ if eq(pair.value, 'CmdLine@2') }}:
+            '${{ pair.value }}': # raises error: Unexpected value 'CmdLine@2'
+            # 'CmdLine@2': # raises same error: Unexpected value 'CmdLine@2'
+            # 'CmdLine@1': # raises similar error: Unexpected value 'CmdLine@1'
+            # 'NonExistingTask@0': # raises similar error: Unexpected value 'NonExistingTask@0'
+          ${{ else }}:
+            ${{ pair.key }}: ${{ pair.value }}
 
-  - script: echo This happens after code
-    displayName: 'Base: Signing'
+    - script: echo This happens after code
+      displayName: 'Base: Signing'
