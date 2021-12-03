@@ -4,11 +4,11 @@ trigger:
     - '*'
 
 extends:
-  # template: start.yml
-  template: ../script-check2/template.yml
+  template: start.yml
+  # template: ../script-check2/template.yml
   parameters:
-    # buildSteps:  
-    usersteps:  
+    buildSteps:  
+    # usersteps:  
       - bash: echo Test #Passes
         displayName: succeed
       - bash: echo "Test"
