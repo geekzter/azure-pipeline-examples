@@ -1,13 +1,8 @@
 # azure-pipelines.yml
-trigger:
-  branches:
-    include:
-    - '*'
-    
 extends:
   template: template.yml
   parameters:
     usersteps:
-    - bash: echo bash
+    - task: MyTask@1
     - script: echo This step will be stripped out and not run!
-    - pwsh: echo pwsh
+    - task: MyOtherTask@2
