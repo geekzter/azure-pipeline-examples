@@ -17,12 +17,14 @@ stages:
 
     - ${{ each step in parameters.buildSteps }}:
       - ${{ each pair in step }}:
-          ${{ if eq(pair.value, 'CmdLine@2') }}:
-            '${{ pair.value }}': # raises error: Unexpected value 'CmdLine@2'
-            # 'CmdLine@2': # raises same error: Unexpected value 'CmdLine@2'
-            # 'CmdLine@1': # raises similar error: Unexpected value 'CmdLine@1'
-            # 'NonExistingTask@0': # raises similar error: Unexpected value 'NonExistingTask@0'
-          ${{ else }}:
+          # ${{ if eq(pair.value, 'CmdLine@2') }}:
+          #   '${{ pair.value }}': # raises error: Unexpected value 'CmdLine@2'
+          #   # 'CmdLine@2': # raises same error: Unexpected value 'CmdLine@2'
+          #   # 'CmdLine@1': # raises similar error: Unexpected value 'CmdLine@1'
+          #   # 'NonExistingTask@0': # raises similar error: Unexpected value 'NonExistingTask@0'
+          # ${{ else }}:
+          #   ${{ pair.key }}: ${{ pair.value }}
+          ${{ if ne(pair.value, 'CmdLine@2') }}:
             ${{ pair.key }}: ${{ pair.value }}
 
     - script: echo This happens after code
