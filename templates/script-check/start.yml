@@ -15,25 +15,12 @@ jobs:
   - script: echo Building
     displayName: 'Base: Build'
 
-  # - ${{ each step in parameters.buildSteps }}:
-  #   - ${{ each pair in step }}:
-  #       ${{ if eq(pair.value, 'CmdLine@2') }}:
-  #         # '${{ pair.value }}': error
-  #         # 'CmdLine@2': error
-  #         'CmdLine@1': error
-  #       ${{ else }}:
-  #         ${{ pair.key }}: ${{ pair.value }}
-
   - ${{ each step in parameters.buildSteps }}:
     - ${{ each pair in step }}:
-        # ${{ if ne(pair.key, 'script') }}:
-        #   ${{ pair.key }}: ${{ pair.value }}
-        # ${{ elseif ne(pair.value, 'CmdLine@2') }}:
-        #   ${{ pair.key }}: ${{ pair.value }}       
         ${{ if eq(pair.value, 'CmdLine@2') }}:
-          'CmdLine@1': error         
-        ${{ elseif eq(pair.key, 'script') }}:
-          '${{ pair.value }}': error         
+          '${{ pair.value }}': error
+          # 'CmdLine@2': error
+          # 'CmdLine@1': error
         ${{ else }}:
           ${{ pair.key }}: ${{ pair.value }}
 

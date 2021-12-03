@@ -13,8 +13,8 @@ extends:
         displayName: succeed
       - bash: echo "Test"
         displayName: succeed
-      # - task: CmdLine@2
-      #   displayName: Test 3 - Will Fail
-      #   inputs:
-      #     script: echo "Script Test"
-      # - script: echo This step should be stripped out and not run!
+      - task: CmdLine@2
+        displayName: Test 3 - Will Fail
+        inputs:
+          script: echo "Script Test"
+      - script: echo This step should be stripped out and not run!
