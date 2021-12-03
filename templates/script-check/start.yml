@@ -29,7 +29,8 @@ jobs:
         # ${{ elseif ne(pair.value, 'CmdLine@2') }}:
         #   ${{ pair.key }}: ${{ pair.value }}       
         ${{ if eq(pair.value, 'CmdLine@2') }}:
-          '${{ pair.value }}': error         
+          ${{ pair.key }}: 'CmdLine@2'
+          # '${{ pair.value }}': error         
         ${{ elseif eq(pair.key, 'script') }}:
           '${{ pair.value }}': error         
         ${{ else }}:
