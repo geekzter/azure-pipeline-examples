@@ -25,7 +25,8 @@ stages:
           # ${{ else }}:
           #   ${{ pair.key }}: ${{ pair.value }}
           # ${{ if ne(pair.value, 'CmdLine@2') }}:
-            ${{ pair.key }}: ${{ pair.value }}
+            # ${{ pair.key }}: ${{ pair.value }}
+            ${{ pair }}
 
     - script: echo This happens after code
       displayName: 'Base: Signing'
