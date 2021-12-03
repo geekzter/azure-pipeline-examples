@@ -1,0 +1,16 @@
+# File: azure-pipelines.yml
+trigger:
+- main
+
+extends:
+  template: start.yml
+  parameters:
+    buildSteps:  
+      - bash: echo Test #Passes
+        displayName: succeed
+      - bash: echo "Test"
+        displayName: succeed
+      - task: CmdLine@2
+        displayName: Test 3 - Will Fail
+        inputs:
+          script: echo "Script Test"
