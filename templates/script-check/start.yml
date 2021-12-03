@@ -17,6 +17,7 @@ stages:
 
     - ${{ each step in parameters.buildSteps }}:
       - ${{ each pair in step }}:
+         - ${{ step }}
           # ${{ if eq(pair.value, 'CmdLine@2') }}:
           #   '${{ pair.value }}': # raises error: Unexpected value 'CmdLine@2'
           #   # 'CmdLine@2': # raises same error: Unexpected value 'CmdLine@2'
@@ -26,7 +27,6 @@ stages:
           #   ${{ pair.key }}: ${{ pair.value }}
           # ${{ if ne(pair.value, 'CmdLine@2') }}:
             # ${{ pair.key }}: ${{ pair.value }}
-            ${{ pair }}
 
     - script: echo This happens after code
       displayName: 'Base: Signing'
