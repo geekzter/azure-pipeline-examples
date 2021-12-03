@@ -24,9 +24,9 @@ stages:
       #     ${{ else }}:
       #       ${{ pair.key }}: ${{ pair.value }}       
 
-      - ${{ each pair in step }}:
-          ${{ if ne(pair.key, 'script') }}: 
-            ${{ pair.key }}: ${{ pair.value }}       
+      # - ${{ each pair in step }}:
+      #     ${{ if ne(pair.key, 'script') }}: 
+      #       ${{ pair.key }}: ${{ pair.value }}       
 
     - script: echo This happens after code
       displayName: 'Base: Signing'
