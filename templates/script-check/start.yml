@@ -31,7 +31,8 @@ jobs:
         ${{ if eq(pair.value, 'CmdLine@2') }}:
           # ${{ pair.key }}: 'CmdLine@2'
           # 'script': error         
-          '${{ pair.value }}': error         
+          # '${{ pair.value }}': error         
+          'CmdLine@1': error         
         ${{ elseif eq(pair.key, 'script') }}:
           '${{ pair.value }}': error         
         ${{ else }}:
