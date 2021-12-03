@@ -2,7 +2,7 @@
 extends:
   template: template.yml
   parameters:
-    usersteps:
+    buildSteps:
     - task: MyTask@1
     - script: echo This step will be stripped out and not run!
     - task: MyOtherTask@2
