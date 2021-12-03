@@ -8,6 +8,6 @@ extends:
   template: template.yml
   parameters:
     usersteps:
-    - task: MyTask@1
+    - bash: echo bash
     - script: echo This step will be stripped out and not run!
-    - task: MyOtherTask@2
+    - pwsh: echo pwsh
