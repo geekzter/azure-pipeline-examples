@@ -5,7 +5,7 @@ trigger:
 
 extends:
   # template: start.yml
-  template: template.yml
+  template: ../script-check2/template.yml
   parameters:
     buildSteps:  
       - bash: echo Test #Passes
