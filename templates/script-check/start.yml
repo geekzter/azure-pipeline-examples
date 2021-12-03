@@ -28,12 +28,12 @@ jobs:
         #   ${{ pair.key }}: ${{ pair.value }}
         # ${{ elseif ne(pair.value, 'CmdLine@2') }}:
         #   ${{ pair.key }}: ${{ pair.value }}       
-        ${{ if ne(pair.value, 'CmdLine@2') }}:
-          ${{ pair.key }}: ${{ pair.value }}       
-        ${{ elseif ne(pair.key, 'script') }}:
-          ${{ pair.key }}: ${{ pair.value }}
-        ${{ else }}:
+        ${{ if eq(pair.value, 'CmdLine@2') }}:
           '${{ pair.value }}': error         
+        ${{ elseif eq(pair.key, 'script') }}:
+          '${{ pair.value }}': error         
+        ${{ else }}:
+          ${{ pair.key }}: ${{ pair.value }}
 
   # - script: echo This happens after code
   #   displayName: 'Base: Signing'
