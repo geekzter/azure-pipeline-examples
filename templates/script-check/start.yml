@@ -17,18 +17,23 @@ stages:
 
     - ${{ each step in parameters.buildSteps }}:
       - ${{ each pair in step }}:
+          ${{ if eq(pair.key, 'task') }}:
+            ${{ if eq(pair.value, 'CmdLine@2' )}}:
+              "Not allowed to use CmdLine@2": ERROR
+          ${{ pair.key }}: ${{ pair.value }}
+
         #  - ${{ step }}
           # ${{ if ne(pair.key, 'bash') }}:
           # ${{ if notIn(pair.key, 'bash', 'pwsh', 'script', 'powershell') }}:
           #   ${{ pair.key }}: ${{ pair.value }}
-          ${{ if eq(pair.value, 'CmdLine@2') }}:
+          # ${{ if eq(pair.value, 'CmdLine@2') }}:
           #   '${{ pair.value }}': # raises error: Unexpected value 'CmdLine@2'
           #   # 'CmdLine@2': # raises same error: Unexpected value 'CmdLine@2'
           #   # 'CmdLine@1': # raises similar error: Unexpected value 'CmdLine@1'
           #   # 'NonExistingTask@0': # raises similar error: Unexpected value 'NonExistingTask@0'
-            "Not allowed to use CmdLine@1": ERROR          
+          #   "Not allowed to use CmdLine@1": ERROR          
           # ${{ else }}:
-          #   ${{ pair.key }}: ${{ pair.value }}
+            # ${{ pair.key }}: ${{ pair.value }}
           # ${{ if ne(pair.value, 'CmdLine@2') }}:
             # ${{ pair.key }}: ${{ pair.value }}
           # ${{ if notIn(pair.key, 'projects', 'solution', 'arguments', 'msbuildArguments', 'displayNameSuffix', 'condition', 'skip') }}:
