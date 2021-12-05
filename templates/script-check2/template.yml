@@ -9,7 +9,7 @@ steps:
     - ${{ step }}
   - ${{ else }}:  
     - ${{ each pair in step }}:
-        displayName: 'Task disabled by template'
+        displayName: Disabled3
         ${{ if eq(pair.key, 'inputs') }}:
           inputs:
             ${{ each attribute in pair.value }}:
