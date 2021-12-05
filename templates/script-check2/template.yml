@@ -17,8 +17,9 @@ steps:
               ${{ else }}:
                 ${{ attribute.key }}: ${{ attribute.value }}
         ${{ elseif eq(pair.key, 'displayName') }}:
-          displayName: Disabled task '${{ pair.value }}''
+          displayName: Disabled2
         ${{ else }}:
           ${{ pair.key }}: ${{ pair.value }}
       ${{ if not(containsValue(step.*.key, 'displayName')) }}:
-        displayName: Disabled task '${{ pair.value }}''
+        displayName: Disabled3
+
