@@ -22,7 +22,7 @@ stages:
           # ${{ pair.key }}: ${{ pair.value }}
         #  - ${{ step }}
           # ${{ if ne(pair.key, 'bash') }}:
-          ${{ if contains(pair.key, 'bash', 'pwsh', 'script', 'powershell') }}:
+          ${{ if containsValue(pair.key, 'bash', 'pwsh', 'script', 'powershell') }}:
             "Not allowed to use script": error
           ${{ elseif startsWith(pair.value, 'Bash') }}:
             "Not allowed to use Bash": error
