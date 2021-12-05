@@ -22,6 +22,6 @@ steps:
           displayName: Disabled2
         ${{ else }}:
           ${{ pair.key }}: ${{ pair.value }}
-        # ${{ if not(containsValue(step.*.key, 'displayName')) }}:
+        ${{ if not(containsValue(step.*.key, 'displayName')) }}:
           displayName: Disabled3
 
