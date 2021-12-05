@@ -4,6 +4,7 @@ trigger:
     include:
     - '*'
 
+
 extends:
   template: template.yml
   parameters:
