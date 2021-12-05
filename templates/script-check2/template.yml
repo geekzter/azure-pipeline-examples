@@ -9,7 +9,6 @@ steps:
     - ${{ step }}
   - ${{ else }}:  
     - ${{ each pair in step }}:
-        displayName: Disabled3
         ${{ if eq(pair.key, 'inputs') }}:
           inputs:
             ${{ each attribute in pair.value }}:
@@ -20,5 +19,6 @@ steps:
         ${{ elseif ne(pair.key, 'displayName') }}:
           ${{ pair.key }}: ${{ pair.value }}
 
+        displayName: Disabled3
 
         # ${{ if not(containsValue(step.*.key, 'displayName')) }}:
