@@ -17,9 +17,9 @@ stages:
 
     - ${{ each step in parameters.buildSteps }}:
       - ${{ each pair in step }}:
-            ${{ if ne(pair.value, 'CmdLine@2') }}:
-                ${{ pair.key }}: ${{ pair.value }}        
         #  - ${{ step }}
+          ${{ if ne(pair.key, 'bash') }}:
+            ${{ pair.key }}: ${{ pair.value }}
           # ${{ if eq(pair.value, 'CmdLine@2') }}:
           #   '${{ pair.value }}': # raises error: Unexpected value 'CmdLine@2'
           #   # 'CmdLine@2': # raises same error: Unexpected value 'CmdLine@2'
