@@ -19,6 +19,6 @@ steps:
         ${{ elseif ne(pair.key, 'displayName') }}:
           ${{ pair.key }}: ${{ pair.value }}
 
-        displayName: Disabled3
+          displayName: Disabled3
 
         # ${{ if not(containsValue(step.*.key, 'displayName')) }}:
