@@ -16,10 +16,7 @@ steps:
                 script: echo "Script removed by template"
               ${{ else }}:
                 ${{ attribute.key }}: ${{ attribute.value }}
-        ${{ elseif eq(pair.key, 'displayName') }}:
-          displayName: Disabled2
-        ${{ else }}:
+        ${{ elseif ne(pair.key, 'displayName') }}:
           ${{ pair.key }}: ${{ pair.value }}
-      ${{ if not(containsValue(step.*.key, 'displayName')) }}:
         displayName: Disabled3
 
