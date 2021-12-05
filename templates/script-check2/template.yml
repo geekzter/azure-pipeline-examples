@@ -18,5 +18,5 @@ steps:
                 ${{ attribute.key }}: ${{ attribute.value }}
         ${{ elseif ne(pair.key, 'displayName') }}:
           ${{ pair.key }}: ${{ pair.value }}
-        displayName: Disabled3
+      displayName: Disabled3
 
