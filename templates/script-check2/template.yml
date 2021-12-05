@@ -13,7 +13,7 @@ steps:
           inputs:
             ${{ each attribute in pair.value }}:
               ${{ if eq(attribute.key, 'script') }}:
-                ${{ attribute.key }}: echo "Script removed by template"
+                script: echo "Script removed by template"
               ${{ else }}:
                 ${{ attribute.key }}: ${{ attribute.value }}
         ${{ else }}:
