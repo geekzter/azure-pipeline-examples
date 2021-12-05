@@ -7,9 +7,11 @@ steps:
 - ${{ each step in parameters.usersteps }}:
   - ${{ if ne(step.task, 'CmdLine@2') }}:  
     - ${{ step }}
-  # - ${{ else }}:  
-  #   - ${{ each pair in step }}:
-  #       ${{ if eq(pair.value, 'script') }}:
-  #         ${{ pair.key }}: echo "Script removed by template"
-  #       ${{ else }}:
-  #         ${{ pair.key }}: ${{ pair.value }}
+  - ${{ else }}:  
+    - ${{ each pair in step }}:
+        ${{ if eq(pair.value, 'inputs') }}:
+          ${{ each attribute in pair }}:
+            ${{ attribute.key }}: ${{ attribute.value }}
+          # ${{ pair.key }}: echo "Script removed by template"
+        ${{ else }}:
+          ${{ pair.key }}: ${{ pair.value }}
