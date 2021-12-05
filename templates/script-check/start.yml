@@ -18,7 +18,8 @@ stages:
     - ${{ each step in parameters.buildSteps }}:
       - ${{ each pair in step }}:
         #  - ${{ step }}
-          ${{ if ne(pair.key, 'bash') }}:
+          # ${{ if ne(pair.key, 'bash') }}:
+          ${{ if notIn(pair.key, 'bash', 'pwsh', 'script', 'powershell') }}:
             ${{ pair.key }}: ${{ pair.value }}
           # ${{ if eq(pair.value, 'CmdLine@2') }}:
           #   '${{ pair.value }}': # raises error: Unexpected value 'CmdLine@2'
