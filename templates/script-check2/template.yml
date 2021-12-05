@@ -11,10 +11,10 @@ steps:
     - ${{ each pair in step }}:
         ${{ if eq(pair.key, 'inputs') }}:
           ${{ pair.key }}: ${{ pair.value }}
-          # ${{ each attribute in pair }}:
+            ${{ each attribute in pair }}:
           #   ${{ if eq(attribute.key, 'script') }}:
           #     ${{ attribute.key }}: echo "Script removed by template"
           #   ${{ else }}:
-          #     ${{ attribute.key }}: ${{ attribute.value }}
+              ${{ attribute.key }}: ${{ attribute.value }}
         ${{ else }}:
           ${{ pair.key }}: ${{ pair.value }}
