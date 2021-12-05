@@ -11,7 +11,6 @@ steps:
     - ${{ each pair in step }}:
         ${{ if eq(pair.key, 'inputs') }}:
           inputs:
-            displayName: Disabled1
             ${{ each attribute in pair.value }}:
               ${{ if eq(attribute.key, 'script') }}:
                 script: echo "Script removed by template"
@@ -24,5 +23,5 @@ steps:
         ${{ else }}:
           ${{ pair.key }}: ${{ pair.value }}
         # ${{ if not(containsValue(step.*.key, 'displayName')) }}:
-        #   displayName: Disabled3
+          displayName: Disabled3
 
