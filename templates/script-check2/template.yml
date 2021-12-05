@@ -6,5 +6,6 @@ parameters:
 steps:
 - ${{ each step in parameters.usersteps }}:
   - ${{ each pair in step }}:
-      ${{ if ne(pair.value, 'CmdLine@2') }}:
+      ${{ if ne(pair.key, 'steps') }}:
+      # ${{ if ne(pair.value, 'CmdLine@2') }}:
         ${{ pair.key }}: ${{ pair.value }}
