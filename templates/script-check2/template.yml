@@ -19,4 +19,4 @@ steps:
         ${{ elseif ne(pair.key, 'displayName') }}:
           ${{ pair.key }}: ${{ pair.value }}
 
-          displayName: Disabled by template ${{ step.displayName }}
+          displayName: 'Disabled by template: ${{ step.displayName }}'
