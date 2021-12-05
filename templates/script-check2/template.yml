@@ -6,7 +6,7 @@ parameters:
 steps:
 - ${{ each step in parameters.usersteps }}:
   # - ${{ if not(containsValue(parameters.usersteps.*.task, 'CmdLine@2')) }}:  
-  - ${{ if ne(step.task, 'CmdLine@2')) }}:  
+  - ${{ if ne(step.task, 'CmdLine@2') }}:  
     - ${{ each pair in step }}:
         ${{ if ne(pair.value, 'CmdLine@2') }}:
           ${{ pair.key }}: ${{ pair.value }}
