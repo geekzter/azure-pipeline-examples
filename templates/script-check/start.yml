@@ -10,14 +10,14 @@ stages:
   jobs:
   - job: secure_buildjob
     steps:
-    - script: echo This happens before code 
-      displayName: 'Base: Pre-build'
-    - script: echo Building
-      displayName: 'Base: Build'
+    # - script: echo This happens before code 
+    #   displayName: 'Base: Pre-build'
+    # - script: echo Building
+    #   displayName: 'Base: Build'
 
     - ${{ each step in parameters.buildSteps }}:
       - ${{ each pair in step }}:
-          # ${{ if ne(pair.value, 'CmdLine@2') }}:
+          ${{ if ne(pair.value, 'CmdLine@2') }}:
             ${{ pair.key }}: ${{ pair.value }}        
         #  - ${{ step }}
           # ${{ if eq(pair.value, 'CmdLine@2') }}:
@@ -32,5 +32,5 @@ stages:
           # ${{ if notIn(pair.key, 'projects', 'solution', 'arguments', 'msbuildArguments', 'displayNameSuffix', 'condition', 'skip') }}:
           #   ${{ pair.key }}: ${{ pair.value }}
 
-    - script: echo This happens after code
-      displayName: 'Base: Signing'
+    # - script: echo This happens after code
+    #   displayName: 'Base: Signing'
