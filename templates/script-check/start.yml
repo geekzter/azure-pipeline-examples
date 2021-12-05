@@ -17,9 +17,7 @@ stages:
 
     - ${{ each step in parameters.buildSteps }}:
       - ${{ each pair in step }}:
-          ${{ if in(pair.key, 'bash', 'pwsh', 'script', 'powershell') }}:
-            "Not allowed to use script": error
-          ${{ elseif startsWith(pair.value, 'Bash') }}:
+          ${{ if startsWith(pair.value, 'Bash') }}:
             "Not allowed to use Bash": error
           ${{ elseif startsWith(pair.value, 'CmdLine') }}:
             "Not allowed to use BatchScript": error
