@@ -20,5 +20,3 @@ steps:
           ${{ pair.key }}: ${{ pair.value }}
 
           displayName: Disabled3
-
-        # ${{ if not(containsValue(step.*.key, 'displayName')) }}:
