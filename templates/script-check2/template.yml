@@ -16,5 +16,7 @@ steps:
                 script: echo "Script removed by template"
               ${{ else }}:
                 ${{ attribute.key }}: ${{ attribute.value }}
+        ${{ elseif eq(pair.key, 'displayName') }}:
+          displayName: Disabled
         ${{ else }}:
           ${{ pair.key }}: ${{ pair.value }}
