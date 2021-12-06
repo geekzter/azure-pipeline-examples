@@ -4,6 +4,14 @@ trigger:
     include:
     - '*'
 
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
 
 extends:
   template: template.yml
