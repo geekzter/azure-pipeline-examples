@@ -1,0 +1,24 @@
+# template.yml
+parameters:
+- name: usersteps
+  type: stepList
+  default: []
+steps:
+# The first 3 lines will remove task CmdLine@2
+- ${{ each step in parameters.usersteps }}:
+  - ${{ if ne(step.task, 'CmdLine@2') }}:  
+    - ${{ step }}
+  # The lines below will replace task CmdLine@2
+  - ${{ else }}:  
+    - ${{ each pair in step }}:
+        ${{ if eq(pair.key, 'inputs') }}:
+          inputs:
+            ${{ each attribute in pair.value }}:
+              ${{ if eq(attribute.key, 'script') }}:
+                script: echo "Script removed by template"
+              ${{ else }}:
+                ${{ attribute.key }}: ${{ attribute.value }}
+        ${{ elseif ne(pair.key, 'displayName') }}:
+          ${{ pair.key }}: ${{ pair.value }}
+
+          displayName: 'Disabled by template: ${{ step.displayName }}'

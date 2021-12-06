@@ -1,0 +1,26 @@
+# azure-pipelines.yml
+trigger:
+  branches:
+    include:
+    - '*'
+
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+extends:
+  template: template.yml
+  parameters:
+    usersteps:
+    # - task: MyTask@1
+    - bash: echo bash
+    - script: echo This step will be stripped out and not run!
+    - task: CmdLine@2
+      displayName: Test - Will be stripped out
+      inputs:
+        script: echo This step will be stripped out and not run!
+    # - task: MyOtherTask@2

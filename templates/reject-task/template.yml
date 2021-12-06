@@ -1,0 +1,37 @@
+# File: start.yml
+parameters:
+- name: buildSteps # the name of the parameter is buildSteps
+  type: stepList # data type is StepList
+  default: [] # default value of buildSteps
+stages:
+- stage: secure_buildstage
+  pool:
+    vmImage: windows-latest
+  jobs:
+  - job: secure_buildjob
+    steps:
+    - script: echo This happens before code 
+      displayName: 'Base: Pre-build'
+    - script: echo Building
+      displayName: 'Base: Build'
+
+    - ${{ each step in parameters.buildSteps }}:
+      - ${{ each pair in step }}:
+        # The 
+          ${{ if startsWith(pair.value, 'Bash') }}:
+            # Will throw syntax error: Unexpected value 'Not allowed to use Bash'
+            "Not allowed to use Bash": error
+          ${{ elseif startsWith(pair.value, 'CmdLine') }}:
+            # Will throw syntax error: Unexpected value 'Not allowed to use BatchScript'
+            "Not allowed to use BatchScript": error
+          ${{ elseif startsWith(pair.value, 'PowerShell') }}:
+            # Will throw syntax error: Unexpected value 'Not allowed to use PowerShell'
+            "Not allowed to use PowerShell": error
+          ${{ elseif startsWith(pair.value, 'ShellScript') }}:
+            # Will throw syntax error: Unexpected value 'Not allowed to use ShellScript'
+            "Not allowed to use ShellScript": error
+          ${{ else }}:
+            ${{ pair.key }}: ${{ pair.value }}
+
+    - script: echo This happens after code
+      displayName: 'Base: Signing'

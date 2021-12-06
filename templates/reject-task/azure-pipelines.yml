@@ -1,0 +1,18 @@
+trigger:
+  branches:
+    include:
+    - '*'
+
+extends:
+  template: template.yml
+  parameters:
+    buildSteps:  
+      - bash: echo Test #Passes
+        displayName: Bash A
+      - bash: echo "Test"
+        displayName: Bash B
+      - task: CmdLine@2
+        displayName: Test 3 - Will Fail
+        inputs:
+          script: echo "Script Test"
+      - script: echo Test 4 - Will Fail
