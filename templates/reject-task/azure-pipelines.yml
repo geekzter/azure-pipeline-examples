@@ -1,8 +1,3 @@
-trigger:
-  branches:
-    include:
-    - '*'
-
 extends:
   template: template.yml
   parameters:
