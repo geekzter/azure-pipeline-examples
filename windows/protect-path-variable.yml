@@ -1,5 +1,3 @@
-name: protect-path-variable
-
 trigger: none
 schedules:
 - cron: '0 1 * * *'
