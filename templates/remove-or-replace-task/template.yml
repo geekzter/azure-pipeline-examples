@@ -11,6 +11,7 @@ steps:
   # The lines below will replace task CmdLine@2
   - ${{ else }}:  
     - ${{ each pair in step }}:
+        displayName: 'Disabled by template: ${{ step.displayName }}'
         ${{ if eq(pair.key, 'inputs') }}:
           inputs:
             ${{ each attribute in pair.value }}:
@@ -21,4 +22,4 @@ steps:
         ${{ elseif ne(pair.key, 'displayName') }}:
           ${{ pair.key }}: ${{ pair.value }}
 
-          displayName: 'Disabled by template: ${{ step.displayName }}'
+          # displayName: 'Disabled by template: ${{ step.displayName }}'
