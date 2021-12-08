@@ -28,5 +28,3 @@ extends:
       displayName: Test - Will be stripped out
       inputs:
         script: echo This step will be stripped out and not run!
-    - task: Delay@1 # Make sure we have at least one task
-    # - task: MyOtherTask@2
