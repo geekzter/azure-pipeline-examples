@@ -13,7 +13,7 @@ schedules:
     - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: windows-latest
 
 extends:
   template: template.yml
