@@ -6,7 +6,7 @@ parameters:
 steps:
 # The first 3 lines will remove task CmdLine@2
 - ${{ each step in parameters.usersteps }}:
-  - ${{ if not(or(startsWith(pair.value, 'Bash'),startsWith(pair.value, 'CmdLine'),startsWith(pair.value, 'PowerShell'))) }}:  
+  - ${{ if not(or(startsWith(step.task, 'Bash'),startsWith(step.task, 'CmdLine'),startsWith(step.task, 'PowerShell'))) }}:  
     - ${{ step }}
   # The lines below will replace task CmdLine@2
   - ${{ else }}:  
