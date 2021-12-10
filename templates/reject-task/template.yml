@@ -27,9 +27,6 @@ stages:
           ${{ elseif startsWith(pair.value, 'PowerShell') }}:
             # Will throw syntax error: Unexpected value 'Not allowed to use PowerShell'
             "Not allowed to use PowerShell": error
-          ${{ elseif startsWith(pair.value, 'ShellScript') }}:
-            # Will throw syntax error: Unexpected value 'Not allowed to use ShellScript'
-            "Not allowed to use ShellScript": error
           ${{ else }}:
             ${{ pair.key }}: ${{ pair.value }}
 
