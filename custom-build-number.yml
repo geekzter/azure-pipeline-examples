@@ -1,5 +1,10 @@
+parameters:
+- name: workspace
+  type: string
+  default: ci
+  
 # name: $(TeamProject)_$(Build.DefinitionName)_$(SourceBranchName)_$(Date:yyyyMMdd)$(Rev:.r)
-name: $(Build.DefinitionName)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.RequestedFor)-$(Build.BuildId)
+name: $(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.workspace }}-$(Build.BuildId)
 
 trigger: none
 schedules:
