@@ -1,0 +1,14 @@
+trigger: none
+schedules:
+- cron: '0 1 * * Mo,We,Sa'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - '*'
+jobs:
+- job: 'simple'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - pwsh: echo running
