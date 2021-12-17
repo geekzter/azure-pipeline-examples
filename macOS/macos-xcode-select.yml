@@ -11,7 +11,7 @@ variables:
   xcodeRoot: "/Applications/Xcode_13.2.app"
 
 jobs:
-- job: macOSlatest
+- job: xcodeSelect
   pool:
     vmImage: 'macOS-latest'
   steps:
