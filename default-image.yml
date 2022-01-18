@@ -16,7 +16,7 @@ jobs:
   - pwsh: |
       Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Set-Variable osProperties 
       if (Get-Command Get-ComputerInfo -ErrorAction SilentlyContinue) {
-        Add-Member -InputObject $osProperties -MemberType NoteProperty -Name WindowsProductName -Value (Get-ComputerInfo | Select-Object WindowsProductName)
+        $osProperties | Add-Member -MemberType NoteProperty -Name WindowsProductName -Value (Get-ComputerInfo | Select-Object WindowsProductName)
       }
       $osProperties | Format-List
 - job: 'nopool'
