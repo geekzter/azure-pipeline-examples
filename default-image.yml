@@ -14,10 +14,12 @@ jobs:
     name: 'Hosted'
   steps:
   - pwsh: |
-      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Set-Variable osProperties 
       if (Get-Command Get-ComputerInfo -ErrorAction SilentlyContinue) {
-        Get-ComputerInfo | Select-Object WindowsProductName
+        # Add-Member -InputObject $osProperties -MemberType NoteProperty -Name Foo -Value Bar
+        Add-Member -InputObject $osProperties -NotePropertyMembers (Get-ComputerInfo | Select-Object WindowsProductName)
       }
+      $osProperties | Format-List
 - job: 'nopool'
   displayName: 'No pool specified'
   steps:
