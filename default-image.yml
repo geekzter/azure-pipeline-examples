@@ -15,8 +15,14 @@ jobs:
   steps:
   - pwsh: |
       Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+      if (Get-Command Get-ComputerInfo -ErrorAction SilentlyContinue) {
+        Get-ComputerInfo | Select-Object WindowsProductName
+      }
 - job: 'nopool'
   displayName: 'No pool specified'
   steps:
   - pwsh: |
       Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+      if (Get-Command Get-ComputerInfo -ErrorAction SilentlyContinue) {
+        Get-ComputerInfo | Select-Object WindowsProductName
+      }
