@@ -8,21 +8,17 @@ schedules:
     - main
 
 jobs:
-- job: 'hosted'
-  displayName: 'Hosted pool'
-  pool:
-    name: 'Hosted'
-  steps:
-  - pwsh: |
-      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Set-Variable osProperties 
-      if (Get-Command Get-ComputerInfo -ErrorAction SilentlyContinue) {
-        $osProperties | Add-Member -MemberType NoteProperty -Name WindowsProductName -Value (Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName)
-      }
-      $osProperties | Format-List
 - job: 'azurepipelines'
   displayName: 'Azure Pipelines pool'
   pool:
     name: 'Azure Pipelines'
+  steps:
+  - pwsh: |
+      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+- job: 'hosted'
+  displayName: 'Hosted pool'
+  pool:
+    name: 'Hosted'
   steps:
   - pwsh: |
       Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Set-Variable osProperties 
