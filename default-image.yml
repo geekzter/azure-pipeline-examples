@@ -15,6 +15,13 @@ jobs:
   steps:
   - pwsh: |
       Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+- job: 'default'
+  displayName: 'Default pool'
+  pool:
+    name: 'Default'
+  steps:
+  - pwsh: |
+      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
 - job: 'hosted'
   displayName: 'Hosted pool'
   pool:
