@@ -18,16 +18,16 @@ jobs:
     vmImage: 'windows-latest'
   steps:
   - pwsh: |
-      .\powershell-progress-preference.ps1
+      .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
     displayName: Default
     workingDirectory: '$(scriptDirectory)'
   - pwsh: |
       $ProgressPreference = 'SilentlyContinue'
-      .\powershell-progress-preference.ps1
+      .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
     displayName: SilentlyContinue
     workingDirectory: '$(scriptDirectory)'
   - pwsh: |
       $ProgressPreference = 'Continue'
-      .\powershell-progress-preference.ps1
+      .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
     displayName: Continue
     workingDirectory: '$(scriptDirectory)'
