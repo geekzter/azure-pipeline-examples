@@ -12,11 +12,14 @@ variables:
   value: '$(Build.SourcesDirectory)/windows'
 
 jobs:
-- job: powershellProgress1
-  displayName: 'Progress Preference 1'
+- job: powerShellCore
+  displayName: 'PowerShell Core Progress Preference'
   pool:
     vmImage: 'windows-latest'
   steps:
+  - pwsh: |
+      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+    displayName: Get PowerShell version
   - pwsh: |
       .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
     displayName: Default
@@ -32,42 +35,101 @@ jobs:
     displayName: Continue
     workingDirectory: '$(scriptDirectory)'
 
-- job: powershellProgress2
-  displayName: 'Progress Preference 2'
+- job: windowsPowerShell
+  displayName: 'Windows PowerShell Progress Preference'
   pool:
     vmImage: 'windows-latest'
   steps:
-  - pwsh: |
+  - powershell: |
+      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+    displayName: Get PowerShell version
+  - powershell: |
+      .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
+    displayName: Default
+    workingDirectory: '$(scriptDirectory)'
+  - powershell: |
       $ProgressPreference = 'SilentlyContinue'
       .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
     displayName: SilentlyContinue
     workingDirectory: '$(scriptDirectory)'
-  - pwsh: |
-      .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
-    displayName: Default
-    workingDirectory: '$(scriptDirectory)'
-  - pwsh: |
+  - powershell: |
       $ProgressPreference = 'Continue'
       .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
     displayName: Continue
     workingDirectory: '$(scriptDirectory)'
 
-- job: powershellProgress3
-  displayName: 'Progress Preference 3'
+- job: azurePowerShellCore
+  displayName: 'Azure PowerShell Core Progress Preference'
   pool:
     vmImage: 'windows-latest'
   steps:
-  - pwsh: |
-      .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
-    displayName: Default
-    workingDirectory: '$(scriptDirectory)'
-  - pwsh: |
-      $ProgressPreference = 'Continue'
-      .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
-    displayName: Continue
-    workingDirectory: '$(scriptDirectory)'
-  - pwsh: |
-      $ProgressPreference = 'SilentlyContinue'
-      .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
-    displayName: SilentlyContinue
-    workingDirectory: '$(scriptDirectory)'
+  - task: AzurePowerShell@5
+    displayName: 'Default'
+    inputs:
+      azureSubscription: my-azure-subscription
+      scriptType: inlineScript
+      inline: |
+        .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: true
+      workingDirectory: '$(scriptDirectory)'
+  - task: AzurePowerShell@5
+    displayName: 'SilentlyContinue'
+    inputs:
+      azureSubscription: my-azure-subscription
+      scriptType: inlineScript
+      inline: |
+        $ProgressPreference = 'SilentlyContinue'
+        .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: true
+      workingDirectory: '$(scriptDirectory)'
+  - task: AzurePowerShell@5
+    displayName: 'Continue'
+    inputs:
+      azureSubscription: my-azure-subscription
+      scriptType: inlineScript
+      inline: |
+        $ProgressPreference = 'Continue'
+        .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: true
+      workingDirectory: '$(scriptDirectory)'
+
+- job: azureWindowsPowerShell
+  displayName: 'Azure Windows PowerShell Progress Preference'
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - task: AzurePowerShell@5
+    displayName: 'Default'
+    inputs:
+      azureSubscription: my-azure-subscription
+      scriptType: inlineScript
+      inline: |
+        .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: false
+      workingDirectory: '$(scriptDirectory)'
+  - task: AzurePowerShell@5
+    displayName: 'SilentlyContinue'
+    inputs:
+      azureSubscription: my-azure-subscription
+      scriptType: inlineScript
+      inline: |
+        $ProgressPreference = 'SilentlyContinue'
+        .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: false
+      workingDirectory: '$(scriptDirectory)'
+  - task: AzurePowerShell@5
+    displayName: 'Continue'
+    inputs:
+      azureSubscription: my-azure-subscription
+      scriptType: inlineScript
+      inline: |
+        $ProgressPreference = 'Continue'
+        .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: false
+      workingDirectory: '$(scriptDirectory)'
