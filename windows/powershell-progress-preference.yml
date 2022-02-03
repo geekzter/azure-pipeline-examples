@@ -17,17 +17,17 @@ jobs:
       $ProgressPreference = 'SilentlyContinue'
 
       $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
-      for ($i = 1; $i -le 100; $i++ )
+      for ($i = 1; $i -le 1000; $i++ )
       {
-          Write-Progress -Activity "Test Progress" -Status "$i% Complete:" -PercentComplete $i
+          Write-Progress -Activity "Test Progress" -Status "$i% Complete:" -PercentComplete $i/10
       }
       $stopwatch.Elapsed
     displayName: SilentlyContinue
   - pwsh: |
       $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
-      for ($i = 1; $i -le 100; $i++ )
+      for ($i = 1; $i -le 1000; $i++ )
       {
-          Write-Progress -Activity "Test Progress" -Status "$i% Complete:" -PercentComplete $i
+          Write-Progress -Activity "Test Progress" -Status "$i% Complete:" -PercentComplete $i/10
       }
       $stopwatch.Elapsed
     displayName: Default
@@ -35,9 +35,9 @@ jobs:
       $ProgressPreference = 'Continue'
 
       $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
-      for ($i = 1; $i -le 100; $i++ )
+      for ($i = 1; $i -le 1000; $i++ )
       {
-          Write-Progress -Activity "Test Progress" -Status "$i% Complete:" -PercentComplete $i
+          Write-Progress -Activity "Test Progress" -Status "$i% Complete:" -PercentComplete $i/10
       }
       $stopwatch.Elapsed
     displayName: Continue
