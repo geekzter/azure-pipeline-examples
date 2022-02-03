@@ -14,6 +14,14 @@ jobs:
     vmImage: 'windows-latest'
   steps:
   - pwsh: |
+      $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
+      for ($i = 1; $i -le 1000; $i++ )
+      {
+          Write-Progress -Activity "Test Progress" -Status "$i% Complete:" -PercentComplete $i/10
+      }
+      $stopwatch.Elapsed
+    displayName: Default
+  - pwsh: |
       $ProgressPreference = 'SilentlyContinue'
 
       $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
@@ -23,14 +31,6 @@ jobs:
       }
       $stopwatch.Elapsed
     displayName: SilentlyContinue
-  - pwsh: |
-      $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
-      for ($i = 1; $i -le 1000; $i++ )
-      {
-          Write-Progress -Activity "Test Progress" -Status "$i% Complete:" -PercentComplete $i/10
-      }
-      $stopwatch.Elapsed
-    displayName: Default
   - pwsh: |
       $ProgressPreference = 'Continue'
 
