@@ -102,22 +102,22 @@ jobs:
     vmImage: 'windows-latest'
   steps:
   - task: AzurePowerShell@5
-    displayName: 'Default'
-    inputs:
-      azureSubscription: my-azure-subscription
-      scriptType: inlineScript
-      inline: |
-        .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
-      azurePowerShellVersion: 'latestVersion'
-      pwsh: false
-      workingDirectory: '$(scriptDirectory)'
-  - task: AzurePowerShell@5
     displayName: 'SilentlyContinue'
     inputs:
       azureSubscription: my-azure-subscription
       scriptType: inlineScript
       inline: |
         $ProgressPreference = 'SilentlyContinue'
+        .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: false
+      workingDirectory: '$(scriptDirectory)'
+  - task: AzurePowerShell@5
+    displayName: 'Default'
+    inputs:
+      azureSubscription: my-azure-subscription
+      scriptType: inlineScript
+      inline: |
         .\powershell-progress-preference.ps1 -TempDirectory $(Build.ArtifactStagingDirectory)
       azurePowerShellVersion: 'latestVersion'
       pwsh: false
