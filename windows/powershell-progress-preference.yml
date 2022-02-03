@@ -1,0 +1,43 @@
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: powershellProgress
+  displayName: 'Progress Preference'
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - pwsh: |
+      $ProgressPreference = 'SilentlyContinue'
+
+      $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
+      for ($i = 1; $i -le 100; $i++ )
+      {
+          Write-Progress -Activity "Test Progress" -Status "$i% Complete:" -PercentComplete $i
+      }
+      $stopwatch.Elapsed
+    displayName: SilentlyContinue
+  - pwsh: |
+      $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
+      for ($i = 1; $i -le 100; $i++ )
+      {
+          Write-Progress -Activity "Test Progress" -Status "$i% Complete:" -PercentComplete $i
+      }
+      $stopwatch.Elapsed
+    displayName: Default
+  - pwsh: |
+      $ProgressPreference = 'Continue'
+
+      $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
+      for ($i = 1; $i -le 100; $i++ )
+      {
+          Write-Progress -Activity "Test Progress" -Status "$i% Complete:" -PercentComplete $i
+      }
+      $stopwatch.Elapsed
+    displayName: Continue
