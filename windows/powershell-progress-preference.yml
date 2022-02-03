@@ -15,9 +15,11 @@ jobs:
   steps:
   - pwsh: |
       $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
-      for ($i = 1; $i -le 1000; $i++ )
+      for ($i = 1; $i -le 10000; $i++ )
       {
-          Write-Progress -Activity "Test Progress" -Status "$i% Complete:" -PercentComplete ($i/10)
+        $percentComplete = ($i/100)
+        Write-Progress -Activity "Test Progress" -Status "$percentComplete% Complete:" -PercentComplete $percentComplete
+        Start-Sleep -Milliseconds 1
       }
       $stopwatch.Elapsed
     displayName: Default
@@ -25,9 +27,11 @@ jobs:
       $ProgressPreference = 'SilentlyContinue'
 
       $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
-      for ($i = 1; $i -le 1000; $i++ )
+      for ($i = 1; $i -le 10000; $i++ )
       {
-          Write-Progress -Activity "Test Progress" -Status "$i% Complete:" -PercentComplete ($i/10)
+        $percentComplete = ($i/100)
+        Write-Progress -Activity "Test Progress" -Status "$percentComplete% Complete:" -PercentComplete $percentComplete
+        Start-Sleep -Milliseconds 1
       }
       $stopwatch.Elapsed
     displayName: SilentlyContinue
@@ -35,9 +39,11 @@ jobs:
       $ProgressPreference = 'Continue'
 
       $stopwatch =  [system.diagnostics.stopwatch]::StartNew()
-      for ($i = 1; $i -le 1000; $i++ )
+      for ($i = 1; $i -le 10000; $i++ )
       {
-          Write-Progress -Activity "Test Progress" -Status "$i% Complete:" -PercentComplete ($i/10)
+        $percentComplete = ($i/100)
+        Write-Progress -Activity "Test Progress" -Status "$percentComplete% Complete:" -PercentComplete $percentComplete
+        Start-Sleep -Milliseconds 1
       }
       $stopwatch.Elapsed
     displayName: Continue
