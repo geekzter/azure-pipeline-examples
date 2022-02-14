@@ -38,7 +38,7 @@ jobs:
 - job: 'DefaultHosted'
   displayName: 'DefaultHosted pool'
   pool:
-    name: 'DefaultHosted'
+    vmImage: 'DefaultHosted'
   steps:
   - pwsh: |
       Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Set-Variable osProperties 
