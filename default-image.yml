@@ -15,6 +15,7 @@ jobs:
   steps:
   - pwsh: |
       Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+
 - job: 'default'
   displayName: 'Default pool'
   pool:
@@ -22,7 +23,8 @@ jobs:
   steps:
   - pwsh: |
       Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
-- job: 'hosted'
+
+- job: 'Hosted'
   displayName: 'Hosted pool'
   pool:
     name: 'Hosted'
@@ -33,8 +35,25 @@ jobs:
         $osProperties | Add-Member -MemberType NoteProperty -Name WindowsProductName -Value (Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName)
       }
       $osProperties | Format-List
+- job: 'DefaultHosted'
+  displayName: 'DefaultHosted pool'
+  pool:
+    name: 'DefaultHosted'
+  steps:
+  - pwsh: |
+      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Set-Variable osProperties 
+      if (Get-Command Get-ComputerInfo -ErrorAction SilentlyContinue) {
+        $osProperties | Add-Member -MemberType NoteProperty -Name WindowsProductName -Value (Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName)
+      }
+      $osProperties | Format-List
+
 - job: 'nopool'
   displayName: 'No pool specified'
   steps:
   - pwsh: |
       Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+
+
+
+
+
