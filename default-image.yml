@@ -8,10 +8,70 @@ schedules:
     - main
 
 jobs:
-- job: 'hosted'
+- job: 'azurepipelines'
+  displayName: 'Azure Pipelines pool'
+  pool:
+    name: 'Azure Pipelines'
+  steps:
+  - pwsh: |
+      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+      if ($IsLinux) {
+        lsb_release -d
+      }
+      if ($IsWindows) {
+        Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName
+      }
+
+- job: 'default'
+  displayName: 'Default pool'
+  pool:
+    name: 'Default'
+  steps:
+  - pwsh: |
+      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+      if ($IsLinux) {
+        lsb_release -d
+      }
+      if ($IsWindows) {
+        Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName
+      }
+
+- job: 'Hosted'
   displayName: 'Hosted pool'
   pool:
     name: 'Hosted'
   steps:
   - pwsh: |
       Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+      if ($IsLinux) {
+        lsb_release -d
+      }
+      if ($IsWindows) {
+        Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName
+      }
+
+- job: 'DefaultHosted'
+  displayName: 'DefaultHosted image'
+  pool:
+    vmImage: 'DefaultHosted'
+  steps:
+  - pwsh: |
+      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+      if ($IsLinux) {
+        lsb_release -d
+      }
+      if ($IsWindows) {
+        Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName
+      }
+
+- job: 'nopool'
+  displayName: 'No pool or image specified'
+  steps:
+  - pwsh: |
+      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+      if ($IsLinux) {
+        lsb_release -d
+      }
+      if ($IsWindows) {
+        Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName
+      }
