@@ -15,6 +15,12 @@ jobs:
   steps:
   - pwsh: |
       Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+      if ($IsLinux) {
+        lsb_release -d
+      }
+      if ($IsWindows) {
+        Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName
+      }
 
 - job: 'default'
   displayName: 'Default pool'
@@ -23,6 +29,12 @@ jobs:
   steps:
   - pwsh: |
       Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+      if ($IsLinux) {
+        lsb_release -d
+      }
+      if ($IsWindows) {
+        Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName
+      }
 
 - job: 'Hosted'
   displayName: 'Hosted pool'
@@ -30,30 +42,36 @@ jobs:
     name: 'Hosted'
   steps:
   - pwsh: |
-      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Set-Variable osProperties 
-      if (Get-Command Get-ComputerInfo -ErrorAction SilentlyContinue) {
-        $osProperties | Add-Member -MemberType NoteProperty -Name WindowsProductName -Value (Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName)
+      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+      if ($IsLinux) {
+        lsb_release -d
       }
-      $osProperties | Format-List
+      if ($IsWindows) {
+        Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName
+      }
+
 - job: 'DefaultHosted'
   displayName: 'DefaultHosted image'
   pool:
     vmImage: 'DefaultHosted'
   steps:
   - pwsh: |
-      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Set-Variable osProperties 
-      if (Get-Command Get-ComputerInfo -ErrorAction SilentlyContinue) {
-        $osProperties | Add-Member -MemberType NoteProperty -Name WindowsProductName -Value (Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName)
+      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
+      if ($IsLinux) {
+        lsb_release -d
       }
-      $osProperties | Format-List
+      if ($IsWindows) {
+        Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName
+      }
 
 - job: 'nopool'
-  displayName: 'No pool specified'
+  displayName: 'No pool or image specified'
   steps:
   - pwsh: |
       Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
-
-
-
-
-
+      if ($IsLinux) {
+        lsb_release -d
+      }
+      if ($IsWindows) {
+        Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName
+      }
