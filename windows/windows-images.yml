@@ -33,7 +33,7 @@ jobs:
   - pwsh: |
       Get-ComputerInfo | Select-Object WindowsProductName
 
-- job: 'hosted-latest'
+- job: 'hostedlatest'
   displayName: 'Hosted pool with windows-latest'
   pool:
     name: 'Hosted'
