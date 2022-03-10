@@ -30,6 +30,16 @@ jobs:
   displayName: 'Hosted pool'
   pool:
     name: 'Hosted'
+    vmImage: 'windows-latest'
+  steps:
+  - pwsh: |
+      Write-Host "hello from Windows 2016 with Visual Studio 2017"
+      Get-ComputerInfo | Select-Object WindowsProductName
+
+- job: 'hosted-latest'
+  displayName: 'Hosted pool with windows-latest'
+  pool:
+    name: 'Hosted'
   steps:
   - pwsh: |
       Write-Host "hello from Windows 2016 with Visual Studio 2017"
