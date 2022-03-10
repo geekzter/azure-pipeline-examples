@@ -14,7 +14,6 @@ jobs:
     name: 'Hosted VS2017'
   steps:
   - pwsh: |
-      Write-Host "hello from Windows 2016 with Visual Studio 2017"
       Get-ComputerInfo | Select-Object WindowsProductName
 
 - job: 'windows2016'
@@ -23,7 +22,6 @@ jobs:
     vmImage: 'vs2017-win2016'
   steps:
   - pwsh: |
-      Write-Host "hello from Windows 2016 with Visual Studio 2017"
       Get-ComputerInfo | Select-Object WindowsProductName
 
 - job: 'hosted'
@@ -33,7 +31,6 @@ jobs:
     vmImage: 'windows-latest'
   steps:
   - pwsh: |
-      Write-Host "hello from Windows 2016 with Visual Studio 2017"
       Get-ComputerInfo | Select-Object WindowsProductName
 
 - job: 'hosted-latest'
@@ -42,7 +39,6 @@ jobs:
     name: 'Hosted'
   steps:
   - pwsh: |
-      Write-Host "hello from Windows 2016 with Visual Studio 2017"
       Get-ComputerInfo | Select-Object WindowsProductName
 
 - job: 'windows2019'
@@ -51,7 +47,6 @@ jobs:
     vmImage: 'windows-2019'
   steps:
   - pwsh: |
-      Write-Host "hello from Windows 2019 with Visual Studio 2019"
       Get-ComputerInfo | Select-Object WindowsProductName
 
 - job: 'windows2022'
@@ -60,7 +55,6 @@ jobs:
     vmImage: 'windows-2022'
   steps:
   - pwsh: |
-      Write-Host "hello from Windows 2022 with Visual Studio 2022"
       Get-ComputerInfo | Select-Object WindowsProductName
 
 - job: 'windowslatest'
@@ -69,5 +63,4 @@ jobs:
     vmImage: 'windows-latest'
   steps:
   - pwsh: |
-      Write-Host "hello from the latest version of Windows available"
       Get-ComputerInfo | Select-Object WindowsProductName
