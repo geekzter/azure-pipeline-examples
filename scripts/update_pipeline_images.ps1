@@ -14,14 +14,15 @@
 #Requires -Version 7
 param ( 
     [parameter(Mandatory=$false)][string]$DeprecatedImage="vs2017-win2016",
-    [parameter(Mandatory=$false)][int]$MaxPipelines=200,
+    [parameter(Mandatory=$false)][int]$MaxItems=200,
     [parameter(Mandatory=$true)][string]$OrganizationUrl=$env:SYSTEM_COLLECTIONURI,
-    [parameter(Mandatory=$true)][string]$Project,
+    [parameter(Mandatory=$false)][string]$Project,
     [parameter(Mandatory=$false)][string]$ReplaceWithImage="windows-2019",
     [parameter(Mandatory=$false)][string]$Token=$env:AZURE_DEVOPS_EXT_PAT ?? $env:SYSTEM_ACCESSTOKEN
 ) 
+$apiVersion="6.0"
 
-function BuildHeaders(
+function Build-Headers(
     [parameter(Mandatory=$true)][string]$Token
 )
 {
@@ -44,14 +45,11 @@ function Find-Pipelines(
     [parameter(Mandatory=$true)][string]$Token
 )
 {
-    # az devops cli does not (yet) allow updates, so using the REST API
-    $apiVersion="6.0"
-
-    $listApi = "${OrganizationUrl}/${Project}/_apis/build/definitions?api-version=${apiVersion}&includeAllProperties=true&`$top=${MaxPipelines}"
+    $listApi = "${OrganizationUrl}/${Project}/_apis/build/definitions?api-version=${apiVersion}&includeAllProperties=true&`$top=${MaxItems}"
     Write-Debug "REST API Url: $listApi"
 
     # Retrieve pipeline
-    $requestHeaders = BuildHeaders -Token $Token
+    $requestHeaders = Build-Headers -Token $Token
     Invoke-RestMethod -Headers $requestHeaders -Method 'Get' -Uri $listApi | Set-Variable pipelines
     # Filter pipelines with either pipeline image or at least one job level image matching the given deprecated image name
     $pipelines.value | Where-Object {
@@ -60,6 +58,21 @@ function Find-Pipelines(
     } | Set-Variable pipelinedUsingDeprecatedImages
 
     return $pipelinedUsingDeprecatedImages
+}
+
+function List-Projects(
+    [parameter(Mandatory=$true)][string]$OrganizationUrl,
+    [parameter(Mandatory=$true)][string]$Token
+)
+{
+    $listApi = "${OrganizationUrl}/_apis/projects?api-version=${apiVersion}&stateFilter=wellFormed&`$top=${MaxItems}"
+    Write-Debug "REST API Url: $listApi"
+
+    # Retrieve pipeline
+    $requestHeaders = Build-Headers -Token $Token
+    Invoke-RestMethod -Headers $requestHeaders -Method 'Get' -Uri $listApi | Set-Variable projects
+
+    return $projects
 }
 
 function Update-Pipeline(
@@ -71,15 +84,12 @@ function Update-Pipeline(
     [parameter(Mandatory=$true)][string]$Token
 )
 {
-    # az devops cli does not (yet) allow updates, so using the REST API
-    $OrganizationUrl = $OrganizationUrl -replace "/$","" # Strip trailing '/'
-    $apiVersion="6.0"
-
+    
     $itemApi = "${OrganizationUrl}/${Project}/_apis/build/definitions/${DefinitionId}?api-version=${apiVersion}"
     Write-Debug "REST API Url: $itemApi"
 
     # Retrieve pipeline
-    $requestHeaders = BuildHeaders -Token $Token
+    $requestHeaders = Build-Headers -Token $Token
     Invoke-RestMethod -Headers $requestHeaders -Method 'Get' -Uri $itemApi | Set-Variable pipelineSettings
     $pipelineSettings | ConvertTo-Json -Depth 10 | Write-Debug
     
@@ -117,26 +127,55 @@ function Update-Pipeline(
 
 }
 
+function Update-Project(
+    [parameter(Mandatory=$true)][string]$DeprecatedImage,
+    [parameter(Mandatory=$true)][string]$OrganizationUrl,
+    [parameter(Mandatory=$true)][string]$Project,
+    [parameter(Mandatory=$true)][string]$ReplaceWithImage,
+    [parameter(Mandatory=$true)][string]$Token
+)
+{   
+    "Retrieving up to {3} classic / UI pipelines using '{0}' in {1}/{2}" -f $DeprecatedImage, $OrganizationUrl, $Project, $MaxItems | Write-Host
+    Find-Pipelines -DeprecatedImage $DeprecatedImage `
+                   -OrganizationUrl $OrganizationUrl -Project $Project `
+                   -Token $Token `
+                   | Set-Variable pipelinedUsingDeprecatedImages
+    
+    if (!$pipelinedUsingDeprecatedImages) {
+        "No classic / UI pipelines found using '{0}' in {1}/{2}" -f $DeprecatedImage, $OrganizationUrl, $Project | Write-Host
+        return
+    }
+    "{0} pipelines are using {1}" -f $pipelinedUsingDeprecatedImages.Count, $DeprecatedImage
+    
+    foreach ($pipeline in $pipelinedUsingDeprecatedImages) {
+        "Updating pipeline '{0}' ({1}) {2} -> {3}..." -f $pipeline.name, $pipeline.id, $DeprecatedImage, $ReplaceWithImage | Write-Host
+        Write-Verbose $pipeline._links.web.href
+        Update-Pipeline -DefinitionId $pipeline.id `
+                        -DeprecatedImage $DeprecatedImage `
+                        -OrganizationUrl $OrganizationUrl -Project $Project `
+                        -ReplaceWithImage $ReplaceWithImage `
+                        -Token $Token
+    }
+}
+
 $OrganizationUrl = $OrganizationUrl -replace "/$","" # Strip trailing '/'
 
-"Retrieving up to {3} classic / UI pipelines using '{0}' in {1}/{2}" -f $DeprecatedImage, $OrganizationUrl, $Project, $MaxPipelines | Write-Host
-Find-Pipelines -DeprecatedImage $DeprecatedImage `
-                        -OrganizationUrl $OrganizationUrl -Project $Project `
-                        -Token $Token `
-                        | Set-Variable pipelinedUsingDeprecatedImages
+if ($Project) {
+    Update-Project -DeprecatedImage $DeprecatedImage `
+                   -OrganizationUrl $OrganizationUrl -Project $Project `
+                   -ReplaceWithImage $ReplaceWithImage `
+                   -Token $Token
 
-if (!$pipelinedUsingDeprecatedImages) {
-    "No classic / UI pipelines found using '{0}' in {1}/{2}" -f $DeprecatedImage, $OrganizationUrl, $Project | Write-Host
-    exit
-}
-"{0} pipelines are using {1}" -f $pipelinedUsingDeprecatedImages.Count, $DeprecatedImage
-
-foreach ($pipeline in $pipelinedUsingDeprecatedImages) {
-    "Updating pipeline '{0}' ({1}) {2} -> {3}..." -f $pipeline.name, $pipeline.id, $DeprecatedImage, $ReplaceWithImage | Write-Host
-    Write-Verbose $pipeline._links.web.href
-    Update-Pipeline -DefinitionId $pipeline.id `
-                    -DeprecatedImage $DeprecatedImage `
-                    -OrganizationUrl $OrganizationUrl -Project $Project `
-                    -ReplaceWithImage $ReplaceWithImage `
-                    -Token $Token
+} else {
+    "Retrieving up to {0} projects in {1}" -f $MaxItems, $OrganizationUrl | Write-Host
+    List-Projects -OrganizationUrl $OrganizationUrl -Token $Token | Set-Variable projects
+    foreach ($proj in $projects.value) {
+        $projectNameEncoded = [System.Web.HttpUtility]::UrlPathEncode($proj.name)
+        "`nProcessing project {0} ({1}/{2})" -f $proj.name, $OrganizationUrl, $projectNameEncoded | Write-Host
+    
+        Update-Project -DeprecatedImage $DeprecatedImage `
+                       -OrganizationUrl $OrganizationUrl -Project $projectNameEncoded `
+                       -ReplaceWithImage $ReplaceWithImage `
+                       -Token $Token
+    }    
 }
