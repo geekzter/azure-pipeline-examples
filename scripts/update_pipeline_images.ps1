@@ -15,10 +15,10 @@
 param ( 
     [parameter(Mandatory=$false)][string]$DeprecatedImage="vs2017-win2016",
     [parameter(Mandatory=$false)][int]$MaxItems=200,
-    [parameter(Mandatory=$true)][string]$OrganizationUrl=$env:SYSTEM_COLLECTIONURI,
+    [parameter(Mandatory=$true)][string]$OrganizationUrl,
     [parameter(Mandatory=$false)][string]$Project,
     [parameter(Mandatory=$false)][string]$ReplaceWithImage="windows-2019",
-    [parameter(Mandatory=$false)][string]$Token=$env:AZURE_DEVOPS_EXT_PAT ?? $env:SYSTEM_ACCESSTOKEN
+    [parameter(Mandatory=$false)][string]$Token=$env:AZURE_DEVOPS_EXT_PAT
 ) 
 $apiVersion="6.0"
 
