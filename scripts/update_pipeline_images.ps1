@@ -2,19 +2,20 @@
 
 <# 
 .SYNOPSIS 
-    Updates image in classic (UI) pipeline definitions
+    Updates image in classic (UI) pipeline definitions in a given project
  
 .DESCRIPTION 
     This script is a wrapper around Terraform. It is provided for convenience only, as it works around some limitations in the demo. 
     E.g. terraform might need resources to be started before executing, and resources may not be accessible from the current locastion (IP address).
 
 .EXAMPLE
-    ./update_pipeline_image.ps1 -OrganizationUrl "https://dev.azure.com/myorg/" -Project "MyProject" -DeprecatedImage vs2017-win2016 -ReplaceWithImage windows-2019
+    ./update_pipeline_images.ps1 -OrganizationUrl "https://dev.azure.com/myorg/" -Project "MyProject" -DeprecatedImage vs2017-win2016 -ReplaceWithImage windows-2019
 #> 
 #Requires -Version 7
 param ( 
     [parameter(Mandatory=$false)][string]$DeprecatedImage="vs2017-win2016",
-    [parameter(Mandatory=$true)][string]$OrganizationUrl,
+    [parameter(Mandatory=$false)][int]$MaxPipelines=200,
+    [parameter(Mandatory=$true)][string]$OrganizationUrl=$env:SYSTEM_COLLECTIONURI,
     [parameter(Mandatory=$true)][string]$Project,
     [parameter(Mandatory=$false)][string]$ReplaceWithImage="windows-2019",
     [parameter(Mandatory=$false)][string]$Token=$env:AZURE_DEVOPS_EXT_PAT ?? $env:SYSTEM_ACCESSTOKEN
@@ -36,7 +37,7 @@ function BuildHeaders(
     return $requestHeaders
 }
 
-function Get-DeprecatedPipelines(
+function Find-Pipelines(
     [parameter(Mandatory=$true)][string]$DeprecatedImage,
     [parameter(Mandatory=$true)][string]$OrganizationUrl,
     [parameter(Mandatory=$true)][string]$Project,
@@ -46,16 +47,19 @@ function Get-DeprecatedPipelines(
     # az devops cli does not (yet) allow updates, so using the REST API
     $apiVersion="6.0"
 
-    $listApi = "${OrganizationUrl}/${Project}/_apis/build/definitions?api-version=${apiVersion}&includeAllProperties=true"
+    $listApi = "${OrganizationUrl}/${Project}/_apis/build/definitions?api-version=${apiVersion}&includeAllProperties=true&`$top=${MaxPipelines}"
     Write-Debug "REST API Url: $listApi"
 
     # Retrieve pipeline
     $requestHeaders = BuildHeaders -Token $Token
     Invoke-RestMethod -Headers $requestHeaders -Method 'Get' -Uri $listApi | Set-Variable pipelines
-    $pipelines.value | Write-Verbose
-    $pipelines.value | Where-Object {$_.process.target.agentSpecification.identifier -eq $DeprecatedImage} | Set-Variable deprecatedPipelines
+    # Filter pipelines with either pipeline image or at least one job level image matching the given deprecated image name
+    $pipelines.value | Where-Object {
+        ($_.process.target.agentSpecification.identifier -eq $DeprecatedImage) -or `
+        ($_.process.phases.target.agentSpecification.identifier -contains $DeprecatedImage)
+    } | Set-Variable pipelinedUsingDeprecatedImages
 
-    return $deprecatedPipelines
+    return $pipelinedUsingDeprecatedImages
 }
 
 function Update-Pipeline(
@@ -81,44 +85,58 @@ function Update-Pipeline(
     
     # Test whether update is needed
     if (!$pipelineSettings.queue.pool.isHosted) {
-        Write-Host "Not a Microsoft-hosted pipeline, skipping"
+        Write-Host "Skipping pipeline ${DefinitionId}: Not a Microsoft-hosted pipeline"
         return
     }
     $vmImage = $pipelineSettings.process.target.agentSpecification.identifier
     if (!$vmImage) {
-        Write-Host "Image not defined, not a classic / UI pipeline"
+        Write-Host "Skipping pipeline ${DefinitionId}: Image not defined, not a classic / UI pipeline"
         return
     }
     Write-Host "Pipeline $DefinitionId is using '$vmImage'"
 
-    # Update pipeline
+    # Set pipeline level image definition
     if ($vmImage -eq $DeprecatedImage) {
         Write-Host "Updating pipeline $DefinitionId to '$ReplaceWithImage'..."
         $pipelineSettings.process.target.agentSpecification.identifier = $ReplaceWithImage
-        $pipelineSettings | ConvertTo-Json -Depth 7 | Invoke-RestMethod -Headers $requestHeaders -Method 'Put' -Uri $itemApi | Set-Variable pipelineSettings
-        Write-Host "Pipeline $DefinitionId updated to '$($pipelineSettings.process.target.agentSpecification.identifier)'"
     }
+
+    # Set job level image definitions
+    foreach ($job in $pipelineSettings.process.phases) {
+        if ($job.target.agentSpecification.identifier -eq $DeprecatedImage) {
+            "Updating pipeline {0} job '{1}' to '{2}'..." -f $DefinitionId, $job.name, $ReplaceWithImage | Write-Host
+            Write-Host "Updating pipeline $DefinitionId to '$ReplaceWithImage'..."
+            $pipelineSettings.process.target.agentSpecification.identifier = $ReplaceWithImage
+            $job.target.agentSpecification.identifier = $ReplaceWithImage
+        }
+    }
+
+    # Perform update
+    $pipelineSettings | ConvertTo-Json -Depth 7 | Invoke-RestMethod -Headers $requestHeaders -Method 'Put' -Uri $itemApi | Write-Debug
+    Write-Host "Pipeline $DefinitionId updated to '$($pipelineSettings.process.target.agentSpecification.identifier)'"
+
 }
 
 $OrganizationUrl = $OrganizationUrl -replace "/$","" # Strip trailing '/'
 
-"Retrieving classic / UI pipelines using '{0}' in {1}/{2}" -f $DeprecatedImage, $OrganizationUrl, $Project | Write-Host
-Get-DeprecatedPipelines -DeprecatedImage $DeprecatedImage `
+"Retrieving up to {3} classic / UI pipelines using '{0}' in {1}/{2}" -f $DeprecatedImage, $OrganizationUrl, $Project, $MaxPipelines | Write-Host
+Find-Pipelines -DeprecatedImage $DeprecatedImage `
                         -OrganizationUrl $OrganizationUrl -Project $Project `
                         -Token $Token `
-                        | Set-Variable deprecatedPipelines
+                        | Set-Variable pipelinedUsingDeprecatedImages
 
-if (!$deprecatedPipelines) {
+if (!$pipelinedUsingDeprecatedImages) {
     "No classic / UI pipelines found using '{0}' in {1}/{2}" -f $DeprecatedImage, $OrganizationUrl, $Project | Write-Host
     exit
 }
-                        
-foreach ($pipeline in $deprecatedPipelines) {
+"{0} pipelines are using {1}" -f $pipelinedUsingDeprecatedImages.Count, $DeprecatedImage
+
+foreach ($pipeline in $pipelinedUsingDeprecatedImages) {
     "Updating pipeline '{0}' ({1}) {2} -> {3}..." -f $pipeline.name, $pipeline.id, $DeprecatedImage, $ReplaceWithImage | Write-Host
+    Write-Verbose $pipeline._links.web.href
     Update-Pipeline -DefinitionId $pipeline.id `
                     -DeprecatedImage $DeprecatedImage `
                     -OrganizationUrl $OrganizationUrl -Project $Project `
                     -ReplaceWithImage $ReplaceWithImage `
                     -Token $Token
-
 }
