@@ -89,26 +89,33 @@ function Update-Pipeline(
         Write-Host "Image not defined, not a classic / UI pipeline"
         return
     }
-    Write-Host "Pipeline is using '$vmImage'"
+    Write-Host "Pipeline $DefinitionId is using '$vmImage'"
 
     # Update pipeline
     if ($vmImage -eq $DeprecatedImage) {
-        Write-Host "Updating to '$ReplaceWithImage'"
+        Write-Host "Updating pipeline $DefinitionId to '$ReplaceWithImage'..."
         $pipelineSettings.process.target.agentSpecification.identifier = $ReplaceWithImage
         $pipelineSettings | ConvertTo-Json -Depth 7 | Invoke-RestMethod -Headers $requestHeaders -Method 'Put' -Uri $itemApi | Set-Variable pipelineSettings
-        Write-Host "Pipeline updated to '$($pipelineSettings.process.target.agentSpecification.identifier)'"
+        Write-Host "Pipeline $DefinitionId updated to '$($pipelineSettings.process.target.agentSpecification.identifier)'"
     }
 }
 
 $OrganizationUrl = $OrganizationUrl -replace "/$","" # Strip trailing '/'
 
+"Retrieving classic / UI pipelines using '{0}' in {1}/{2}" -f $DeprecatedImage, $OrganizationUrl, $Project | Write-Host
 Get-DeprecatedPipelines -DeprecatedImage $DeprecatedImage `
                         -OrganizationUrl $OrganizationUrl -Project $Project `
                         -Token $Token `
                         | Set-Variable deprecatedPipelines
 
-foreach ($deprecatedPipeline in $deprecatedPipelines) {
-    Update-Pipeline -DefinitionId $deprecatedPipeline.id `
+if (!$deprecatedPipelines) {
+    "No classic / UI pipelines found using '{0}' in {1}/{2}" -f $DeprecatedImage, $OrganizationUrl, $Project | Write-Host
+    exit
+}
+                        
+foreach ($pipeline in $deprecatedPipelines) {
+    "Updating pipeline '{0}' ({1}) {2} -> {3}..." -f $pipeline.name, $pipeline.id, $DeprecatedImage, $ReplaceWithImage | Write-Host
+    Update-Pipeline -DefinitionId $pipeline.id `
                     -DeprecatedImage $DeprecatedImage `
                     -OrganizationUrl $OrganizationUrl -Project $Project `
                     -ReplaceWithImage $ReplaceWithImage `
