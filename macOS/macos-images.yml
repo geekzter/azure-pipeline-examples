@@ -22,13 +22,13 @@ jobs:
   - bash: |
       echo Hello from macOS Big Sur
       sw_vers
-# - job: macOS12
-#   pool:
-#     vmImage: 'macOS-12'
-#   steps:
-#   - bash: |
-#       echo Hello from macOS Monterey
-#       sw_vers
+- job: macOS12
+  pool:
+    vmImage: 'macOS-12'
+  steps:
+  - bash: |
+      echo Hello from macOS Monterey
+      sw_vers
 - job: macOSlatest
   pool:
     vmImage: 'macOS-latest'
