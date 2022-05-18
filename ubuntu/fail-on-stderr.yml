@@ -4,6 +4,11 @@ pool:
 steps:
 - bash: |
     >&2 echo "error"
+  failOnStderr: true
+
+- bash: |
+    bash -c 'exit 1'
+  condition: always()
 
 - task: Bash@3
   inputs:
