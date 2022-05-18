@@ -5,12 +5,14 @@ steps:
 - bash: |
     echo This step will not fail
     >&2 echo "error"
+  condition: always()
   failOnStderr: false
 
 - bash: |
     echo This step will fail
     >&2 echo "error"
-  failOnStderr: false
+  condition: always()
+  failOnStderr: true
 
 - bash: |
     echo This step will fail (on non-zero exit code)
