@@ -9,18 +9,19 @@ steps:
   inputs:
     targetType: 'inline'
     script: ls -l doesnotexist
+    failOnStderr: false
   condition: always()
-  failOnStderr: false
 
 - task: Shellpp@0
   inputs:
     type: 'InlineScript'
     script: ls -l doesnotexist
+    failOnStderr: false
   condition: always()
-  failOnStderr: false
 
 - task: CmdLine@2
   inputs:
     script: ls -l doesnotexist
+    failOnStderr: false
   condition: always()
-  failOnStderr: false
+  
