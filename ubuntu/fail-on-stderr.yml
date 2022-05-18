@@ -3,30 +3,17 @@ pool:
   vmImage: 'ubuntu-latest'
 steps:
 - bash: |
+    echo This step will not fail
     >&2 echo "error"
-  failOnStderr: true
+  failOnStderr: false
 
 - bash: |
+    echo This step will fail
+    >&2 echo "error"
+  failOnStderr: false
+
+- bash: |
+    echo This step will fail (on non-zero exit code)
     bash -c 'exit 1'
   condition: always()
-
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: ls -l doesnotexist
-    failOnStderr: false
-  condition: always()
-
-- task: Shellpp@0
-  inputs:
-    type: 'InlineScript'
-    script: ls -l doesnotexist
-    failOnStderr: false
-  condition: always()
-
-- task: CmdLine@2
-  inputs:
-    script: ls -l doesnotexist
-    failOnStderr: false
-  condition: always()
-  
+  failOnStderr: false
