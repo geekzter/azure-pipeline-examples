@@ -3,21 +3,24 @@ pool:
   vmImage: 'ubuntu-latest'
 steps:
 - bash: |
-    echo error >&2
+    >&2 echo "error"
 
 - task: Bash@3
   inputs:
     targetType: 'inline'
     script: ls -l doesnotexist
   condition: always()
+  failOnStderr: false
 
 - task: Shellpp@0
   inputs:
     type: 'InlineScript'
     script: ls -l doesnotexist
   condition: always()
+  failOnStderr: false
 
 - task: CmdLine@2
   inputs:
     script: ls -l doesnotexist
   condition: always()
+  failOnStderr: false
