@@ -7,6 +7,6 @@ jobs:
     vmImage: 'windows-latest'
   steps:
   - pwsh: |
-      Get-Command git*.exe | Format-Table -Property -AutoSize | Out-String -Width 512
+      Get-Command git*.exe | Format-Table -AutoSize | Out-String -Width 512
       Write-Host "PATH:"
       $env:PATH -split ";"
