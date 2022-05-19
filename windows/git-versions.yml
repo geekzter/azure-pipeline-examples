@@ -1,0 +1,13 @@
+trigger: none
+
+jobs:
+- job: 'windows'
+  displayName: 'Windows latest'
+  pool:
+    vmImage: 'windows-latest'
+  steps:
+  - pwsh: |
+      Get-Command git*.exe | Format-Table -Property Source, Name, Version
+      Write-Host "PATH:"
+      Get-Item env:PATH -split ";"
+
