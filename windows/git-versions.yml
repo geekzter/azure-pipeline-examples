@@ -7,6 +7,18 @@ jobs:
     vmImage: 'windows-latest'
   steps:
   - pwsh: |
-      Get-Command git*.exe | Format-Table -AutoSize | Out-String -Width 512
+      Get-Command git*.exe | Format-Table -AutoSize | Out-String -Width 256
+      Write-Host "PATH:"
+      $env:PATH -split ";"
+
+- job: 'default'
+  displayName: 'Default (self-hosted)'
+  pool:
+    name: 'Default'
+    demands:
+    - agent.os -equals Windows_NT
+  steps:
+  - pwsh: |
+      Get-Command git*.exe | Format-Table -AutoSize | Out-String -Width 256
       Write-Host "PATH:"
       $env:PATH -split ";"
