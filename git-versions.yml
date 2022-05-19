@@ -1,0 +1,19 @@
+trigger: none
+
+jobs:
+- job: 'windows2019'
+  displayName: 'windows-2019 image'
+  pool:
+    vmImage: 'windows-2019'
+  steps:
+  - pwsh: |
+      Get-Command git
+      Get-Item env:PATH
+
+# - job: 'windows2022'
+#   displayName: 'windows-2022 image'
+#   pool:
+#     vmImage: 'windows-2022'
+#   steps:
+#   - pwsh: |
+#       Get-ComputerInfo | Select-Object WindowsProductName
