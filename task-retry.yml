@@ -21,7 +21,7 @@ jobs:
 - job: retryDemo
   displayName: 'Retry demo'
   pool:
-    name: 'Hosted'
+    name: 'Azure Pipelines'
   steps:
   - pwsh: |
       $randomNumber = (Get-Random -Minimum 0 -Maximum 100)
