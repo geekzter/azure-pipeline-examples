@@ -8,7 +8,7 @@ schedules:
     - main
 
 variables:
-- artifactDirectory: '$(Build.SourcesDirectory)/terraform'
+  artifactDirectory: '$(Build.SourcesDirectory)/terraform'
 
 jobs:
 - job: retryDemo
