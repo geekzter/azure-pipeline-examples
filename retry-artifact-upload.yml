@@ -24,6 +24,11 @@ jobs:
   - publish: $(artifactDirectory)
     displayName: 'Publish artifact'
     artifact: 'artifact'
+  - pwsh: |
+      mkdir -p $(artifactDirectory)
+      cd $(artifactDirectory)
+      echo content > artifact.txt
+    displayName: 'Update artifacts'
   - publish: $(artifactDirectory)
     displayName: 'Publish artifact again'
     artifact: 'artifact'
