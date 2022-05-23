@@ -1,0 +1,29 @@
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+variables:
+- artifactDirectory: '$(Build.SourcesDirectory)/terraform'
+
+jobs:
+- job: retryDemo
+  displayName: 'Retry demo'
+  pool:
+    name: 'Hosted'
+  steps:
+  - pwsh: |
+      mkdir -p $(artifactDirectory)
+      cd $(artifactDirectory)
+      echo content > artifact.txt
+    displayName: 'Generate artifacts'
+  - publish: $(artifactDirectory)
+    displayName: 'Publish artifact'
+    artifact: 'artifact'
+  - publish: $(artifactDirectory)
+    displayName: 'Publish artifact again'
+    artifact: 'artifact'
