@@ -10,6 +10,8 @@ schedules:
 variables:
   artifactDirectory: '$(Build.SourcesDirectory)/terraform'
 
+# TODO: Generate unique artifact name e.g. $[format('{0:yyyyMMdd}', pipeline.startTime)]
+
 jobs:
 - job: retryDemo
   displayName: 'Retry demo'
