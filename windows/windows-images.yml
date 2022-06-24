@@ -8,6 +8,16 @@ schedules:
     - main
 
 jobs:
+- job: 'azurepipelines'
+  displayName: 'Azure Pipelines'
+  pool:
+    name: 'Azure Pipelines'
+    demands:
+    - agent.os -equals Windows_NT
+  steps:
+  - pwsh: |
+      Get-ComputerInfo | Select-Object WindowsProductName
+            
 - job: 'default'
   displayName: 'Default'
   pool:
