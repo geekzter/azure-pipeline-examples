@@ -1,0 +1,34 @@
+trigger: none
+# schedules:
+# - cron: '0 1 * * *'
+#   displayName: 'Nightly build (UTC)'
+#   always: 'true'
+#   branches:
+#     include:
+#     - main
+
+jobs:
+- job: stepoutput
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - pwsh: |
+      $previousIPAddress = $(ipAddress)
+      $ipAddress = "a"
+      Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "IP Address: ${ipAddress}"
+      echo "##vso[task.setvariable variable=ipAddress;isOutput=true]${ipAddress}"
+
+  - pwsh: |
+      $previousIPAddress = $(ipAddress)
+      $ipAddress = "b"
+      Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "IP Address: ${ipAddress}"
+      echo "##vso[task.setvariable variable=ipAddress;isOutput=true]${ipAddress}"
+
+  - pwsh: |
+      $previousIPAddress = $(ipAddress)
+      $ipAddress = "b"
+      Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "IP Address: ${ipAddress}"
+      echo "##vso[task.setvariable variable=ipAddress;isOutput=true]${ipAddress}"
