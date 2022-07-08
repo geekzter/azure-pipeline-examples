@@ -13,7 +13,7 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
   - pwsh: |
-      $previousIPAddress = $(ipAddress)
+      # $previousIPAddress = $(ipAddress)
       $ipAddress = "a"
       Write-Host "Previous IP Address: ${previousIPAddress}"
       Write-Host "IP Address: ${ipAddress}"
