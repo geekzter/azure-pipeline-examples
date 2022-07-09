@@ -3,29 +3,42 @@ parameters:
   displayName: Number of seconds to wait between detecting IP address
   type: number
   default: 120
-  
+- name: image
+  displayName: Image
+  type: string
+  values:
+  - 'ubuntu-latest'
+  - 'windows-latest'
+  default: 'ubuntu-latest'
+
 trigger: none
-# schedules:
-# - cron: '0 1 * * *'
-#   displayName: 'Nightly (UTC)'
-#   always: 'true'
-#   branches:
-#     include:
-#     - main
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
 
 variables:
+  vmImage: ${{ parameters.image }}
   sleepTime: ${{ parameters.sleepTime }}
 
 jobs:
 - job: detectIP
   displayName: 'Check client IP address consistency'
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: $(vmImage)
   timeoutInMinutes: 360
   steps:
   - pwsh: |
-      &{$ErrorActionPreference = 'SilentlyContinue';$script:metaData =(Invoke-RestMethod -Headers @{"Metadata"="true"} -Method GET -NoProxy -Uri "http://169.254.169.254/metadata/instance/compute?api-version=2021-02-01" -TimeoutSec 1)}
-      $script:metaData
+      Write-Host "Retrieving VM instance metadata for agent with name '${env:AGENT_MACHINENAME}'"
+      &{$ErrorActionPreference = 'SilentlyContinue';$script:metaData=(Invoke-RestMethod -Headers @{"Metadata"="true"} -Method GET -NoProxy -Uri "http://169.254.169.254/metadata/instance/compute?api-version=2021-02-01" -TimeoutSec 1)}
+      if ($script:metaData) {
+        $script:metaData | Format-List
+      } else {
+        Write-Host "Agent with name '${env:AGENT_MACHINENAME}' does not appear to be an Azure VM"
+      }      
     displayName: 'Get VM instance metadata'
 
   - pwsh: |
