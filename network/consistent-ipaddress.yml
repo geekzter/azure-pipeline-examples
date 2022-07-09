@@ -17,18 +17,18 @@ jobs:
       $ipAddress = "a"
       Write-Host "Previous IP Address: ${previousIPAddress}"
       Write-Host "IP Address: ${ipAddress}"
-      echo "##vso[task.setvariable variable=ipAddress§]${ipAddress}"
+      Write-Output "##vso[task.setvariable variable=ipAddress§]${ipAddress}"
 
   - pwsh: |
       $previousIPAddress = $(ipAddress)
       $ipAddress = "b"
       Write-Host "Previous IP Address: ${previousIPAddress}"
       Write-Host "IP Address: ${ipAddress}"
-      echo "##vso[task.setvariable variable=ipAddress]${ipAddress}"
+      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
 
   - pwsh: |
       $previousIPAddress = $(ipAddress)
       $ipAddress = "b"
       Write-Host "Previous IP Address: ${previousIPAddress}"
       Write-Host "IP Address: ${ipAddress}"
-      echo "##vso[task.setvariable variable=ipAddress]${ipAddress}"
+      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
