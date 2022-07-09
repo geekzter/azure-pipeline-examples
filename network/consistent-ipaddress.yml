@@ -20,21 +20,31 @@ jobs:
   #     echo $(mySecretVal)
 
   - pwsh: |
-      $ipAddress = "a"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
+      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
+    displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
-      $ipAddress = "b"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
+      if ($previousIPAddress -ne $ipAddress) {
+        throw "Detected IP address ${ipAddress} is different from {$previousIPAddress} detected in previous task"
+      }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
+      Start-Sleep -Seconds 120
+    displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
-      $ipAddress = "c"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
+      if ($previousIPAddress -ne $ipAddress) {
+        throw "Detected IP address ${ipAddress} is different from {$previousIPAddress} detected in previous task"
+      }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
+      Start-Sleep -Seconds 120
+    displayName: 'Detect client IP address'
