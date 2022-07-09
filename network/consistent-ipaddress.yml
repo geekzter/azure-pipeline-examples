@@ -20,7 +20,6 @@ jobs:
   #     echo $(mySecretVal)
 
   - pwsh: |
-      # $previousIPAddress = "$(ipAddress)"
       $ipAddress = "a"
       Write-Host "Previous IP Address: ${previousIPAddress}"
       Write-Host "IP Address: ${ipAddress}"
