@@ -13,8 +13,10 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
   - bash: |
+      echo "##vso[task.setvariable variable=ipAddress;issecret=true]bash"
       echo "##vso[task.setvariable variable=mySecretVal;issecret=true]secretvalue"
   - bash: |
+      echo $(ipAddress)
       echo $(mySecretVal)
 
   - pwsh: |
