@@ -18,21 +18,21 @@ jobs:
       echo $(mySecretVal)
 
   - pwsh: |
-      # $previousIPAddress = $(ipAddress)
+      $previousIPAddress = "$(ipAddress)"
       $ipAddress = "a"
       Write-Host "Previous IP Address: ${previousIPAddress}"
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress§]${ipAddress}"
 
   - pwsh: |
-      $previousIPAddress = $(ipAddress)
+      $previousIPAddress = "$(ipAddress)"
       $ipAddress = "b"
       Write-Host "Previous IP Address: ${previousIPAddress}"
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
 
   - pwsh: |
-      $previousIPAddress = $(ipAddress)
+      $previousIPAddress = "$(ipAddress)"
       $ipAddress = "b"
       Write-Host "Previous IP Address: ${previousIPAddress}"
       Write-Host "IP Address: ${ipAddress}"
