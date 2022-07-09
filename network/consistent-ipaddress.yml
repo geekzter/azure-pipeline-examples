@@ -12,15 +12,15 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-  - bash: |
-      echo "##vso[task.setvariable variable=ipAddress;issecret=true]bash"
-      echo "##vso[task.setvariable variable=mySecretVal;issecret=true]secretvalue"
-  - bash: |
-      echo $(ipAddress)
-      echo $(mySecretVal)
+  # - bash: |
+  #     echo "##vso[task.setvariable variable=ipAddress;issecret=true]bash"
+  #     echo "##vso[task.setvariable variable=mySecretVal;issecret=true]secretvalue"
+  # - bash: |
+  #     echo $(ipAddress)
+  #     echo $(mySecretVal)
 
   - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
+      # $previousIPAddress = "$(ipAddress)"
       $ipAddress = "a"
       Write-Host "Previous IP Address: ${previousIPAddress}"
       Write-Host "IP Address: ${ipAddress}"
@@ -35,7 +35,7 @@ jobs:
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
-      $ipAddress = "b"
+      $ipAddress = "c"
       Write-Host "Previous IP Address: ${previousIPAddress}"
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
