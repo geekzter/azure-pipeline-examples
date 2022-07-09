@@ -21,8 +21,14 @@ jobs:
   displayName: 'Check client IP address consistency'
   pool:
     vmImage: 'ubuntu-latest'
+  timeoutInMinutes: 360
   steps:
   - pwsh: |
+      &{$ErrorActionPreference = 'SilentlyContinue';$script:metaData =(Invoke-RestMethod -Headers @{"Metadata"="true"} -Method GET -NoProxy -Uri "http://169.254.169.254/metadata/instance/compute?api-version=2021-02-01" -TimeoutSec 1)}
+      $script:metaData
+    displayName: 'Get VM instance metadata'
+
+  - pwsh: |
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
@@ -31,696 +37,533 @@ jobs:
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
   - pwsh: |
       $previousIPAddress = "$(ipAddress)"
       Write-Host "Previous IP Address: ${previousIPAddress}"
+      Write-Host "Sleeping $(sleepTime) seconds..."
+      Start-Sleep -Seconds $(sleepTime)
       Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
       if ($previousIPAddress -ne $ipAddress) {
         throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
       }
       Write-Host "IP Address: ${ipAddress}"
       Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
-    displayName: 'Detect client IP address'
-
-  - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
-      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
-      if ($previousIPAddress -ne $ipAddress) {
-        throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
-      }
-      Write-Host "IP Address: ${ipAddress}"
-      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
-    displayName: 'Detect client IP address'
-
-  - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
-      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
-      if ($previousIPAddress -ne $ipAddress) {
-        throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
-      }
-      Write-Host "IP Address: ${ipAddress}"
-      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
-    displayName: 'Detect client IP address'
-
-  - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
-      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
-      if ($previousIPAddress -ne $ipAddress) {
-        throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
-      }
-      Write-Host "IP Address: ${ipAddress}"
-      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
-    displayName: 'Detect client IP address'
-
-  - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
-      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
-      if ($previousIPAddress -ne $ipAddress) {
-        throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
-      }
-      Write-Host "IP Address: ${ipAddress}"
-      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
-    displayName: 'Detect client IP address'
-
-  - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
-      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
-      if ($previousIPAddress -ne $ipAddress) {
-        throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
-      }
-      Write-Host "IP Address: ${ipAddress}"
-      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
-    displayName: 'Detect client IP address'
-
-  - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
-      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
-      if ($previousIPAddress -ne $ipAddress) {
-        throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
-      }
-      Write-Host "IP Address: ${ipAddress}"
-      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
-    displayName: 'Detect client IP address'
-
-  - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
-      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
-      if ($previousIPAddress -ne $ipAddress) {
-        throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
-      }
-      Write-Host "IP Address: ${ipAddress}"
-      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
-    displayName: 'Detect client IP address'
-
-  - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
-      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
-      if ($previousIPAddress -ne $ipAddress) {
-        throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
-      }
-      Write-Host "IP Address: ${ipAddress}"
-      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
-    displayName: 'Detect client IP address'
-
-  - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
-      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
-      if ($previousIPAddress -ne $ipAddress) {
-        throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
-      }
-      Write-Host "IP Address: ${ipAddress}"
-      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
-    displayName: 'Detect client IP address'
-
-  - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
-      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
-      if ($previousIPAddress -ne $ipAddress) {
-        throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
-      }
-      Write-Host "IP Address: ${ipAddress}"
-      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
-    displayName: 'Detect client IP address'
-
-  - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
-      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
-      if ($previousIPAddress -ne $ipAddress) {
-        throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
-      }
-      Write-Host "IP Address: ${ipAddress}"
-      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
-    displayName: 'Detect client IP address'
-
-  - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
-      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
-      if ($previousIPAddress -ne $ipAddress) {
-        throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
-      }
-      Write-Host "IP Address: ${ipAddress}"
-      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
-    displayName: 'Detect client IP address'
-
-  - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
-      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
-      if ($previousIPAddress -ne $ipAddress) {
-        throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
-      }
-      Write-Host "IP Address: ${ipAddress}"
-      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
-    displayName: 'Detect client IP address'
-
-  - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
-      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
-      if ($previousIPAddress -ne $ipAddress) {
-        throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
-      }
-      Write-Host "IP Address: ${ipAddress}"
-      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
-    displayName: 'Detect client IP address'
-
-  - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
-      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
-      if ($previousIPAddress -ne $ipAddress) {
-        throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
-      }
-      Write-Host "IP Address: ${ipAddress}"
-      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
-    displayName: 'Detect client IP address'
-
-  - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
-      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
-      if ($previousIPAddress -ne $ipAddress) {
-        throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
-      }
-      Write-Host "IP Address: ${ipAddress}"
-      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
-    displayName: 'Detect client IP address'
-
-  - pwsh: |
-      $previousIPAddress = "$(ipAddress)"
-      Write-Host "Previous IP Address: ${previousIPAddress}"
-      Invoke-RestMethod https://api.ipify.org | Set-Variable ipAddress
-      if ($previousIPAddress -ne $ipAddress) {
-        throw "Detected IP address ${ipAddress} is different from ${previousIPAddress} detected in previous task"
-      }
-      Write-Host "IP Address: ${ipAddress}"
-      Write-Output "##vso[task.setvariable variable=ipAddress]${ipAddress}"
-      Start-Sleep -Seconds $(sleepTime)
     displayName: 'Detect client IP address'
 
