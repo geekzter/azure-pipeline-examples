@@ -12,6 +12,8 @@ parameters:
   - 'windows-latest'
   default: 'ubuntu-latest'
 
+name: $(Date:yyyyMMdd)$(Rev:.r)-${{ parameters.image }}
+
 trigger: none
 schedules:
 - cron: '0 1 * * *'
