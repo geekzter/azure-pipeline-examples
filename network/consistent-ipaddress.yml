@@ -7,6 +7,7 @@ parameters:
   displayName: Image
   type: string
   values:
+  - 'macos-latest'
   - 'ubuntu-latest'
   - 'windows-latest'
   default: 'ubuntu-latest'
