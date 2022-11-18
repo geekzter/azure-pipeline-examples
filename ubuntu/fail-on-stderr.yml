@@ -15,7 +15,7 @@ steps:
   failOnStderr: true
 
 - bash: |
-    echo This step will fail (on non-zero exit code)
+    echo This step will fail on non-zero exit code
     bash -c 'exit 1'
   condition: always()
   failOnStderr: false
