@@ -1,0 +1,7 @@
+pool:
+  vmImage: 'ubuntu-latest'
+
+container: ubuntu:20.04
+
+steps:
+- script: printenv

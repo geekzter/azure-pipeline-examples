@@ -1,0 +1,7 @@
+pool:
+  vmImage: 'windows-2022'
+
+container: mcr.microsoft.com/windows/servercore:ltsc2022
+
+steps:
+- script: set
