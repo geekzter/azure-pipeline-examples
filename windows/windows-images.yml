@@ -25,7 +25,10 @@ jobs:
     vmImage: 'windows-latest'
   steps:
   - pwsh: |
+      Write-Host "(Get-ComputerInfo).WindowsProductName"
       Get-ComputerInfo | Select-Object WindowsProductName
+      Write-Host "`$PSVersionTable.OS"
+      $PSVersionTable.OS
 
 - job: 'hostedlatest'
   displayName: 'Hosted pool with windows-latest'
@@ -33,7 +36,10 @@ jobs:
     name: 'Hosted'
   steps:
   - pwsh: |
+      Write-Host "(Get-ComputerInfo).WindowsProductName"
       Get-ComputerInfo | Select-Object WindowsProductName
+      Write-Host "`$PSVersionTable.OS"
+      $PSVersionTable.OS
 
 - job: 'windows2019'
   displayName: 'windows-2019 image'
@@ -41,7 +47,10 @@ jobs:
     vmImage: 'windows-2019'
   steps:
   - pwsh: |
+      Write-Host "(Get-ComputerInfo).WindowsProductName"
       Get-ComputerInfo | Select-Object WindowsProductName
+      Write-Host "`$PSVersionTable.OS"
+      $PSVersionTable.OS
 
 - job: 'windows2022'
   displayName: 'windows-2022 image'
@@ -49,7 +58,10 @@ jobs:
     vmImage: 'windows-2022'
   steps:
   - pwsh: |
+      Write-Host "(Get-ComputerInfo).WindowsProductName"
       Get-ComputerInfo | Select-Object WindowsProductName
+      Write-Host "`$PSVersionTable.OS"
+      $PSVersionTable.OS
 
 - job: 'windowslatest'
   displayName: 'windows-latest image'
@@ -57,4 +69,7 @@ jobs:
     vmImage: 'windows-latest'
   steps:
   - pwsh: |
+      Write-Host "(Get-ComputerInfo).WindowsProductName"
       Get-ComputerInfo | Select-Object WindowsProductName
+      Write-Host "`$PSVersionTable.OS"
+      $PSVersionTable.OS
