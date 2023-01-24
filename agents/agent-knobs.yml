@@ -8,6 +8,7 @@ jobs:
   
   variables:
     AGENT_DIAGNOSTIC: 'true'
+    AZP_AGENT_USE_LEGACY_HTTP: 'true'
     VSTSAGENT_TRACE: 'true'
     VSTS_AGENT_HTTPTRACE: 'true'
 
