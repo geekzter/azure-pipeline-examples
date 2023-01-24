@@ -1,0 +1,19 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
+
+trigger: none
+
+jobs:
+- job: 'agentWithKnobs'
+  displayName: 'Agent with Knobs'
+
+  variables:
+    AGENT_USE_NODE10: 'true' # Forces tasks depending on Node 6 runner to use Node 10 runner
+  
+  pool:
+    name: 'Azure Pipelines'
+    vmImage: ubuntu-latest
+    
+  steps:
+  - bash: |
+      printenv | sort
+    displayName: 'Print environment variables'
