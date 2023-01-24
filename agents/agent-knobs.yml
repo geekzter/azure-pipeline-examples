@@ -3,8 +3,8 @@ name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$
 trigger: none
 
 jobs:
-- job: 'azurepipelines'
-  displayName: 'Azure Pipelines pool'
+- job: 'agentWithKnobs'
+  displayName: 'Agent with Knobs'
 
   variables:
     AGENT_USE_NODE10: 'true' # Forces tasks depending on Node 6 runner to use Node 10 runner
@@ -15,3 +15,4 @@ jobs:
   steps:
   - bash: |
       printenv | sort
+    displayName: 'Print environment variables'
