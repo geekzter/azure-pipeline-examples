@@ -3,9 +3,9 @@ name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$
 trigger: none
 
 variables:
-- AGENT_DIAGNOSTIC: 'true'
-- VSTSAGENT_TRACE: 'true'
-- VSTS_AGENT_HTTPTRACE: 'true'
+  AGENT_DIAGNOSTIC: 'true'
+  VSTSAGENT_TRACE: 'true'
+  VSTS_AGENT_HTTPTRACE: 'true'
 
 jobs:
 - job: 'azurepipelines'
