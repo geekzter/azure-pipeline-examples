@@ -12,6 +12,7 @@ jobs:
   pool:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
+    
   steps:
   - bash: |
       printenv | sort
