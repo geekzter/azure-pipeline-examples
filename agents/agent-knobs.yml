@@ -1,0 +1,18 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.workspace }}-$(Build.BuildId)
+
+trigger: none
+
+variables:
+- AGENT_DIAGNOSTIC: 'true'
+- VSTSAGENT_TRACE: 'true'
+- VSTS_AGENT_HTTPTRACE: 'true'
+
+jobs:
+- job: 'azurepipelines'
+  displayName: 'Azure Pipelines pool'
+  pool:
+    name: 'Azure Pipelines'
+    vmImage: ubuntu-latest
+  steps:
+  - bash: |
+      printenv | sort
