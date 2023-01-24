@@ -2,16 +2,17 @@ name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$
 
 trigger: none
 
+variables:
+  AGENT_DIAGNOSTIC: 'true'
+  AGENT_USE_NODE10: 'true'
+  # AZP_AGENT_USE_LEGACY_HTTP: 'true' # self-hosted agents only
+  VSTSAGENT_TRACE: 'true'
+  VSTS_AGENT_HTTPTRACE: 'true'
+
 jobs:
 - job: 'azurepipelines'
   displayName: 'Azure Pipelines pool'
   
-  variables:
-    AGENT_DIAGNOSTIC: 'true'
-    AZP_AGENT_USE_LEGACY_HTTP: 'true'
-    VSTSAGENT_TRACE: 'true'
-    VSTS_AGENT_HTTPTRACE: 'true'
-
   pool:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
