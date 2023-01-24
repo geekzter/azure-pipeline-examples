@@ -7,7 +7,7 @@ jobs:
   displayName: 'Azure Pipelines pool'
 
   variables:
-    AGENT_USE_NODE10: 'true'
+    AGENT_USE_NODE10: 'true' # Forces tasks depending on Node 6 runner to use Node 10 runner
   
   pool:
     name: 'Azure Pipelines'
