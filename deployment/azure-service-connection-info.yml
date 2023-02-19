@@ -22,38 +22,14 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Set-PSDebug -Trace 1
-
         Write-Host "`$env:servicePrincipalId is set: '$($env:servicePrincipalId -ne $null)'"
-        az account show -o json | Out-File -FilePath "$(Build.ArtifactStagingDirectory)/account.json"
-        az account show --query "user.name" -o tsv | Set-Variable identityName
-        Write-Host "Identity name: '${identityName}'"
-        Write-Host "Identity name matches '${env:identityName}': $($identityName -eq ${env:identityName})"
-
-        az ad sp list --display-name $identityName --query "[0]" | Set-Variable identityJson
-        if ($identityJson -eq $null) {
-          Write-Host "Identity not found"
-        } else {
-          Write-Host "Identity found"
-          Write-Host "Identity object of displayName '${identityName}':"
-          Write-Host $identityJson
-          $identityJson | ConvertFrom-Json | Format-List
-        }
-
-        Write-Host "Service Principal object of displayName '${identityName}':"
-        az ad sp list --filter "displayName eq '${identityName}'" --query "[0]" -o json | Set-Variable identityJson
-        if ($identityJson -eq $null) {
-          Write-Host "Service Principal not found"
-        } else {
-          Write-Host "Service Principal found"
-          Write-Host $identityJson
-          $identityJson | ConvertFrom-Json | Format-List
-        }
+        az account show --query "user.name" -o tsv | Set-Variable servicePrincipalId
+        az ad sp show --id $servicePrincipalId -o json
         
-        echo "These are subscriptions that appId '${env:servicePrincipalId}' has access to:"
+        echo "These are subscriptions that identity has access to:"
         az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" -o table
         
-        echo "These are resource groups that appId '${env:servicePrincipalId}' has access to in '$(az account show --query name -o tsv)':"
+        echo "These are resource groups that identity has access to in '$(az account show --query name -o tsv)':"
         az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" -o table
       addSpnToEnvironment: true
       failOnStandardError: false
