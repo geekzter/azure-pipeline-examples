@@ -22,10 +22,15 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        az account show
+        Write-Host "`$env:servicePrincipalId is set: '$($env:servicePrincipalId -ne $null)'"
 
-        Write-Host "Service Principal object of appId '${env:servicePrincipalId}':"
-        az ad sp list --filter "appId eq '${env:servicePrincipalId}'" --query "[0]" -o json
+        az account show --query "user.name" -o tsv | Set-Variable identityName
+        Write-Host "Identity name: '${identityName}'"
+
+        az ad sp list --display-name $identityName
+
+        Write-Host "Service Principal object of displayName '${identityName}':"
+        az ad sp list --filter "displayName eq '${identityName}'" --query "[0]" -o json
         
         echo "These are subscriptions that appId '${env:servicePrincipalId}' has access to:"
         az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" -o table
@@ -35,30 +40,21 @@ jobs:
       addSpnToEnvironment: true
       failOnStandardError: false
 
-- job: container
-  displayName: 'Ubuntu container agent'
-  container: ubuntu:20.04
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  - script: printenv
-    displayName: 'Print environment variables'
-  - task: AzureCLI@2
-    displayName: 'Display Service Principal information'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        az account show
-
-        Write-Host "Service Principal object of appId '${env:servicePrincipalId}':"
-        az ad sp list --filter "appId eq '${env:servicePrincipalId}'" --query "[0]" -o json
-        
-        echo "These are subscriptions that appId '${env:servicePrincipalId}' has access to:"
-        az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" -o table
-        
-        echo "These are resource groups that appId '${env:servicePrincipalId}' has access to in '$(az account show --query name -o tsv)':"
-        az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" -o table
-      addSpnToEnvironment: true
-      failOnStandardError: false
+# - job: container
+#   displayName: 'Ubuntu container agent'
+#   container: ubuntu:20.04
+#   pool:
+#     vmImage: 'ubuntu-latest'
+#   steps:
+#   - script: printenv
+#     displayName: 'Print environment variables'
+#   - task: AzureCLI@2
+#     displayName: 'Display Service Principal information'
+#     inputs:
+#       azureSubscription: '$(subscriptionConnection)'
+#       scriptType: pscore
+#       scriptLocation: inlineScript
+#       inlineScript: |
+#         az account show
+#       addSpnToEnvironment: true
+#       failOnStandardError: false
