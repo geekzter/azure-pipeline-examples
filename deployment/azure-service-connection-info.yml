@@ -36,6 +36,3 @@ jobs:
       addSpnToEnvironment: true
       failOnStandardError: false
       workingDirectory: '$(Build.ArtifactStagingDirectory)'
-  - publish: '$(Build.ArtifactStagingDirectory)'
-    displayName: 'Publish artifacts'
-    artifact: drop
