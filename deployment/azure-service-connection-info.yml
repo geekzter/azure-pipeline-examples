@@ -26,7 +26,7 @@ jobs:
         az account show --query "user.name" -o tsv | Set-Variable servicePrincipalId
 
         Write-Host "Identity object:"
-        az ad sp show --id $servicePrincipalId -o json | jq -C
+        az ad sp show --id $servicePrincipalId -o json
         
         Write-Host "These are subscriptions that identity has access to:"
         az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" -o table
@@ -39,22 +39,3 @@ jobs:
   - publish: '$(Build.ArtifactStagingDirectory)'
     displayName: 'Publish artifacts'
     artifact: drop
-
-# - job: container
-#   displayName: 'Ubuntu container agent'
-#   container: ubuntu:20.04
-#   pool:
-#     vmImage: 'ubuntu-latest'
-#   steps:
-#   - script: printenv
-#     displayName: 'Print environment variables'
-#   - task: AzureCLI@2
-#     displayName: 'Display Identity information'
-#     inputs:
-#       azureSubscription: '$(subscriptionConnection)'
-#       scriptType: pscore
-#       scriptLocation: inlineScript
-#       inlineScript: |
-#         az account show
-#       addSpnToEnvironment: true
-#       failOnStandardError: false
