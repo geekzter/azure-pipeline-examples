@@ -16,7 +16,7 @@ jobs:
   - script: printenv
     displayName: 'Print environment variables'
   - task: AzureCLI@2
-    displayName: 'Display Service Principal information'
+    displayName: 'Display Identity information'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
@@ -26,11 +26,25 @@ jobs:
 
         az account show --query "user.name" -o tsv | Set-Variable identityName
         Write-Host "Identity name: '${identityName}'"
+        Write-Host "Identity name matches '${env:identityName}': $($identityName -eq ${env:identityName})"
 
-        az ad sp list --display-name $identityName
+        az ad sp list --display-name $identityName | Set-Variable identityJson
+        if ($identityJson -eq $null) {
+          Write-Host "Identity not found"
+        } else {
+          Write-Host "Identity found"
+          Write-Host "Identity object of displayName '${identityName}':"
+          Write-Host $identityJson
+        }
 
         Write-Host "Service Principal object of displayName '${identityName}':"
-        az ad sp list --filter "displayName eq '${identityName}'" --query "[0]" -o json
+        az ad sp list --filter "displayName eq '${identityName}'" --query "[0]" -o json | Set-Variable identityJson
+        if ($identityJson -eq $null) {
+          Write-Host "Service Principal not found"
+        } else {
+          Write-Host "Service Principal found"
+          Write-Host $identityJson
+        }
         
         echo "These are subscriptions that appId '${env:servicePrincipalId}' has access to:"
         az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" -o table
@@ -49,7 +63,7 @@ jobs:
 #   - script: printenv
 #     displayName: 'Print environment variables'
 #   - task: AzureCLI@2
-#     displayName: 'Display Service Principal information'
+#     displayName: 'Display Identity information'
 #     inputs:
 #       azureSubscription: '$(subscriptionConnection)'
 #       scriptType: pscore
