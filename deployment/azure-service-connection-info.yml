@@ -24,12 +24,14 @@ jobs:
       inlineScript: |
         Write-Host "`$env:servicePrincipalId is set: '$($env:servicePrincipalId -ne $null)'"
         az account show --query "user.name" -o tsv | Set-Variable servicePrincipalId
-        az ad sp show --id $servicePrincipalId -o json
+
+        Write-Host "Identity object:"
+        az ad sp show --id $servicePrincipalId -o json | jq
         
-        echo "These are subscriptions that identity has access to:"
+        Write-Host "These are subscriptions that identity has access to:"
         az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" -o table
         
-        echo "These are resource groups that identity has access to in '$(az account show --query name -o tsv)':"
+        Write-Host "These are resource groups that identity has access to in '$(az account show --query name -o tsv)':"
         az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" -o table
       addSpnToEnvironment: true
       failOnStandardError: false
