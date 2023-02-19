@@ -25,7 +25,7 @@ jobs:
         Set-PSDebug -Trace 1
 
         Write-Host "`$env:servicePrincipalId is set: '$($env:servicePrincipalId -ne $null)'"
-
+        az account show -o json | Out-File -FilePath "$(Build.ArtifactStagingDirectory)/account.json"
         az account show --query "user.name" -o tsv | Set-Variable identityName
         Write-Host "Identity name: '${identityName}'"
         Write-Host "Identity name matches '${env:identityName}': $($identityName -eq ${env:identityName})"
@@ -57,6 +57,10 @@ jobs:
         az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" -o table
       addSpnToEnvironment: true
       failOnStandardError: false
+      workingDirectory: '$(Build.ArtifactStagingDirectory)'
+  - publish: '$(Build.ArtifactStagingDirectory)'
+    displayName: 'Publish artifacts'
+    artifact: drop
 
 # - job: container
 #   displayName: 'Ubuntu container agent'
