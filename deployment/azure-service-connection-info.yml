@@ -26,7 +26,7 @@ jobs:
         az account show --query "user.name" -o tsv | Set-Variable servicePrincipalId
 
         Write-Host "Identity object:"
-        az ad sp show --id $servicePrincipalId -o json | jq
+        az ad sp show --id $servicePrincipalId -o json | jq -C
         
         Write-Host "These are subscriptions that identity has access to:"
         az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" -o table
