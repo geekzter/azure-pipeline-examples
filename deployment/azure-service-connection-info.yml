@@ -1,0 +1,61 @@
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: agent
+  displayName: 'Ubuntu agent'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - script: printenv
+    displayName: 'Print environment variables'
+  - task: AzureCLI@2
+    displayName: 'Terraform init'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        Write-Host "Service Principal object of appId '${env:servicePrincipalId}':"
+        az ad sp list --filter "appId eq '${env:servicePrincipalId}'" --query "[0]" -o json
+        
+        echo "These are subscriptions that appId '${env:servicePrincipalId}' has access to:"
+        az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" -o table
+        
+        echo "These are resource groups that appId '${env:servicePrincipalId}' has access to in '$(az account show --query name -o tsv)':"
+        az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" -o table
+      addSpnToEnvironment: true
+
+- job: container
+  displayName: 'Ubuntu container agent'
+  container: ubuntu:20.04
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - script: printenv
+    displayName: 'Print environment variables'
+  - bash: |
+      echo Hello from the latest version of Ubuntu available
+      lsb_release -d
+  - task: AzureCLI@2
+    displayName: 'Terraform init'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        Write-Host "Service Principal object of appId '${env:servicePrincipalId}':"
+        az ad sp list --filter "appId eq '${env:servicePrincipalId}'" --query "[0]" -o json
+        
+        echo "These are subscriptions that appId '${env:servicePrincipalId}' has access to:"
+        az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" -o table
+        
+        echo "These are resource groups that appId '${env:servicePrincipalId}' has access to in '$(az account show --query name -o tsv)':"
+        az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" -o table
+      addSpnToEnvironment: true
