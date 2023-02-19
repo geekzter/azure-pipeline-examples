@@ -16,12 +16,14 @@ jobs:
   - script: printenv
     displayName: 'Print environment variables'
   - task: AzureCLI@2
-    displayName: 'Terraform init'
+    displayName: 'Display Service Principal information'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
+        az account show
+
         Write-Host "Service Principal object of appId '${env:servicePrincipalId}':"
         az ad sp list --filter "appId eq '${env:servicePrincipalId}'" --query "[0]" -o json
         
@@ -31,6 +33,7 @@ jobs:
         echo "These are resource groups that appId '${env:servicePrincipalId}' has access to in '$(az account show --query name -o tsv)':"
         az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" -o table
       addSpnToEnvironment: true
+      failOnStandardError: false
 
 - job: container
   displayName: 'Ubuntu container agent'
@@ -40,16 +43,15 @@ jobs:
   steps:
   - script: printenv
     displayName: 'Print environment variables'
-  - bash: |
-      echo Hello from the latest version of Ubuntu available
-      lsb_release -d
   - task: AzureCLI@2
-    displayName: 'Terraform init'
+    displayName: 'Display Service Principal information'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
+        az account show
+
         Write-Host "Service Principal object of appId '${env:servicePrincipalId}':"
         az ad sp list --filter "appId eq '${env:servicePrincipalId}'" --query "[0]" -o json
         
@@ -59,3 +61,4 @@ jobs:
         echo "These are resource groups that appId '${env:servicePrincipalId}' has access to in '$(az account show --query name -o tsv)':"
         az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" -o table
       addSpnToEnvironment: true
+      failOnStandardError: false
