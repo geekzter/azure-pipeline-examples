@@ -20,28 +20,29 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
+        Write-Host "Service Connection name: '$(subscriptionConnection)'"
+
         Write-Host "`$env:servicePrincipalId is set: '$($env:servicePrincipalId -ne $null)'"
         Write-Host "`$env:tenantId is set: '$($env:tenantId -ne $null)'"
         az account show --query "user.name" -o tsv | Set-Variable appId
         az account show -o json | Out-File -FilePath azureAccount.json
         Get-Content azureAccount.json
 
-        Write-Host "Service Principal object:"
+        Write-Host "Roles assignments for the identity:"
+        Write-Host "az role assignment list --all --assignee ${appId}"
+        az role assignment list --all --assignee $appId -o json | Out-File -FilePath roleAssignments.json
+        Get-Content roleAssignments.json
+
+        Write-Host "Service Principal object of the identity:"
         Write-Host "az ad sp show --id ${appId}"
         az ad sp show --id $appId -o json | Out-File -FilePath servicePrincipal.json
         Get-Content servicePrincipal.json | ConvertFrom-Json | Set-Variable servicePrincipal
         Get-Content servicePrincipal.json
 
-        Write-Host "Roles assignments for identity:"
-        Write-Host "az role assignment list --all --assignee $($servicePrincipal.id)"
-        # az role assignment list --all --assignee $servicePrincipal.id -o json | Out-File -FilePath roleAssignments.json
-        az role assignment list --all --assignee $appId -o json | Out-File -FilePath roleAssignments.json
-        Get-Content roleAssignments.json
-
-        Write-Host "These are subscriptions that identity has access to:"
+        Write-Host "Subscriptions the identity has access to:"
         az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" -o table
         
-        Write-Host "These are resource groups that identity has access to in '$(az account show --query name -o tsv)':"
+        Write-Host "Resource groups that identity has access to in subscription '$(az account show --query name -o tsv)':"
         az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" -o table
       addSpnToEnvironment: true
       failOnStandardError: false
