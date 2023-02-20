@@ -41,7 +41,8 @@ jobs:
 
         Write-Host "These are roles that identity has:"
         # az role assignment list --all --query "[?principalName=='${appId}']" -o json | Out-File -FilePath roleAssignments.json
-        az role assignment list --all --query "[?principalId=='$(servicePrincipal.id)']" -o json | Out-File -FilePath roleAssignments.json
+        # az role assignment list --all --query "[?principalId=='$($servicePrincipal.id)']" -o json | Out-File -FilePath roleAssignments.json
+        az role assignment list --all --assignee $servicePrincipal.id -o json | Out-File -FilePath roleAssignments.json
         Get-Content roleAssignments.json
       addSpnToEnvironment: true
       failOnStandardError: false
