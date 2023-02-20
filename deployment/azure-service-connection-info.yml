@@ -23,7 +23,7 @@ jobs:
         Write-Host "`$env:servicePrincipalId is set: '$($env:servicePrincipalId -ne $null)'"
         Write-Host "`$env:tenantId is set: '$($env:tenantId -ne $null)'"
         az account show --query "user.name" -o tsv | Set-Variable appId
-        az account show -o json | Out-File -FilePath account.json
+        az account show -o json | Out-File -FilePath azureAccount.json
         Get-Content azureAccount.json
 
         az ad signed-in-user show -o json | Out-File -FilePath signedInUser.json
