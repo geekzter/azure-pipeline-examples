@@ -23,16 +23,27 @@ jobs:
       scriptLocation: inlineScript
       inlineScript: |
         Write-Host "`$env:servicePrincipalId is set: '$($env:servicePrincipalId -ne $null)'"
-        az account show --query "user.name" -o tsv | Set-Variable servicePrincipalId
+        az account show --query "user.name" -o tsv | Set-Variable appId
+        az account show -o json | Out-File -FilePath account.json
+        Get-Content account.json
 
         Write-Host "Identity object:"
-        az ad sp show --id $servicePrincipalId -o json
+        az ad sp show --id $appId -o json | Out-File -FilePath servicePrincipal.json
+        Get-Content servicePrincipal.json
         
         Write-Host "These are subscriptions that identity has access to:"
         az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" -o table
         
         Write-Host "These are resource groups that identity has access to in '$(az account show --query name -o tsv)':"
         az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" -o table
+
+        Write-Host "These are roles that identity has:"
+        az role assignment list --all --query "[?principalName=='${appId}']" -o json | Out-File -FilePath roleAssignments.json
+        Get-Content roleAssignments.json
       addSpnToEnvironment: true
       failOnStandardError: false
       workingDirectory: '$(Build.ArtifactStagingDirectory)'
+
+  - publish: $(Build.ArtifactStagingDirectory)
+    displayName: 'Publish artifacts'
+    artifact: indentityInfo
