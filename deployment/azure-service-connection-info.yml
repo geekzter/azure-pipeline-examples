@@ -26,12 +26,16 @@ jobs:
         az account show -o json | Out-File -FilePath account.json
         Get-Content account.json
 
+        az ad signed-in-user show -o json | Out-File -FilePath signedInUser.json
+        Write-Host "az ad signed-in-user show"
+        Get-Content signedInUser.json
+
         Write-Host "Service Principal object:"
         Write-Host "az ad sp show --id ${appId}"
         az ad sp show --id $appId -o json | Out-File -FilePath servicePrincipal.json
         Get-Content servicePrincipal.json | ConvertFrom-Json | Set-Variable servicePrincipal
         Get-Content servicePrincipal.json
-        
+
         Write-Host "Roles assignments the identity has:"
         Write-Host "az role assignment list --all --assignee $($servicePrincipal.id))"
         az role assignment list --all --assignee $servicePrincipal.id -o json | Out-File -FilePath roleAssignments.json
