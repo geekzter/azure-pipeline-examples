@@ -26,20 +26,16 @@ jobs:
         az account show -o json | Out-File -FilePath azureAccount.json
         Get-Content azureAccount.json
 
-        az ad signed-in-user show -o json | Out-File -FilePath signedInUser.json
-        Write-Host "az ad signed-in-user show"
-        Get-Content signedInUser.json
+        Write-Host "Roles assignments for identity:"
+        Write-Host "az role assignment list --all --assignee $($servicePrincipal.id))"
+        az role assignment list --all --assignee $servicePrincipal.id -o json | Out-File -FilePath roleAssignments.json
+        Get-Content roleAssignments.json
 
         Write-Host "Service Principal object:"
         Write-Host "az ad sp show --id ${appId}"
         az ad sp show --id $appId -o json | Out-File -FilePath servicePrincipal.json
         Get-Content servicePrincipal.json | ConvertFrom-Json | Set-Variable servicePrincipal
         Get-Content servicePrincipal.json
-
-        Write-Host "Roles assignments the identity has:"
-        Write-Host "az role assignment list --all --assignee $($servicePrincipal.id))"
-        az role assignment list --all --assignee $servicePrincipal.id -o json | Out-File -FilePath roleAssignments.json
-        Get-Content roleAssignments.json
 
         Write-Host "These are subscriptions that identity has access to:"
         az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" -o table
