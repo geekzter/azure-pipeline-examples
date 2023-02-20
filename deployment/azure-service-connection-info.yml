@@ -29,6 +29,8 @@ jobs:
 
         Write-Host "Identity object:"
         az ad sp show --id $appId -o json | Out-File -FilePath servicePrincipal.json
+        Get-Content servicePrincipal.json | ConvertFrom-Json | Set-Variable servicePrincipal
+        $servicePrincipal | Format-List
         Get-Content servicePrincipal.json
         
         Write-Host "These are subscriptions that identity has access to:"
@@ -38,7 +40,8 @@ jobs:
         az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" -o table
 
         Write-Host "These are roles that identity has:"
-        az role assignment list --all --query "[?principalName=='${appId}']" -o json | Out-File -FilePath roleAssignments.json
+        # az role assignment list --all --query "[?principalName=='${appId}']" -o json | Out-File -FilePath roleAssignments.json
+        az role assignment list --all --query "[?principalId=='$(servicePrincipal.id)']" -o json | Out-File -FilePath roleAssignments.json
         Get-Content roleAssignments.json
       addSpnToEnvironment: true
       failOnStandardError: false
