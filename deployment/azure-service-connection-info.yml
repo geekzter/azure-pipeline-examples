@@ -35,7 +35,7 @@ jobs:
         Write-Host "Roles assignments for identity:"
         Write-Host "az role assignment list --all --assignee $($servicePrincipal.id)"
         # az role assignment list --all --assignee $servicePrincipal.id -o json | Out-File -FilePath roleAssignments.json
-        az role assignment list --all --query "[?principalName=='${appId}']" -o json | Out-File -FilePath roleAssignments.json
+        az role assignment list --all --assignee $appId -o json | Out-File -FilePath roleAssignments.json
         Get-Content roleAssignments.json
 
         Write-Host "These are subscriptions that identity has access to:"
