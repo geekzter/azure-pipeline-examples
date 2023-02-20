@@ -24,7 +24,7 @@ jobs:
         Write-Host "`$env:tenantId is set: '$($env:tenantId -ne $null)'"
         az account show --query "user.name" -o tsv | Set-Variable appId
         az account show -o json | Out-File -FilePath account.json
-        Get-Content account.json
+        Get-Content azureAccount.json
 
         az ad signed-in-user show -o json | Out-File -FilePath signedInUser.json
         Write-Host "az ad signed-in-user show"
