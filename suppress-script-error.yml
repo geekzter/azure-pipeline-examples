@@ -15,19 +15,19 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
   - bash: |
-      echo This step will not fail
-      >&2 echo "error"
-    condition: always()
-    displayName: 'Not failing on stderr'
-    failOnStderr: false
-
-  - bash: |
       echo This step will fail
       >&2 echo "error"
     condition: always()
     displayName: 'Fail on stderr'
     failOnStderr: true
     continueOnError: true
+
+  - bash: |
+      echo This step will not fail
+      >&2 echo "error"
+    condition: always()
+    displayName: 'Not failing on stderr'
+    failOnStderr: false
 
   - bash: |
       echo This step will fail on non-zero exit code
@@ -41,7 +41,7 @@ jobs:
       bash -c 'exit 1'
       if [ $? -eq 1 ]
       then
-        echo absorbing exit code 1
+        echo Absorbing exit code 1
         exit 0
       else
         exit $?
@@ -58,24 +58,24 @@ jobs:
       Write-Host "This step will fail"
       bash -c '>&2 echo "error"'
     condition: always()
-    displayName: 'Not failing on stderr'
-    failOnStderr: false
+    displayName: 'Fail on stderr'
+    failOnStderr: true
+    continueOnError: true
 
   - pwsh: |
       Write-Host "This step will not fail (failOnStderr)"
       bash -c '>&2 echo "error"'
     condition: always()
-    displayName: 'Fail on stderr'
-    errorActionPreference: silentlyContinue
-    failOnStderr: true
-    continueOnError: true
+    displayName: 'Not failing on stderr'
+    failOnStderr: false
 
   - pwsh: |
       Write-Host "This step will fail"
       Write-Error "This message is processed by error stream"
     condition: always()
     displayName: 'Not failing on stderr'
-    failOnStderr: false
+    errorActionPreference: stop
+    # failOnStderr: false
 
   - pwsh: |
       Write-Host "This step will not fail (errorActionPreference)"
@@ -83,11 +83,10 @@ jobs:
     condition: always()
     displayName: 'Fail on stderr'
     errorActionPreference: silentlyContinue
-    failOnStderr: true
+    # failOnStderr: true
     continueOnError: true
 
   - pwsh: |
-      Write-Host "This step will not fail?"
       Write-Host "This step will fail on non-zero exit code"
       pwsh -nop -c 'exit 1'
     condition: always()
@@ -97,6 +96,15 @@ jobs:
   - pwsh: |
       Write-Host "This step will not fail on non-zero exit code"
       pwsh -nop -c 'exit 1'
+      if ($LastExitCode -eq 1)
+      {
+        Write-Host "Absorbing exit code 1"
+        exit 0
+      }
+      else
+      {
+        exit $LastExitCode
+      }
     condition: always()
     displayName: 'Not failing on non-zero exit code'
     continueOnError: true
