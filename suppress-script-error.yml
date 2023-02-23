@@ -10,7 +10,7 @@ trigger: none
 
 jobs:
 - job: bash
-  displayName: Handle errors in bash
+  displayName: Suppress script errors in bash
   pool:
     vmImage: 'ubuntu-latest'
   steps:
@@ -18,9 +18,9 @@ jobs:
       echo This step will fail
       >&2 echo "error"
     condition: always()
+    continueOnError: true
     displayName: 'Fail on stderr'
     failOnStderr: true
-    continueOnError: true
 
   - bash: |
       echo This step will not fail
@@ -33,8 +33,8 @@ jobs:
       echo This step will fail on non-zero exit code
       bash -c 'exit 1'
     condition: always()
-    displayName: 'Fail on non-zero exit code'
     continueOnError: true
+    displayName: 'Fail on non-zero exit code'
 
   - bash: |
       echo This step will not fail on non-zero exit code
@@ -50,7 +50,7 @@ jobs:
     displayName: 'Not failing on non-zero exit code'
 
 - job: pwsh
-  displayName: Handle errors in PowerShell
+  displayName: Suppress script errors in PowerShell
   pool:
     vmImage: 'ubuntu-latest'
   steps:
@@ -58,9 +58,9 @@ jobs:
       Write-Host "This step will fail"
       bash -c '>&2 echo "error"'
     condition: always()
+    continueOnError: true
     displayName: 'Fail on stderr'
     failOnStderr: true
-    continueOnError: true
 
   - pwsh: |
       Write-Host "This step will not fail (failOnStderr)"
@@ -73,9 +73,9 @@ jobs:
       Write-Host "This step will fail"
       Write-Error "This message is processed by error stream"
     condition: always()
+    continueOnError: true
     displayName: 'Fail on Write-Error'
     errorActionPreference: stop
-    # failOnStderr: false
 
   - pwsh: |
       Write-Host "This step will not fail (errorActionPreference)"
@@ -83,8 +83,6 @@ jobs:
     condition: always()
     displayName: 'Not failing on Write-Error'
     errorActionPreference: silentlyContinue
-    # failOnStderr: true
-    continueOnError: true
 
   - pwsh: |
       Write-Host "This step will fail on non-zero exit code"
@@ -107,4 +105,3 @@ jobs:
       }
     condition: always()
     displayName: 'Not failing on non-zero exit code'
-    continueOnError: true
