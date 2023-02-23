@@ -1,4 +1,4 @@
-trigger: none
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
 schedules:
 - cron: '0 1 * * *'
   displayName: 'Nightly build (UTC)'
@@ -6,6 +6,7 @@ schedules:
   branches:
     include:
     - main
+trigger: none
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -44,5 +45,5 @@ steps:
       exit $?
     fi
   condition: always()
-  displayName: 'Not fail on non-zero exit code'
+  displayName: 'Not failing on non-zero exit code'
   failOnStderr: false
