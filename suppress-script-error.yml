@@ -34,7 +34,6 @@ jobs:
       bash -c 'exit 1'
     condition: always()
     displayName: 'Fail on non-zero exit code'
-    # failOnStderr: false
     continueOnError: true
 
   - bash: |
@@ -49,7 +48,6 @@ jobs:
       fi
     condition: always()
     displayName: 'Not failing on non-zero exit code'
-    # failOnStderr: false
 
 - job: pwsh
   displayName: Handle errors in PowerShell
@@ -57,26 +55,43 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
   - pwsh: |
-      Write-Host "This step will not fail?"
+      Write-Host "This step will fail"
+      bash -c '>&2 echo "error"'
+    condition: always()
+    displayName: 'Not failing on stderr'
+    failOnStderr: false
+
+  - pwsh: |
+      Write-Host "This step will not fail (failOnStderr)"
+      bash -c '>&2 echo "error"'
+    condition: always()
+    displayName: 'Fail on stderr'
+    errorActionPreference: silentlyContinue
+    failOnStderr: true
+    continueOnError: true
+
+  - pwsh: |
+      Write-Host "This step will fail"
       Write-Error "This message is processed by error stream"
     condition: always()
     displayName: 'Not failing on stderr'
     failOnStderr: false
 
   - pwsh: |
-      Write-Host "This step will not fail?"
+      Write-Host "This step will not fail (errorActionPreference)"
       Write-Error "This message is processed by error stream"
     condition: always()
     displayName: 'Fail on stderr'
+    errorActionPreference: silentlyContinue
     failOnStderr: true
     continueOnError: true
 
   - pwsh: |
       Write-Host "This step will not fail?"
       Write-Host "This step will fail on non-zero exit code"
+      pwsh -nop -c 'exit 1'
     condition: always()
     displayName: 'Fail on non-zero exit code'
-    errorActionPreference: silentlyContinue
     continueOnError: true
 
   - pwsh: |
@@ -84,8 +99,4 @@ jobs:
       pwsh -nop -c 'exit 1'
     condition: always()
     displayName: 'Not failing on non-zero exit code'
-    # failOnStderr: false
     continueOnError: true
-
-
-# errorActionPreference: silentlyContinue
