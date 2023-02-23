@@ -1,3 +1,11 @@
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -6,24 +14,24 @@ steps:
     echo This step will not fail
     >&2 echo "error"
   condition: always()
-  displayName: 'This step will not fail on stderr'
+  displayName: 'Not failing on stderr'
   failOnStderr: false
 
 - bash: |
     echo This step will fail
     >&2 echo "error"
   condition: always()
-  displayName: 'This step will fail on stderr'
+  displayName: 'Fail on stderr'
   failOnStderr: true
-  continueOnError: false
+  continueOnError: true
 
 - bash: |
     echo This step will fail on non-zero exit code
     bash -c 'exit 1'
   condition: always()
-  displayName: 'This step will fail on non-zero exit code'
+  displayName: 'Fail on non-zero exit code'
   failOnStderr: false
-  continueOnError: false
+  continueOnError: true
 
 - bash: |
     echo This step will not fail on non-zero exit code
@@ -36,5 +44,5 @@ steps:
       exit $?
     fi
   condition: always()
-  displayName: 'This step will not fail on non-zero exit code'
+  displayName: 'Not fail on non-zero exit code'
   failOnStderr: false
