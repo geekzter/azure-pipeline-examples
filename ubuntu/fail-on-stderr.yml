@@ -19,3 +19,16 @@ steps:
     bash -c 'exit 1'
   condition: always()
   failOnStderr: false
+
+- bash: |
+    echo This step will fail on non-zero exit code
+    bash -c 'exit 1'
+    if [ $? -eq 1 ]
+    then
+      echo absorbing exit code 1
+      exit 0
+    else
+      exit $?
+    fi
+  condition: always()
+  failOnStderr: false
