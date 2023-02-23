@@ -1,0 +1,52 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+trigger: none
+
+jobs:
+- job: bash
+  displayName: Handle errors in bash
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - bash: |
+      echo This step will not fail
+      >&2 echo "error"
+    condition: always()
+    displayName: 'Not failing on stderr'
+    failOnStderr: false
+
+  - bash: |
+      echo This step will fail
+      >&2 echo "error"
+    condition: always()
+    displayName: 'Fail on stderr'
+    failOnStderr: true
+    continueOnError: true
+
+  - bash: |
+      echo This step will fail on non-zero exit code
+      bash -c 'exit 1'
+    condition: always()
+    displayName: 'Fail on non-zero exit code'
+    failOnStderr: false
+    continueOnError: true
+
+  - bash: |
+      echo This step will not fail on non-zero exit code
+      bash -c 'exit 1'
+      if [ $? -eq 1 ]
+      then
+        echo absorbing exit code 1
+        exit 0
+      else
+        exit $?
+      fi
+    condition: always()
+    displayName: 'Not failing on non-zero exit code'
+    failOnStderr: false
