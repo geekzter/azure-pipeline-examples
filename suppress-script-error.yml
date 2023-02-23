@@ -1,0 +1,107 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+trigger: none
+
+jobs:
+- job: bash
+  displayName: Suppress script errors in bash
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - bash: |
+      echo This step will fail
+      >&2 echo "error"
+    condition: always()
+    continueOnError: true
+    displayName: 'Fail on stderr'
+    failOnStderr: true
+
+  - bash: |
+      echo This step will not fail
+      >&2 echo "error"
+    condition: always()
+    displayName: 'Not failing on stderr'
+    failOnStderr: false
+
+  - bash: |
+      echo This step will fail on non-zero exit code
+      bash -c 'exit 1'
+    condition: always()
+    continueOnError: true
+    displayName: 'Fail on non-zero exit code'
+
+  - bash: |
+      echo This step will not fail on non-zero exit code
+      bash -c 'exit 1'
+      if [ $? -eq 1 ]
+      then
+        echo Absorbing exit code 1
+        exit 0
+      else
+        exit $?
+      fi
+    condition: always()
+    displayName: 'Not failing on non-zero exit code'
+
+- job: pwsh
+  displayName: Suppress script errors in PowerShell
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - pwsh: |
+      Write-Host "This step will fail"
+      bash -c '>&2 echo "error"'
+    condition: always()
+    continueOnError: true
+    displayName: 'Fail on stderr'
+    failOnStderr: true
+
+  - pwsh: |
+      Write-Host "This step will not fail (failOnStderr)"
+      bash -c '>&2 echo "error"'
+    condition: always()
+    displayName: 'Not failing on stderr'
+    failOnStderr: false
+
+  - pwsh: |
+      Write-Host "This step will fail"
+      Write-Error "This message is processed by error stream"
+    condition: always()
+    continueOnError: true
+    displayName: 'Fail on Write-Error'
+    errorActionPreference: stop
+
+  - pwsh: |
+      Write-Host "This step will not fail (errorActionPreference)"
+      Write-Error "This message is processed by error stream"
+    condition: always()
+    displayName: 'Not failing on Write-Error'
+    errorActionPreference: silentlyContinue
+
+  - pwsh: |
+      Write-Host "This step will fail on non-zero exit code"
+      pwsh -nop -c 'exit 1'
+    condition: always()
+    displayName: 'Fail on non-zero exit code'
+    continueOnError: true
+
+  - pwsh: |
+      Write-Host "This step will not fail on non-zero exit code"
+      pwsh -nop -c 'exit 1'
+      if ($LastExitCode -eq 1)
+      {
+        Write-Host "Absorbing exit code 1"
+        exit 0
+      }
+      else
+      {
+        exit $LastExitCode
+      }
+    condition: always()
+    displayName: 'Not failing on non-zero exit code'
