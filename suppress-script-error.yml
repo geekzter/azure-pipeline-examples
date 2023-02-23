@@ -73,7 +73,7 @@ jobs:
       Write-Host "This step will fail"
       Write-Error "This message is processed by error stream"
     condition: always()
-    displayName: 'Not failing on stderr'
+    displayName: 'Fail on Write-Error'
     errorActionPreference: stop
     # failOnStderr: false
 
@@ -81,7 +81,7 @@ jobs:
       Write-Host "This step will not fail (errorActionPreference)"
       Write-Error "This message is processed by error stream"
     condition: always()
-    displayName: 'Fail on stderr'
+    displayName: 'Not failing on Write-Error'
     errorActionPreference: silentlyContinue
     # failOnStderr: true
     continueOnError: true
