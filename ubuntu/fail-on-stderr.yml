@@ -6,22 +6,27 @@ steps:
     echo This step will not fail
     >&2 echo "error"
   condition: always()
+  displayName: 'This step will not fail on stderr'
   failOnStderr: false
 
 - bash: |
     echo This step will fail
     >&2 echo "error"
   condition: always()
+  displayName: 'This step will fail on stderr'
   failOnStderr: true
+  continueOnError: false
 
 - bash: |
     echo This step will fail on non-zero exit code
     bash -c 'exit 1'
   condition: always()
+  displayName: 'This step will fail on non-zero exit code'
   failOnStderr: false
+  continueOnError: false
 
 - bash: |
-    echo This step will fail on non-zero exit code
+    echo This step will not fail on non-zero exit code
     bash -c 'exit 1'
     if [ $? -eq 1 ]
     then
@@ -31,4 +36,5 @@ steps:
       exit $?
     fi
   condition: always()
+  displayName: 'This step will not fail on non-zero exit code'
   failOnStderr: false
