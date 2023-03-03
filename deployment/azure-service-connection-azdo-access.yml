@@ -35,7 +35,7 @@ jobs:
         Write-Host "`nUse token with Azure DevOps CLI (az devops) to list projects in the organization '$(System.CollectionUri)'..."
         az devops project list --query "value[].{Name:name, Id:id}" -o table
         Write-Host "`nUse token with Azure DevOps CLI (az pipelines) to list pools in the organization '$(System.CollectionUri)'..."
-        az pipelines pool list --query "value[].{Name:name, Id:id}" -o table
+        az pipelines pool list --query "[].{Id:id, Name:name}" -o table
 
         Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
         $apiVersion = "7.1-preview.1"
