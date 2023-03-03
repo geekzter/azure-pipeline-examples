@@ -9,7 +9,7 @@ schedules:
 
 jobs:
 - job: agent
-  displayName: 'Get Azure Service Connection Info'
+  displayName: 'Use Azure Service Connection'
   pool:
     vmImage: 'ubuntu-latest'
   steps:
@@ -20,6 +20,8 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
+        Set-PSdebug -trace 1
+
         Write-Host "Service Connection name: '$(subscriptionConnection)'"
 
         Write-Host "`$env:servicePrincipalId is set: '$($env:servicePrincipalId -ne $null)'"
@@ -37,7 +39,8 @@ jobs:
         $aadToken -replace '.','*' # Mask token
 
         Write-Host "Use token with Azure DevOps CLI (az devops) to list projects in the organization '${env:SYSTEM_COLLECTIONURI}'..."
-        $aadToken | az devops login --organization $env:SYSTEM_COLLECTIONURI # Alternatively, set $env:AZURE_DEVOPS_EXT_PAT
+        $env:AZURE_DEVOPS_EXT_PAT = $aadToken
+        # $aadToken | az devops login --organization $env:SYSTEM_COLLECTIONURI # Alternatively, set $env:AZURE_DEVOPS_EXT_PAT
         az devops configure --defaults organization=$env:SYSTEM_COLLECTIONURI
         az devops project list --query "[].{Name:name, Id:id}" -o table
 
