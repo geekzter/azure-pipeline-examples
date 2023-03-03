@@ -14,7 +14,7 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
   - task: AzureCLI@2
-    displayName: 'Display Identity information'
+    displayName: 'Get AAD token to access Azure DevOps'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
@@ -34,7 +34,7 @@ jobs:
                             --output tsv `
                             | Set-Variable aadToken
         Write-Host "Access token for the identity: " -NoNewline
-        $aadToken -replace  -replace '.','*' 
+        $aadToken -replace '.','*' # Mask token
 
         Write-Host "Use token with Azure DevOps CLI (az devops) to list projects in the organization '${env:SYSTEM_COLLECTIONURI}'..."
         $aadToken | az devops login --organization $OrganizationUrl # Alternatively, set $env:AZURE_DEVOPS_EXT_PAT
