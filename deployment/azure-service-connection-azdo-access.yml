@@ -24,8 +24,6 @@ jobs:
 
         Write-Host "Service Connection name: '$(subscriptionConnection)'"
 
-        Write-Host "`$env:servicePrincipalId is set: '$($env:servicePrincipalId -ne $null)'"
-        Write-Host "`$env:tenantId is set: '$($env:tenantId -ne $null)'"
         az account show --query "user.name" -o tsv | Set-Variable appId
         az account show -o json | Out-File -FilePath azureAccount.json
         Get-Content azureAccount.json
@@ -56,8 +54,8 @@ jobs:
             Authorization = "Bearer $aadToken"
             "Content-Type" = "application/json"
         }
-        Invoke-RestMethod -Uri $apiUrl -Headers $requestHeaders -Method Get
-      addSpnToEnvironment: true
+        Invoke-RestMethod -Uri $apiUrl -Headers $requestHeaders -Method Get | Select-Object -ExpandProperty value `
+                                                                            | Select-Object name, id
       failOnStandardError: true
       workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
