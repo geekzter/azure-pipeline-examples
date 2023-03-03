@@ -28,7 +28,7 @@ jobs:
         az account show -o json | Out-File -FilePath azureAccount.json
         Get-Content azureAccount.json
 
-        Write-Host "Roles assignments for the identity:"
+        Write-Host "Role assignments for the identity:"
         Write-Host "az role assignment list --all --assignee ${appId}"
         az role assignment list --all --assignee $appId -o json | Out-File -FilePath roleAssignments.json
         Get-Content roleAssignments.json
