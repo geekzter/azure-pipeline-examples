@@ -1,0 +1,59 @@
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: agent
+  displayName: 'Get Azure Service Connection Info'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: AzureCLI@2
+    displayName: 'Display Identity information'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        Write-Host "Service Connection name: '$(subscriptionConnection)'"
+
+        Write-Host "`$env:servicePrincipalId is set: '$($env:servicePrincipalId -ne $null)'"
+        Write-Host "`$env:tenantId is set: '$($env:tenantId -ne $null)'"
+        az account show --query "user.name" -o tsv | Set-Variable appId
+        az account show -o json | Out-File -FilePath azureAccount.json
+        Get-Content azureAccount.json
+
+        Write-Host "Obtaining access token for the identity..."
+        az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 `
+                            --query "accessToken" `
+                            --output tsv `
+                            | Set-Variable aadToken
+        Write-Host "Access token for the identity: " -NoNewline
+        $aadToken -replace  -replace '.','*' 
+
+        Write-Host "Use token with Azure DevOps CLI (az devops) to list projects in the organization '${env:SYSTEM_COLLECTIONURI}'..."
+        $aadToken | az devops login --organization $OrganizationUrl # Alternatively, set $env:AZURE_DEVOPS_EXT_PAT
+        az devops configure --defaults organization=$env:SYSTEM_COLLECTIONURI
+        az devops project list --query "[].{Name:name, Id:id}" -o table
+
+        Write-Host "Access REST API with token..."
+        $apiVersion = "7.1-preview.1"
+        $apiUrl = "${env:SYSTEM_COLLECTIONURI}/_apis/distributedtask/pools?api-version=${apiVersion}"
+        $requestHeaders = @{
+            Accept = "application/json"
+            Authorization = "Bearer $aadToken"
+            "Content-Type" = "application/json"
+        }
+        Invoke-RestMethod -Uri $apiUrl -Headers $requestHeaders -Method Get
+      addSpnToEnvironment: true
+      failOnStandardError: false
+      workingDirectory: '$(Build.ArtifactStagingDirectory)'
+
+  - publish: $(Build.ArtifactStagingDirectory)
+    displayName: 'Publish json files'
+    artifact: indentityInfo
