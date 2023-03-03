@@ -20,14 +20,6 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Set-PSdebug -trace 1
-
-        Write-Host "Service Connection name: '$(subscriptionConnection)'"
-
-        az account show --query "user.name" -o tsv | Set-Variable appId
-        az account show -o json | Out-File -FilePath azureAccount.json
-        Get-Content azureAccount.json
-
         Write-Host "Obtaining access token for the identity..."
         az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 `
                             --query "accessToken" `
@@ -58,7 +50,3 @@ jobs:
                                                                             | Select-Object name, id
       failOnStandardError: true
       workingDirectory: '$(Build.ArtifactStagingDirectory)'
-
-  - publish: $(Build.ArtifactStagingDirectory)
-    displayName: 'Publish json files'
-    artifact: indentityInfo
