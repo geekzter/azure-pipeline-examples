@@ -38,15 +38,18 @@ jobs:
         Write-Host "Access token for the identity: " -NoNewline
         $aadToken -replace '.','*' # Mask token
 
-        Write-Host "Use token with Azure DevOps CLI (az devops) to list projects in the organization '${env:SYSTEM_COLLECTIONURI}'..."
+        Write-Host "Use token with Azure DevOps CLI (az devops) to list projects in the organization '$(System.CollectionUri)'..."
         $env:AZURE_DEVOPS_EXT_PAT = $aadToken
-        # $aadToken | az devops login --organization $env:SYSTEM_COLLECTIONURI # Alternatively, set $env:AZURE_DEVOPS_EXT_PAT
-        az devops configure --defaults organization=$env:SYSTEM_COLLECTIONURI
-        az devops project list --query "[].{Name:name, Id:id}" -o table
+        $aadToken | az devops login --organization $(System.CollectionUri) # Alternatively, set $env:AZURE_DEVOPS_EXT_PAT
+        az devops configure --defaults organization=$(System.CollectionUri) project=$(System.TeamProject)
+        az devops configure -l
+        # az devops project list --query "[].{Name:name, Id:id}" -o table
+        az devops project list
+        az pipelines pool list
 
-        Write-Host "Use token with Azure DevOps REST API to list pools in the organization '${env:SYSTEM_COLLECTIONURI}'..."
+        Write-Host "Use token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
         $apiVersion = "7.1-preview.1"
-        $apiUrl = "${env:SYSTEM_COLLECTIONURI}/_apis/distributedtask/pools?api-version=${apiVersion}"
+        $apiUrl = "$(System.CollectionUri)/_apis/distributedtask/pools?api-version=${apiVersion}"
         $requestHeaders = @{
             Accept = "application/json"
             Authorization = "Bearer $aadToken"
