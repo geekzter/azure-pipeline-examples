@@ -37,11 +37,11 @@ jobs:
         $aadToken -replace '.','*' # Mask token
 
         Write-Host "Use token with Azure DevOps CLI (az devops) to list projects in the organization '${env:SYSTEM_COLLECTIONURI}'..."
-        $aadToken | az devops login --organization $OrganizationUrl # Alternatively, set $env:AZURE_DEVOPS_EXT_PAT
+        $aadToken | az devops login --organization $env:SYSTEM_COLLECTIONURI # Alternatively, set $env:AZURE_DEVOPS_EXT_PAT
         az devops configure --defaults organization=$env:SYSTEM_COLLECTIONURI
         az devops project list --query "[].{Name:name, Id:id}" -o table
 
-        Write-Host "Access REST API with token..."
+        Write-Host "Use token with Azure DevOps REST API to list pools in the organization '${env:SYSTEM_COLLECTIONURI}'..."
         $apiVersion = "7.1-preview.1"
         $apiUrl = "${env:SYSTEM_COLLECTIONURI}/_apis/distributedtask/pools?api-version=${apiVersion}"
         $requestHeaders = @{
@@ -51,7 +51,7 @@ jobs:
         }
         Invoke-RestMethod -Uri $apiUrl -Headers $requestHeaders -Method Get
       addSpnToEnvironment: true
-      failOnStandardError: false
+      failOnStandardError: true
       workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
   - publish: $(Build.ArtifactStagingDirectory)
