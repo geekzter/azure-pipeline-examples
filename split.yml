@@ -2,8 +2,10 @@ trigger: none
 
 variables:
 - name: 'resourceGroupName'
+# https://learn.microsoft.com/en-us/azure/devops/pipelines/process/expressions?view=azure-devops#replace
   value: $[ split('/0/1/2/3/4/5/6/7/8', '/')[4] ]
 - name: 'resourceName'
+# https://learn.microsoft.com/en-us/azure/devops/pipelines/process/expressions?view=azure-devops#split
   value: $[ replace('/0/1/2/3/4/5/6/7/8', '/0/1/2/3/4/5/6/7/', '') ]
 
 jobs:
