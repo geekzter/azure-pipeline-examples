@@ -239,8 +239,7 @@ jobs:
 
   - task: AzureCLI@2
     condition: succeededOrFailed()
-    continueOnError: true 
-    displayName: 'kubectl admin (fails)'
+    displayName: 'kubectl admin'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
