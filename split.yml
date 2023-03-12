@@ -4,7 +4,7 @@ variables:
 - name: 'resourceGroupName'
   value: $[ split('/0/1/2/3/4/5/6/7/8', '/')[4] ]
 - name: 'resourceName'
-  value: $[ replace('/0/1/2/3/4/5/6/7/8', '/0/1/2/3/4/5/6/7/', '')[4] ]
+  value: $[ replace('/0/1/2/3/4/5/6/7/8', '/0/1/2/3/4/5/6/7/', '') ]
 
 jobs:
 - job: job
