@@ -108,14 +108,16 @@ jobs:
 
   - pwsh: |
       # Get latest release for Linux amd64
+      $zip = "kubelogin-linux-amd64.zip"
+
       Invoke-RestMethod -Uri https://api.github.com/repos/Azure/kubelogin/releases/latest | Set-Variable release
       $release.assets | Format-Table -Property name, browser_download_url
-      $release.assets | Where-Object -Property name -eq kubelogin-darwin-amd64.zip | Set-Variable asset
+      $release.assets | Where-Object -Property name -eq $zip | Set-Variable asset
       $asset | Format-List
 
       # Download and extract kubelogin
-      Invoke-Webrequest -Uri $asset.browser_download_url -OutFile kubelogin-linux-amd64.zip -UseBasicParsing
-      Expand-Archive kubelogin-linux-amd64.zip -DestinationPath .
+      Invoke-Webrequest -Uri $asset.browser_download_url -OutFile $zip -UseBasicParsing
+      Expand-Archive $zip -DestinationPath .
       Get-ChildItem -Path . -Filter kubelogin -Recurse -Force | Set-Variable kubeloginFile 
       chmod +X $kubeloginFile.FullName
 
@@ -125,6 +127,11 @@ jobs:
       Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
     name: split
     displayName: 'Install kubelogin from zip'
+
+  - pwsh: |
+      kubelogin -h
+    name: split
+    displayName: 'Test kubelogin'
 
   # - task: AzureCLI@2
   #   displayName: 'kubectl with kubelogin'
