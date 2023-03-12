@@ -10,15 +10,6 @@ schedules:
 
 variables:
 - group: 'kubernetes' # should contain subscriptionConnection, aksId
-# - name: 'aksIdElements'
-#   value: $[ split(variables['aksId'], '/') ]
-- name: 'aksIdVar'
-  value: $[ variables['aksId'] ]
-- name: 'aksName'
-  # value: $[ split(variables['aksId'], '/')[8] ]
-  value: $[ split('/1/2/3/4/5/6/7/8/9/0', '/')[8] ]
-- name: 'resourceGroupName'
-  value: $[ split(variables['aksId'], '/')[4] ]
 
 jobs:
 - job: agent
@@ -27,11 +18,10 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
   - pwsh: |
-      Write-Host "aksId: $(aksId)"
-      Write-Host "aksIdVar: $(aksIdVar)"
-      # Write-Host "aksIdElements: $(aksIdElements)"
-      Write-Host "aksName: $(aksName)"
-      Write-Host "resourceGroupName: $(resourceGroupName)"
+      $aksIdElements = '$(aksId)'.Split('/')
+      Write-Host "##vso[task.setvariable variable=aksName;isOutput=true]$aksIdElements[8]"
+      Write-Host "##vso[task.setvariable variable=resourceGroupName;isOutput=true]$aksIdElements[4]"
+    name: split
     displayName: 'Display variables'
 
   - task: AzureCLI@2
@@ -41,7 +31,7 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        az aks get-credentials -n $(aksName) -g $(resourceGroupName) -a
+        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
 
         kubectl config view
         kubectl cluster-info
