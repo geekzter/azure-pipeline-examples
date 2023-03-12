@@ -10,8 +10,8 @@ schedules:
 
 variables:
 - group: 'kubernetes' # should contain subscriptionConnection, aksId
-- name: 'aksIdElements'
-  value: $[ split(variables['aksId'], '/') ]
+# - name: 'aksIdElements'
+#   value: $[ split(variables['aksId'], '/') ]
 - name: 'aksIdVar'
   value: $[ variables['aksId'] ]
 - name: 'aksName'
@@ -28,7 +28,7 @@ jobs:
   - pwsh: |
       Write-Host "aksId: $(aksId)"
       Write-Host "aksIdVar: $(aksIdVar)"
-      Write-Host "aksIdElements: $(aksIdElements)"
+      # Write-Host "aksIdElements: $(aksIdElements)"
       Write-Host "aksName: $(aksName)"
       Write-Host "resourceGroupName: $(resourceGroupName)"
     displayName: 'Display variables'
