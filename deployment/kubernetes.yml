@@ -21,7 +21,7 @@ jobs:
       $aksIdElements = '$(aksId)'.Split('/')
       $aksName = $aksIdElements[8]
       $resourceGroupName = $aksIdElements[4]
-      Write-Host "aksId: ${aksId}"
+      Write-Host "aksId: $(aksId)"
       Write-Host "aksName: ${aksName}"
       Write-Host "resourceGroupName: ${resourceGroupName}"
       Write-Host "##vso[task.setvariable variable=aksName;isOutput=true]${aksName}"
@@ -30,12 +30,13 @@ jobs:
     displayName: 'Prepare variables'
 
   - task: AzureCLI@2
-    displayName: 'Access AKS'
+    displayName: 'Access AKS (local accounts enabled)'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
+        az aks update -n $(split.aksName) -g $(split.resourceGroupName) --enable-local-accounts
         az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
 
         kubectl config view
@@ -43,7 +44,22 @@ jobs:
         kubectl get nodes
 
   - task: AzureCLI@2
-    displayName: 'Install kubelogin'
+    displayName: 'Access AKS (local accounts disabled)'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        az aks update -n $(split.aksName) -g $(split.resourceGroupName) --disable-local-accounts
+        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
+
+        kubectl config view
+        kubectl cluster-info
+        kubectl get nodes
+
+  - task: AzureCLI@2
+    displayName: 'Install kubelogin (fails)'
+    continueOnError: true 
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
