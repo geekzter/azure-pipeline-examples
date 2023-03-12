@@ -50,8 +50,8 @@ jobs:
       scriptLocation: inlineScript
       inlineScript: |
         Set-PSDebug -trace 1   
-        
-        az aks show -n -n $(split.aksName) -g $(split.resourceGroupName) --query "disableLocalAccounts" | Set-Variable disableLocalAccounts
+
+        az aks show -n $(split.aksName) -g $(split.resourceGroupName) --query "disableLocalAccounts" | Set-Variable disableLocalAccounts
         if ($disableLocalAccounts -eq "true") {
           Write-Host "Enabling local accounts on $(split.aksName)..."
           az aks update -n $(split.aksName) -g $(split.resourceGroupName) --enable-local-accounts
