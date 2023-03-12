@@ -30,7 +30,7 @@ jobs:
     name: split
 
   - task: AzureCLI@2
-    displayName: 'Show cluster essentials'
+    displayName: 'Inspect cluster'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
@@ -39,7 +39,17 @@ jobs:
         az aks show -n $(split.aksName) -g $(split.resourceGroupName) `
                     --query "{kubernetesVersion:kubernetesVersion, powerState:powerState.code, disableLocalAccounts:disableLocalAccounts, enableRbac:enableRbac, enableAzureRbac:aadProfile.enableAzureRbac, fqdn:fqdn, privateFqdn:privateFqdn, publicNetworkAccess:publicNetworkAccess, outboundType:networkProfile.outboundType, provisioningState:provisioningState}" `
                     | ConvertFrom-Json `
-                    | Format-List
+                    | Set-Variable cluster
+        
+        $cluster | Format-List
+        if (!($cluster.enableAzureRbac)) {
+          Write-Error "Azure RBAC is not enabled on $(split.aksName)"
+          exit 1
+        }
+        if ($cluster.powerState -ne "Running") {
+          Write-Host "Starting cluster..."
+          az aks start -n $(split.aksName) -g $(split.resourceGroupName)
+        }
 
   # https://learn.microsoft.com/en-us/azure/aks/managed-aad#disable-local-accounts
   - task: AzureCLI@2
@@ -60,7 +70,8 @@ jobs:
         Write-Host "##vso[task.setvariable variable=disableLocalAccountsOriginalState;isOutput=true]${disableLocalAccounts}"
 
   - task: AzureCLI@2
-    displayName: 'kubectl'
+    displayName: 'kubectl (fails)'
+    continueOnError: true 
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
@@ -179,6 +190,7 @@ jobs:
       ls -al $(kubelogin.directoryName)
 
       echo removing $(kubelogin.fullName)...
+      kubelogin remove-tokens
       rm $(kubelogin.fullName)
 
       echo kubelogin directory after removal: $(kubelogin.directoryName)
@@ -186,7 +198,8 @@ jobs:
     displayName: 'Remove kubelogin'
 
   - task: AzureCLI@2
-    displayName: 'kubectl'
+    continueOnError: true 
+    displayName: 'kubectl (fails)'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
@@ -201,7 +214,8 @@ jobs:
 
   - task: AzureCLI@2
     condition: succeededOrFailed()
-    displayName: 'kubectl admin'
+    continueOnError: true 
+    displayName: 'kubectl admin (fails)'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
