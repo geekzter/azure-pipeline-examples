@@ -1,0 +1,44 @@
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+
+variables:
+- group: 'kubernetes' # should contain subscriptionConnection, aksId
+- name: 'aksName'
+  value: split($(aksId), '/')[8]
+- name: 'resourceGroupName'
+  value: split($(aksId), '/')[4]
+
+jobs:
+- job: agent
+  displayName: 'Kubernetes tasks'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: AzureCLI@2
+    displayName: 'Install kubelogin'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        az aks get-credentials -n $(aksName) -g $(resourceGroupName) -a
+
+        kubectl config view
+        kubectl cluster-info
+        kubectl get nodes
+
+  - task: AzureCLI@2
+    displayName: 'Install kubelogin'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        az aks install-cli --kubelogin-version latest
