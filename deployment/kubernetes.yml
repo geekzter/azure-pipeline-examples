@@ -13,76 +13,141 @@ variables:
 
 jobs:
 - job: agent
-  displayName: 'Kubernetes tasks'
+  displayName: 'Kubernetes access'
   pool:
     vmImage: 'ubuntu-latest'
   steps:
+  # - pwsh: |
+  #     $aksIdElements = '$(aksId)'.Split('/')
+  #     $aksName = $aksIdElements[8]
+  #     $resourceGroupName = $aksIdElements[4]
+  #     Write-Host "aksId: $(aksId)"
+  #     Write-Host "aksName: ${aksName}"
+  #     Write-Host "resourceGroupName: ${resourceGroupName}"
+  #     Write-Host "##vso[task.setvariable variable=aksName;isOutput=true]${aksName}"
+  #     Write-Host "##vso[task.setvariable variable=resourceGroupName;isOutput=true]${resourceGroupName}"
+  #   displayName: 'Prepare variables'
+  #   name: split
+
+  # - task: AzureCLI@2
+  #   displayName: 'Cluster configuration'
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       az aks show -n $(split.aksName) -g $(split.resourceGroupName) `
+  #                   --query "{kubernetesVersion:kubernetesVersion, powerState:powerState.code, disableLocalAccounts:disableLocalAccounts, enableRbac:enableRbac, enableAzureRbac:aadProfile.enableAzureRbac, fqdn:fqdn, privateFqdn:privateFqdn, publicNetworkAccess:publicNetworkAccess, outboundType:networkProfile.outboundType, provisioningState:provisioningState}" `
+  #                   | ConvertFrom-Json `
+  #                   | Format-List
+
+  # - task: AzureCLI@2
+  #   displayName: 'Enable local accounts'
+  #   name: localAccounts
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       az aks show -n -n $(split.aksName) -g $(split.resourceGroupName) --query "disableLocalAccounts" | Set-Variable disableLocalAccounts
+  #       if ($disableLocalAccounts -eq "true") {
+  #         Write-Host "Enabling local accounts on $(split.aksName)..."
+  #         az aks update -n $(split.aksName) -g $(split.resourceGroupName) --enable-local-accounts
+  #       } else {
+  #         Write-Host "Local accounts are already enabled on $(split.aksName)."
+  #       }
+  #       Write-Host "##vso[task.setvariable variable=disableLocalAccountsOriginalState;isOutput=true]${disableLocalAccounts}"
+
+  # - task: AzureCLI@2
+  #   displayName: 'kubectl'
+  #   continueOnError: true 
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
+
+  #       kubectl config view
+  #       kubectl cluster-info
+  #       kubectl get nodes
+
+  # - task: AzureCLI@2
+  #   displayName: 'Disable local accounts'
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       Write-Host "Disabling local accounts on $(split.aksName)..."
+  #       az aks update -n $(split.aksName) -g $(split.resourceGroupName) --disable-local-accounts
+
+  # - task: AzureCLI@2
+  #   displayName: 'kubectl (fails)'
+  #   continueOnError: true 
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
+
+  #       kubectl config view
+  #       kubectl cluster-info
+  #       kubectl get nodes
+
+  # - task: AzureCLI@2
+  #   displayName: 'Install kubelogin with az cli (fails)'
+  #   continueOnError: true 
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       az aks install-cli --kubelogin-version latest
+
   - pwsh: |
-      $aksIdElements = '$(aksId)'.Split('/')
-      $aksName = $aksIdElements[8]
-      $resourceGroupName = $aksIdElements[4]
-      Write-Host "aksId: $(aksId)"
-      Write-Host "aksName: ${aksName}"
-      Write-Host "resourceGroupName: ${resourceGroupName}"
-      Write-Host "##vso[task.setvariable variable=aksName;isOutput=true]${aksName}"
-      Write-Host "##vso[task.setvariable variable=resourceGroupName;isOutput=true]${resourceGroupName}"
+      # Get latest release for Linux amd64
+      Invoke-RestMethod -Uri https://api.github.com/repos/Azure/kubelogin/releases/latest | Set-Variable release
+      $release.assets | Format-Table -Property name, browser_download_url
+      $release.assets | Where-Object -Property name -eq kubelogin-darwin-amd64.zip | Set-Variable asset
+      $asset | Format-List
+
+      # Download and extract kubelogin
+      Invoke-Webrequest -Uri $asset.browser_download_url -OutFile kubelogin-linux-amd64.zip -UseBasicParsing
+      Expand-Archive kubelogin-linux-amd64.zip -DestinationPath .
+      Get-ChildItem -Path . -Filter kubelogin -Recurse -Force | Set-Variable kubeloginFile 
+      chmod +X $kubeloginFile.FullName
+
+      # Add kubelogin to PATH
+      Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
     name: split
-    displayName: 'Prepare variables'
+    displayName: 'Install kubelogin from zip'
 
-  - task: AzureCLI@2
-    displayName: 'Disable local accounts'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        Write-Host "Disabling local accounts on $(split.aksName)..."
-        az aks update -n $(split.aksName) -g $(split.resourceGroupName) --disable-local-accounts
+  # - task: AzureCLI@2
+  #   displayName: 'kubectl with kubelogin'
+  #   continueOnError: true 
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
 
-  - task: AzureCLI@2
-    displayName: 'kubectl (fails)'
-    continueOnError: true 
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
+  #       kubelogin convert-kubeconfig -l azurecli
 
-        kubectl config view
-        kubectl cluster-info
-        kubectl get nodes
+  #       kubectl config view
+  #       kubectl cluster-info
+  #       kubectl get nodes
 
-  - task: AzureCLI@2
-    displayName: 'Enable local accounts'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        Write-Host "Enabling local accounts on $(split.aksName)..."
-        az aks update -n $(split.aksName) -g $(split.resourceGroupName) --enable-local-accounts
-
-  - task: AzureCLI@2
-    displayName: 'kubectl'
-    continueOnError: true 
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
-
-        kubectl config view
-        kubectl cluster-info
-        kubectl get nodes
-
-  - task: AzureCLI@2
-    displayName: 'Install kubelogin (fails)'
-    continueOnError: true 
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        az aks install-cli --kubelogin-version latest
+  # - task: AzureCLI@2
+  #   condition: eq(coalesce(variables['localAccounts.disableLocalAccountsOriginalState'],'false'),'false')
+  #   displayName: 'Re-enable local accounts'
+  #   name: localAccounts
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       Write-Host "Enabling local accounts on $(split.aksName)..."
+  #       az aks update -n $(split.aksName) -g $(split.resourceGroupName) --enable-local-accounts
