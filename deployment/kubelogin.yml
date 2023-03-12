@@ -53,7 +53,7 @@ jobs:
         }
 
         Write-Host "`nAKS role assignments for the service connection:"
-        az role assignment list --assignee $env:servicePrincipalId --include-inherited --scope $(aksId) --query "[].roleDefinitionName" -o table
+        az role assignment list --assignee $env:servicePrincipalId --include-inherited --scope $(aksId) --query "[].{Role:roleDefinitionName, Scope:scope}" -o table
 
   # https://learn.microsoft.com/en-us/azure/aks/managed-aad#disable-local-accounts
   - task: AzureCLI@2
