@@ -11,9 +11,9 @@ schedules:
 variables:
 - group: 'kubernetes' # should contain subscriptionConnection, aksId
 - name: 'aksName'
-  value: split($(aksId), '/')[8]
+  value: $[ split($(aksId), '/')[8] ]
 - name: 'resourceGroupName'
-  value: split($(aksId), '/')[4]
+  value: $[ split($(aksId), '/')[4] }
 
 jobs:
 - job: agent
@@ -25,7 +25,8 @@ jobs:
       Write-Host "aksId: $(aksId)"
       Write-Host "aksName: $(aksName)"
       Write-Host "resourceGroupName: $(resourceGroupName)"
-    displayName: 'Show variables'
+    displayName: 'Display variables'
+
   - task: AzureCLI@2
     displayName: 'Access AKS'
     inputs:
