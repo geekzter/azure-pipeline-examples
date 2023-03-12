@@ -77,8 +77,8 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        kubectl config unset contexts 
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName)
+        kubectl config delete-context $(split.aksName) 2>&1
+        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing
 
         kubectl config view
         kubectl cluster-info
@@ -93,8 +93,8 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        kubectl config unset contexts 
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
+        kubectl config delete-context $(split.aksName) 2>&1
+        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing -a
 
         kubectl config view
         kubectl cluster-info
@@ -147,9 +147,9 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        kubectl config unset contexts 
+        kubectl config delete-context $(split.aksName) 2>&1
         kubelogin remove-tokens
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName)
+        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing
         kubelogin convert-kubeconfig -l azurecli
 
         kubectl config view
@@ -165,9 +165,9 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        kubectl config unset contexts 
+        kubectl config delete-context $(split.aksName) 2>&1
         kubelogin remove-tokens
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName)
+        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing
         kubelogin convert-kubeconfig -l spn --client-id $env:servicePrincipalId --client-secret $env:servicePrincipalKey
 
         kubectl config view
@@ -205,8 +205,8 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        kubectl config unset contexts 
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName)
+        kubectl config delete-context $(split.aksName) 2>&1
+        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing
 
         kubectl config view
         kubectl cluster-info
@@ -221,8 +221,8 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        kubectl config unset contexts 
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
+        kubectl config delete-context $(split.aksName) 2>&1
+        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing -a
 
         kubectl config view
         kubectl cluster-info
