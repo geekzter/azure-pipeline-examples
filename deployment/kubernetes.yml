@@ -12,6 +12,8 @@ variables:
 - group: 'kubernetes' # should contain subscriptionConnection, aksId
 - name: 'aksIdElements'
   value: $[ split(variables['aksId'], '/') ]
+- name: 'aksIdVar'
+  value: $[ variables['aksId'] ]
 - name: 'aksName'
   value: $[ split(variables['aksId'], '/')[8] ]
 - name: 'resourceGroupName'
@@ -25,6 +27,7 @@ jobs:
   steps:
   - pwsh: |
       Write-Host "aksId: $(aksId)"
+      Write-Host "aksIdVar: $(aksIdVar)"
       Write-Host "aksIdElements: $(aksIdElements)"
       Write-Host "aksName: $(aksName)"
       Write-Host "resourceGroupName: $(resourceGroupName)"
