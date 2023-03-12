@@ -30,13 +30,23 @@ jobs:
     displayName: 'Prepare variables'
 
   - task: AzureCLI@2
-    displayName: 'Access AKS (local accounts enabled)'
+    displayName: 'Disable local accounts'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        az aks update -n $(split.aksName) -g $(split.resourceGroupName) --enable-local-accounts
+        Write-Host "Disabling local accounts on $(split.aksName)..."
+        az aks update -n $(split.aksName) -g $(split.resourceGroupName) --disable-local-accounts
+
+  - task: AzureCLI@2
+    displayName: 'kubectl (fails)'
+    continueOnError: true 
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
         az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
 
         kubectl config view
@@ -44,14 +54,23 @@ jobs:
         kubectl get nodes
 
   - task: AzureCLI@2
-    displayName: 'Access AKS (local accounts disabled)'
+    displayName: 'Enable local accounts'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        Write-Host "Enabling local accounts on $(split.aksName)..."
+        az aks update -n $(split.aksName) -g $(split.resourceGroupName) --enable-local-accounts
+
+  - task: AzureCLI@2
+    displayName: 'kubectl'
     continueOnError: true 
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        az aks update -n $(split.aksName) -g $(split.resourceGroupName) --disable-local-accounts
         az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
 
         kubectl config view
