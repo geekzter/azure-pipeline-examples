@@ -130,7 +130,6 @@ jobs:
 
   - pwsh: |
       kubelogin -h
-    name: split
     displayName: 'Test kubelogin'
 
   # - task: AzureCLI@2
