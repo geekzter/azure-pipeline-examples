@@ -131,10 +131,10 @@ jobs:
         kubectl get nodes
 
   - task: AzureCLI@2
-    addSpnToEnvironment: true
     displayName: 'kubectl with kubelogin (sp)'
     continueOnError: true 
     inputs:
+      addSpnToEnvironment: true
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
       scriptLocation: inlineScript
