@@ -41,6 +41,7 @@ jobs:
                     | ConvertFrom-Json `
                     | Format-List
 
+  # https://learn.microsoft.com/en-us/azure/aks/managed-aad#disable-local-accounts
   - task: AzureCLI@2
     displayName: 'Disable local accounts'
     name: localAccounts
@@ -59,7 +60,22 @@ jobs:
         Write-Host "##vso[task.setvariable variable=disableLocalAccountsOriginalState;isOutput=true]${disableLocalAccounts}"
 
   - task: AzureCLI@2
-    displayName: 'kubectl (fails)'
+    displayName: 'kubectl'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        kubectl config unset contexts 
+        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName)
+
+        kubectl config view
+        kubectl cluster-info
+        kubectl get nodes
+
+  - task: AzureCLI@2
+    displayName: 'kubectl admin (fails)'
+    condition: succeededOrFailed()
     continueOnError: true 
     inputs:
       azureSubscription: '$(subscriptionConnection)'
@@ -115,7 +131,6 @@ jobs:
 
   - task: AzureCLI@2
     displayName: 'kubectl with kubelogin (azure cli)'
-    continueOnError: true 
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
@@ -123,7 +138,7 @@ jobs:
       inlineScript: |
         kubectl config unset contexts 
         kubelogin remove-tokens
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
+        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName)
         kubelogin convert-kubeconfig -l azurecli
 
         kubectl config view
@@ -131,8 +146,8 @@ jobs:
         kubectl get nodes
 
   - task: AzureCLI@2
+    condition: succeededOrFailed()
     displayName: 'kubectl with kubelogin (sp)'
-    continueOnError: true 
     inputs:
       addSpnToEnvironment: true
       azureSubscription: '$(subscriptionConnection)'
@@ -141,7 +156,7 @@ jobs:
       inlineScript: |
         kubectl config unset contexts 
         kubelogin remove-tokens
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
+        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName)
         kubelogin convert-kubeconfig -l spn --client-id $env:servicePrincipalId --client-secret $env:servicePrincipalKey
 
         kubectl config view
@@ -149,6 +164,7 @@ jobs:
         kubectl get nodes
 
   - task: AzureCLI@2
+    condition: succeededOrFailed()
     displayName: 'Enable local accounts'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
@@ -171,7 +187,21 @@ jobs:
 
   - task: AzureCLI@2
     displayName: 'kubectl'
-    continueOnError: true 
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        kubectl config unset contexts 
+        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName)
+
+        kubectl config view
+        kubectl cluster-info
+        kubectl get nodes
+
+  - task: AzureCLI@2
+    condition: succeededOrFailed()
+    displayName: 'kubectl admin'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
@@ -185,7 +215,7 @@ jobs:
         kubectl get nodes
 
   - task: AzureCLI@2
-    condition: and(succeeded(),eq(coalesce(variables['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'))
+    condition: and(succeededOrFailed(),eq(coalesce(variables['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'))
     displayName: 'Re-disable local accounts'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
