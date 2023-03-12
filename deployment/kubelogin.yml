@@ -56,6 +56,7 @@ jobs:
 
   # https://learn.microsoft.com/en-us/azure/aks/managed-aad#disable-local-accounts
   - task: AzureCLI@2
+    condition: succeededOrFailed()
     displayName: 'Disable local accounts'
     name: localAccounts
     inputs:
@@ -73,6 +74,7 @@ jobs:
         Write-Host "##vso[task.setvariable variable=disableLocalAccountsOriginalState;isOutput=true]${disableLocalAccounts}"
 
   - task: AzureCLI@2
+    condition: succeededOrFailed()
     displayName: 'kubectl (fails)'
     continueOnError: true 
     inputs:
@@ -91,8 +93,8 @@ jobs:
         kubectl get nodes
 
   - task: AzureCLI@2
-    displayName: 'kubectl admin (fails)'
     condition: succeededOrFailed()
+    displayName: 'kubectl admin (fails)'
     continueOnError: true 
     inputs:
       azureSubscription: '$(subscriptionConnection)'
@@ -110,6 +112,7 @@ jobs:
         kubectl get nodes
 
   - task: AzureCLI@2
+    condition: succeededOrFailed()
     displayName: 'Install kubelogin with az cli (fails)'
     continueOnError: true 
     inputs:
@@ -142,6 +145,7 @@ jobs:
       Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
       Write-Host "##vso[task.setvariable variable=directoryName;isOutput=true]$($kubeloginFile.DirectoryName)"
       Write-Host "##vso[task.setvariable variable=fullName;isOutput=true]$($kubeloginFile.FullName)"
+    condition: succeededOrFailed()
     displayName: 'Install kubelogin from zip'
     name: kubelogin
 
@@ -150,6 +154,7 @@ jobs:
     displayName: 'Test kubelogin'
 
   - task: AzureCLI@2
+    condition: succeededOrFailed()
     displayName: 'kubectl with kubelogin (azure cli)'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
@@ -210,9 +215,11 @@ jobs:
 
       echo kubelogin directory after removal: $(kubelogin.directoryName)
       ls -al $(kubelogin.directoryName)
+    condition: succeededOrFailed()
     displayName: 'Remove kubelogin'
 
   - task: AzureCLI@2
+    condition: succeededOrFailed()
     continueOnError: true 
     displayName: 'kubectl (fails)'
     inputs:
