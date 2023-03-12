@@ -15,6 +15,6 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
   - pwsh: |
-      Write-Host "resourceNameBySplit: $(resourceGroupName)"
-      Write-Host "resourceNameByReplace: $(resourceName)"
+      Write-Host "resourceNameBySplit: '$(resourceNameBySplit)'"
+      Write-Host "resourceNameByReplace: '$(resourceNameByReplace)'"
     displayName: 'Display variables'
