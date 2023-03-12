@@ -150,7 +150,6 @@ jobs:
   - task: AzureCLI@2
     condition: eq(coalesce(variables['localAccounts.disableLocalAccountsOriginalState'],'false'),'false')
     displayName: 'Re-enable local accounts'
-    name: localAccounts
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
