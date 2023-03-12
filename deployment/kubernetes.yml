@@ -19,10 +19,15 @@ jobs:
   steps:
   - pwsh: |
       $aksIdElements = '$(aksId)'.Split('/')
-      Write-Host "##vso[task.setvariable variable=aksName;isOutput=true]$aksIdElements[8]"
-      Write-Host "##vso[task.setvariable variable=resourceGroupName;isOutput=true]$aksIdElements[4]"
+      $aksName = $aksIdElements[8]
+      $resourceGroupName = $aksIdElements[4]
+      Write-Host "aksId: ${aksId}"
+      Write-Host "aksName: ${aksName}"
+      Write-Host "resourceGroupName: ${resourceGroupName}"
+      Write-Host "##vso[task.setvariable variable=aksName;isOutput=true]${aksName}"
+      Write-Host "##vso[task.setvariable variable=resourceGroupName;isOutput=true]${resourceGroupName}"
     name: split
-    displayName: 'Display variables'
+    displayName: 'Prepare variables'
 
   - task: AzureCLI@2
     displayName: 'Access AKS'
