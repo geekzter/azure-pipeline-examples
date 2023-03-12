@@ -45,6 +45,7 @@ jobs:
 
   - task: AzureCLI@2
     displayName: 'Access AKS (local accounts disabled)'
+    continueOnError: true 
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
