@@ -26,15 +26,13 @@ jobs:
       Write-Host "resourceGroupName: ${resourceGroupName}"
       Write-Host "##vso[task.setvariable variable=aksName;isOutput=true]${aksName}"
       Write-Host "##vso[task.setvariable variable=resourceGroupName;isOutput=true]${resourceGroupName}"
-
-      # List environment variables
-      Get-ChildItem -Path Env: -Recurse -Include AZURE_*,HOME,KUBECONFIG | Sort-Object -Property Name
     displayName: 'Prepare variables'
     name: split
 
   - task: AzureCLI@2
     displayName: 'Inspect cluster'
     inputs:
+      addSpnToEnvironment: true
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
       scriptLocation: inlineScript
@@ -53,6 +51,9 @@ jobs:
           Write-Host "Starting cluster..."
           az aks start -n $(split.aksName) -g $(split.resourceGroupName)
         }
+
+        Write-Host "`nAKS role assignments for the service connection:"
+        az role assignment list --assignee $env:servicePrincipalId --include-inherited --scope $(aksId) --query "[].roleDefinitionName" -o table
 
   # https://learn.microsoft.com/en-us/azure/aks/managed-aad#disable-local-accounts
   - task: AzureCLI@2
