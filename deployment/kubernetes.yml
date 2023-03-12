@@ -21,8 +21,13 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
+  - pwsh: |
+      Write-Host "aksId: $(aksId)"
+      Write-Host "aksName: $(aksName)"
+      Write-Host "resourceGroupName: $(resourceGroupName)"
+    displayName: 'Show variables'
   - task: AzureCLI@2
-    displayName: 'Install kubelogin'
+    displayName: 'Access AKS'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
