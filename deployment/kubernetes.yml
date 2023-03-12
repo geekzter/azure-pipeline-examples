@@ -50,7 +50,7 @@ jobs:
       scriptLocation: inlineScript
       inlineScript: |
         az aks show -n $(split.aksName) -g $(split.resourceGroupName) --query "disableLocalAccounts" | Set-Variable disableLocalAccounts
-        if ($disableLocalAccounts -eq "true") {
+        if ($disableLocalAccounts -ne "true") {
           Write-Host "`nDisabling local accounts on $(split.aksName)..."
           az aks update -n $(split.aksName) -g $(split.resourceGroupName) --disable-local-accounts
         } else {
@@ -66,6 +66,7 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
+        kubectl config unset contexts 
         az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
 
         kubectl config view
@@ -102,9 +103,9 @@ jobs:
       Write-Host "Installed kubelogin $($release.tag_name) in $($kubeloginFile.DirectoryName)"
 
       # Add kubelogin to PATH
+      Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
       Write-Host "##vso[task.setvariable variable=directoryName;isOutput=true]$($kubeloginFile.DirectoryName)"
       Write-Host "##vso[task.setvariable variable=fullName;isOutput=true]$($kubeloginFile.FullName)"
-      Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
     displayName: 'Install kubelogin from zip'
     name: kubelogin
 
@@ -120,6 +121,7 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
+        kubectl config unset contexts 
         az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
 
         kubelogin convert-kubeconfig -l azurecli
@@ -157,6 +159,7 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
+        kubectl config unset contexts 
         az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
 
         kubectl config view
@@ -164,7 +167,7 @@ jobs:
         kubectl get nodes
 
   - task: AzureCLI@2
-    condition: and(succeeded(),eq(coalesce(variables['localAccounts.disableLocalAccountsOriginalState'],'true'),'false'))
+    condition: and(succeeded(),eq(coalesce(variables['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'))
     displayName: 'Re-disable local accounts'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
