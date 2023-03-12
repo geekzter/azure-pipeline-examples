@@ -49,6 +49,8 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
+        Set-PSDebug -trace 1   
+        
         az aks show -n -n $(split.aksName) -g $(split.resourceGroupName) --query "disableLocalAccounts" | Set-Variable disableLocalAccounts
         if ($disableLocalAccounts -eq "true") {
           Write-Host "Enabling local accounts on $(split.aksName)..."
@@ -148,7 +150,7 @@ jobs:
         kubectl get nodes
 
   - task: AzureCLI@2
-    condition: eq(coalesce(variables['localAccounts.disableLocalAccountsOriginalState'],'false'),'false')
+    condition: and(succeeded(),eq(coalesce(variables['localAccounts.disableLocalAccountsOriginalState'],'false'),'false'))
     displayName: 'Re-enable local accounts'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
