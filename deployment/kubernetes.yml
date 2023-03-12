@@ -119,6 +119,8 @@ jobs:
       Get-ChildItem -Path . -Filter kubelogin -Recurse -Force | Set-Variable kubeloginFile 
       chmod +X $kubeloginFile.FullName
 
+      Write-Host "Installed kubelogin $($release.tag_name) in $($kubeloginFile.DirectoryName)"
+
       # Add kubelogin to PATH
       Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
     name: split
