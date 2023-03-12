@@ -1,12 +1,12 @@
 trigger: none
 
 variables:
-- name: 'resourceGroupName'
+- name: 'resourceNameBySplit'
 # https://learn.microsoft.com/en-us/azure/devops/pipelines/process/expressions?view=azure-devops#replace
-  value: $[ split('/0/1/2/3/4/5/6/7/8', '/')[4] ]
-- name: 'resourceName'
+  value: $[ split('/0/1/2/3/4/5/6/7/8', '/')[8] ]
+- name: 'resourceNameByReplace'
 # https://learn.microsoft.com/en-us/azure/devops/pipelines/process/expressions?view=azure-devops#split
-  value: $[ replace('/0/1/2/3/4/5/6/7/8', '/0/1/2/3/4/5/6/7/', '') ]
+  value: $[ replace('/0/1/2/3/4/5/6/7', '/0/1/2/3/4/5/6/', '') ]
 
 jobs:
 - job: job
@@ -15,6 +15,6 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
   - pwsh: |
-      Write-Host "resourceGroupName: $(resourceGroupName)"
-      Write-Host "resourceName: $(resourceName)"
+      Write-Host "resourceNameBySplit: $(resourceGroupName)"
+      Write-Host "resourceNameByReplace: $(resourceName)"
     displayName: 'Display variables'
