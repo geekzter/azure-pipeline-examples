@@ -114,7 +114,7 @@ jobs:
     displayName: 'Test kubelogin'
 
   - task: AzureCLI@2
-    displayName: 'kubectl with kubelogin'
+    displayName: 'kubectl with kubelogin (azure cli)'
     continueOnError: true 
     inputs:
       azureSubscription: '$(subscriptionConnection)'
@@ -122,9 +122,27 @@ jobs:
       scriptLocation: inlineScript
       inlineScript: |
         kubectl config unset contexts 
+        kubelogin remove-tokens
         az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
-
         kubelogin convert-kubeconfig -l azurecli
+
+        kubectl config view
+        kubectl cluster-info
+        kubectl get nodes
+
+  - task: AzureCLI@2
+    addSpnToEnvironment: true
+    displayName: 'kubectl with kubelogin (sp)'
+    continueOnError: true 
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        kubectl config unset contexts 
+        kubelogin remove-tokens
+        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) -a
+        kubelogin convert-kubeconfig -l spn --client-id $env:servicePrincipalId --client-secret $env:servicePrincipalKey
 
         kubectl config view
         kubectl cluster-info
