@@ -125,7 +125,6 @@ jobs:
 
       # Add kubelogin to PATH
       Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
-    name: split
     displayName: 'Install kubelogin from zip'
 
   - pwsh: |
