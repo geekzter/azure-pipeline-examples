@@ -55,7 +55,33 @@ jobs:
           Write-Host "Starting cluster..."
           az aks start -n $(split.aksName) -g $(split.resourceGroupName)
         }
+        
+  - pwsh: |
+      # Get latest release for Linux amd64
+      $zip = "kubelogin-linux-amd64.zip"
 
+      Write-Host "`nDetermining latest release of kubelogin..."
+      Invoke-RestMethod -Uri https://api.github.com/repos/Azure/kubelogin/releases/latest | Set-Variable release
+      $release.assets | Format-Table -Property name, browser_download_url
+      $release.assets | Where-Object -Property name -eq $zip | Set-Variable asset
+      $asset | Format-List
+
+      # Download and extract kubelogin
+      Write-Host "`nDownloading kubelogin from $($asset.browser_download_url)..."
+      Invoke-Webrequest -Uri $asset.browser_download_url -OutFile $zip -UseBasicParsing
+      Expand-Archive $zip -DestinationPath .
+      Get-ChildItem -Path . -Filter kubelogin -Recurse -Force | Set-Variable kubeloginFile 
+      chmod +X $kubeloginFile.FullName
+
+      Write-Host "Installed kubelogin $($release.tag_name) in $($kubeloginFile.DirectoryName)"
+
+      # Add kubelogin to PATH
+      Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
+      Write-Host "##vso[task.setvariable variable=directoryName;isOutput=true]$($kubeloginFile.DirectoryName)"
+      Write-Host "##vso[task.setvariable variable=fullName;isOutput=true]$($kubeloginFile.FullName)"
+    condition: succeededOrFailed()
+    displayName: 'Install kubelogin from zip'
+    name: kubelogin
   - task: Kubernetes@1
     displayName: 'Kubernetes@1'
     inputs:
@@ -136,32 +162,32 @@ jobs:
       inlineScript: |
         az aks install-cli --kubelogin-version latest
 
-  - pwsh: |
-      # Get latest release for Linux amd64
-      $zip = "kubelogin-linux-amd64.zip"
+  # - pwsh: |
+  #     # Get latest release for Linux amd64
+  #     $zip = "kubelogin-linux-amd64.zip"
 
-      Write-Host "`nDetermining latest release of kubelogin..."
-      Invoke-RestMethod -Uri https://api.github.com/repos/Azure/kubelogin/releases/latest | Set-Variable release
-      $release.assets | Format-Table -Property name, browser_download_url
-      $release.assets | Where-Object -Property name -eq $zip | Set-Variable asset
-      $asset | Format-List
+  #     Write-Host "`nDetermining latest release of kubelogin..."
+  #     Invoke-RestMethod -Uri https://api.github.com/repos/Azure/kubelogin/releases/latest | Set-Variable release
+  #     $release.assets | Format-Table -Property name, browser_download_url
+  #     $release.assets | Where-Object -Property name -eq $zip | Set-Variable asset
+  #     $asset | Format-List
 
-      # Download and extract kubelogin
-      Write-Host "`nDownloading kubelogin from $($asset.browser_download_url)..."
-      Invoke-Webrequest -Uri $asset.browser_download_url -OutFile $zip -UseBasicParsing
-      Expand-Archive $zip -DestinationPath .
-      Get-ChildItem -Path . -Filter kubelogin -Recurse -Force | Set-Variable kubeloginFile 
-      chmod +X $kubeloginFile.FullName
+  #     # Download and extract kubelogin
+  #     Write-Host "`nDownloading kubelogin from $($asset.browser_download_url)..."
+  #     Invoke-Webrequest -Uri $asset.browser_download_url -OutFile $zip -UseBasicParsing
+  #     Expand-Archive $zip -DestinationPath .
+  #     Get-ChildItem -Path . -Filter kubelogin -Recurse -Force | Set-Variable kubeloginFile 
+  #     chmod +X $kubeloginFile.FullName
 
-      Write-Host "Installed kubelogin $($release.tag_name) in $($kubeloginFile.DirectoryName)"
+  #     Write-Host "Installed kubelogin $($release.tag_name) in $($kubeloginFile.DirectoryName)"
 
-      # Add kubelogin to PATH
-      Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
-      Write-Host "##vso[task.setvariable variable=directoryName;isOutput=true]$($kubeloginFile.DirectoryName)"
-      Write-Host "##vso[task.setvariable variable=fullName;isOutput=true]$($kubeloginFile.FullName)"
-    condition: succeededOrFailed()
-    displayName: 'Install kubelogin from zip'
-    name: kubelogin
+  #     # Add kubelogin to PATH
+  #     Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
+  #     Write-Host "##vso[task.setvariable variable=directoryName;isOutput=true]$($kubeloginFile.DirectoryName)"
+  #     Write-Host "##vso[task.setvariable variable=fullName;isOutput=true]$($kubeloginFile.FullName)"
+  #   condition: succeededOrFailed()
+  #   displayName: 'Install kubelogin from zip'
+  #   name: kubelogin
 
   - pwsh: |
       kubelogin -h
