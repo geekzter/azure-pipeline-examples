@@ -76,8 +76,8 @@ jobs:
 
   - task: AzureCLI@2
     condition: succeededOrFailed()
-    displayName: 'kubectl (fails)'
     continueOnError: true 
+    displayName: 'kubectl (fails)'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
@@ -95,8 +95,8 @@ jobs:
 
   - task: AzureCLI@2
     condition: succeededOrFailed()
-    displayName: 'kubectl admin (fails)'
     continueOnError: true 
+    displayName: 'kubectl admin (fails)'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
@@ -114,8 +114,9 @@ jobs:
 
   - task: AzureCLI@2
     condition: succeededOrFailed()
-    displayName: 'Install kubelogin with az cli (fails)'
     continueOnError: true 
+    displayName: 'Install kubelogin with az cli (fails)'
+    enabled: false
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
