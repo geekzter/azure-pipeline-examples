@@ -55,7 +55,7 @@ jobs:
           Write-Host "Starting cluster..."
           az aks start -n $(split.aksName) -g $(split.resourceGroupName)
         }
-        
+
   - pwsh: |
       # Get latest release for Linux amd64
       $zip = "kubelogin-linux-amd64.zip"
@@ -93,226 +93,226 @@ jobs:
       command: 'get'
       arguments: nodes
 
-  # https://learn.microsoft.com/en-us/azure/aks/managed-aad#disable-local-accounts
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    displayName: 'Disable local accounts'
-    name: localAccounts
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        az aks show -n $(split.aksName) -g $(split.resourceGroupName) --query "disableLocalAccounts" | Set-Variable disableLocalAccounts
-        if ($disableLocalAccounts -ne "true") {
-          Write-Host "`nDisabling local accounts on $(split.aksName)..."
-          az aks update -n $(split.aksName) -g $(split.resourceGroupName) --disable-local-accounts
-        } else {
-          Write-Host "Local accounts are already enabled on $(split.aksName)"
-        }
-        Write-Host "##vso[task.setvariable variable=disableLocalAccountsOriginalState;isOutput=true]${disableLocalAccounts}"
+  # # https://learn.microsoft.com/en-us/azure/aks/managed-aad#disable-local-accounts
+  # - task: AzureCLI@2
+  #   condition: succeededOrFailed()
+  #   displayName: 'Disable local accounts'
+  #   name: localAccounts
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       az aks show -n $(split.aksName) -g $(split.resourceGroupName) --query "disableLocalAccounts" | Set-Variable disableLocalAccounts
+  #       if ($disableLocalAccounts -ne "true") {
+  #         Write-Host "`nDisabling local accounts on $(split.aksName)..."
+  #         az aks update -n $(split.aksName) -g $(split.resourceGroupName) --disable-local-accounts
+  #       } else {
+  #         Write-Host "Local accounts are already enabled on $(split.aksName)"
+  #       }
+  #       Write-Host "##vso[task.setvariable variable=disableLocalAccountsOriginalState;isOutput=true]${disableLocalAccounts}"
 
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    continueOnError: true 
-    displayName: 'kubectl (fails)'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        if (Test-Path ~/.kube/config) {
-          Write-Host "Removing ~/.kube/config..."
-          Remove-Item ~/.kube/config
-        }
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing
+  # - task: AzureCLI@2
+  #   condition: succeededOrFailed()
+  #   continueOnError: true 
+  #   displayName: 'kubectl (fails)'
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       if (Test-Path ~/.kube/config) {
+  #         Write-Host "Removing ~/.kube/config..."
+  #         Remove-Item ~/.kube/config
+  #       }
+  #       az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing
 
-        kubectl config view
-        kubectl cluster-info
-        kubectl get nodes
+  #       kubectl config view
+  #       kubectl cluster-info
+  #       kubectl get nodes
 
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    continueOnError: true 
-    displayName: 'kubectl admin (fails)'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        if (Test-Path ~/.kube/config) {
-          Write-Host "Removing ~/.kube/config..."
-          Remove-Item ~/.kube/config
-        }
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing -a
+  # - task: AzureCLI@2
+  #   condition: succeededOrFailed()
+  #   continueOnError: true 
+  #   displayName: 'kubectl admin (fails)'
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       if (Test-Path ~/.kube/config) {
+  #         Write-Host "Removing ~/.kube/config..."
+  #         Remove-Item ~/.kube/config
+  #       }
+  #       az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing -a
 
-        kubectl config view
-        kubectl cluster-info
-        kubectl get nodes
+  #       kubectl config view
+  #       kubectl cluster-info
+  #       kubectl get nodes
 
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    continueOnError: true 
-    displayName: 'Install kubelogin with az cli (fails)'
-    enabled: false
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        az aks install-cli --kubelogin-version latest
+  # - task: AzureCLI@2
+  #   condition: succeededOrFailed()
+  #   continueOnError: true 
+  #   displayName: 'Install kubelogin with az cli (fails)'
+  #   enabled: false
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       az aks install-cli --kubelogin-version latest
+
+  # # - pwsh: |
+  # #     # Get latest release for Linux amd64
+  # #     $zip = "kubelogin-linux-amd64.zip"
+
+  # #     Write-Host "`nDetermining latest release of kubelogin..."
+  # #     Invoke-RestMethod -Uri https://api.github.com/repos/Azure/kubelogin/releases/latest | Set-Variable release
+  # #     $release.assets | Format-Table -Property name, browser_download_url
+  # #     $release.assets | Where-Object -Property name -eq $zip | Set-Variable asset
+  # #     $asset | Format-List
+
+  # #     # Download and extract kubelogin
+  # #     Write-Host "`nDownloading kubelogin from $($asset.browser_download_url)..."
+  # #     Invoke-Webrequest -Uri $asset.browser_download_url -OutFile $zip -UseBasicParsing
+  # #     Expand-Archive $zip -DestinationPath .
+  # #     Get-ChildItem -Path . -Filter kubelogin -Recurse -Force | Set-Variable kubeloginFile 
+  # #     chmod +X $kubeloginFile.FullName
+
+  # #     Write-Host "Installed kubelogin $($release.tag_name) in $($kubeloginFile.DirectoryName)"
+
+  # #     # Add kubelogin to PATH
+  # #     Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
+  # #     Write-Host "##vso[task.setvariable variable=directoryName;isOutput=true]$($kubeloginFile.DirectoryName)"
+  # #     Write-Host "##vso[task.setvariable variable=fullName;isOutput=true]$($kubeloginFile.FullName)"
+  # #   condition: succeededOrFailed()
+  # #   displayName: 'Install kubelogin from zip'
+  # #   name: kubelogin
 
   # - pwsh: |
-  #     # Get latest release for Linux amd64
-  #     $zip = "kubelogin-linux-amd64.zip"
+  #     kubelogin -h
+  #   displayName: 'Test kubelogin'
 
-  #     Write-Host "`nDetermining latest release of kubelogin..."
-  #     Invoke-RestMethod -Uri https://api.github.com/repos/Azure/kubelogin/releases/latest | Set-Variable release
-  #     $release.assets | Format-Table -Property name, browser_download_url
-  #     $release.assets | Where-Object -Property name -eq $zip | Set-Variable asset
-  #     $asset | Format-List
-
-  #     # Download and extract kubelogin
-  #     Write-Host "`nDownloading kubelogin from $($asset.browser_download_url)..."
-  #     Invoke-Webrequest -Uri $asset.browser_download_url -OutFile $zip -UseBasicParsing
-  #     Expand-Archive $zip -DestinationPath .
-  #     Get-ChildItem -Path . -Filter kubelogin -Recurse -Force | Set-Variable kubeloginFile 
-  #     chmod +X $kubeloginFile.FullName
-
-  #     Write-Host "Installed kubelogin $($release.tag_name) in $($kubeloginFile.DirectoryName)"
-
-  #     # Add kubelogin to PATH
-  #     Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
-  #     Write-Host "##vso[task.setvariable variable=directoryName;isOutput=true]$($kubeloginFile.DirectoryName)"
-  #     Write-Host "##vso[task.setvariable variable=fullName;isOutput=true]$($kubeloginFile.FullName)"
+  # - task: AzureCLI@2
   #   condition: succeededOrFailed()
-  #   displayName: 'Install kubelogin from zip'
-  #   name: kubelogin
+  #   displayName: 'kubectl with kubelogin (azure cli)'
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       if (Test-Path ~/.kube/config) {
+  #         Write-Host "Removing ~/.kube/config..."
+  #         Remove-Item ~/.kube/config
+  #       }
+  #       kubelogin remove-tokens
+  #       az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing
+  #       kubelogin convert-kubeconfig -l azurecli
 
-  - pwsh: |
-      kubelogin -h
-    displayName: 'Test kubelogin'
+  #       kubectl config view
+  #       kubectl cluster-info
+  #       kubectl get nodes
 
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    displayName: 'kubectl with kubelogin (azure cli)'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        if (Test-Path ~/.kube/config) {
-          Write-Host "Removing ~/.kube/config..."
-          Remove-Item ~/.kube/config
-        }
-        kubelogin remove-tokens
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing
-        kubelogin convert-kubeconfig -l azurecli
+  # - task: AzureCLI@2
+  #   condition: succeededOrFailed()
+  #   displayName: 'kubectl with kubelogin (sp)'
+  #   inputs:
+  #     addSpnToEnvironment: true
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       if (Test-Path ~/.kube/config) {
+  #         Write-Host "Removing ~/.kube/config..."
+  #         Remove-Item ~/.kube/config
+  #       }
+  #       kubelogin remove-tokens
+  #       az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing
+  #       kubelogin convert-kubeconfig -l spn --client-id $env:servicePrincipalId --client-secret $env:servicePrincipalKey
 
-        kubectl config view
-        kubectl cluster-info
-        kubectl get nodes
+  #       kubectl config view
+  #       kubectl cluster-info
+  #       kubectl get nodes
 
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    displayName: 'kubectl with kubelogin (sp)'
-    inputs:
-      addSpnToEnvironment: true
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        if (Test-Path ~/.kube/config) {
-          Write-Host "Removing ~/.kube/config..."
-          Remove-Item ~/.kube/config
-        }
-        kubelogin remove-tokens
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing
-        kubelogin convert-kubeconfig -l spn --client-id $env:servicePrincipalId --client-secret $env:servicePrincipalKey
+  # - task: Kubernetes@1
+  #   displayName: 'Kubernetes@1'
+  #   inputs:
+  #     connectionType: 'Azure Resource Manager'
+  #     azureSubscriptionEndpoint: '$(subscriptionConnection)'
+  #     azureResourceGroup: $(split.resourceGroupName)
+  #     kubernetesCluster: $(split.aksName)
+  #     #useClusterAdmin: false
+  #     command: 'get'
+  #     arguments: nodes
 
-        kubectl config view
-        kubectl cluster-info
-        kubectl get nodes
+  # - task: AzureCLI@2
+  #   condition: succeededOrFailed()
+  #   displayName: 'Enable local accounts'
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       Write-Host "`nEnabling local accounts on $(split.aksName)..."
+  #       az aks update -n $(split.aksName) -g $(split.resourceGroupName) --enable-local-accounts
 
-  - task: Kubernetes@1
-    displayName: 'Kubernetes@1'
-    inputs:
-      connectionType: 'Azure Resource Manager'
-      azureSubscriptionEndpoint: '$(subscriptionConnection)'
-      azureResourceGroup: $(split.resourceGroupName)
-      kubernetesCluster: $(split.aksName)
-      #useClusterAdmin: false
-      command: 'get'
-      arguments: nodes
+  # - bash: |
+  #     echo kubelogin directory before removal: $(kubelogin.directoryName)
+  #     ls -al $(kubelogin.directoryName)
 
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    displayName: 'Enable local accounts'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        Write-Host "`nEnabling local accounts on $(split.aksName)..."
-        az aks update -n $(split.aksName) -g $(split.resourceGroupName) --enable-local-accounts
+  #     echo removing $(kubelogin.fullName)...
+  #     kubelogin remove-tokens
+  #     rm $(kubelogin.fullName)
 
-  - bash: |
-      echo kubelogin directory before removal: $(kubelogin.directoryName)
-      ls -al $(kubelogin.directoryName)
+  #     echo kubelogin directory after removal: $(kubelogin.directoryName)
+  #     ls -al $(kubelogin.directoryName)
+  #   condition: succeededOrFailed()
+  #   displayName: 'Remove kubelogin'
 
-      echo removing $(kubelogin.fullName)...
-      kubelogin remove-tokens
-      rm $(kubelogin.fullName)
+  # - task: AzureCLI@2
+  #   condition: succeededOrFailed()
+  #   continueOnError: true 
+  #   displayName: 'kubectl (fails)'
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       if (Test-Path ~/.kube/config) {
+  #         Write-Host "Removing ~/.kube/config..."
+  #         Remove-Item ~/.kube/config
+  #       }
+  #       az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing
 
-      echo kubelogin directory after removal: $(kubelogin.directoryName)
-      ls -al $(kubelogin.directoryName)
-    condition: succeededOrFailed()
-    displayName: 'Remove kubelogin'
+  #       kubectl config view
+  #       kubectl cluster-info
+  #       kubectl get nodes
 
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    continueOnError: true 
-    displayName: 'kubectl (fails)'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        if (Test-Path ~/.kube/config) {
-          Write-Host "Removing ~/.kube/config..."
-          Remove-Item ~/.kube/config
-        }
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing
+  # - task: AzureCLI@2
+  #   condition: succeededOrFailed()
+  #   displayName: 'kubectl admin'
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       if (Test-Path ~/.kube/config) {
+  #         Write-Host "Removing ~/.kube/config..."
+  #         Remove-Item ~/.kube/config
+  #       }
+  #       az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing -a
 
-        kubectl config view
-        kubectl cluster-info
-        kubectl get nodes
+  #       kubectl config view
+  #       kubectl cluster-info
+  #       kubectl get nodes
 
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    displayName: 'kubectl admin'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        if (Test-Path ~/.kube/config) {
-          Write-Host "Removing ~/.kube/config..."
-          Remove-Item ~/.kube/config
-        }
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing -a
-
-        kubectl config view
-        kubectl cluster-info
-        kubectl get nodes
-
-  - task: AzureCLI@2
-    condition: and(succeededOrFailed(),eq(coalesce(variables['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'))
-    displayName: 'Re-disable local accounts'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        Write-Host "`nDisabling local accounts on $(split.aksName)..."
-        az aks update -n $(split.aksName) -g $(split.resourceGroupName) --disable-local-accounts
+  # - task: AzureCLI@2
+  #   condition: and(succeededOrFailed(),eq(coalesce(variables['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'))
+  #   displayName: 'Re-disable local accounts'
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       Write-Host "`nDisabling local accounts on $(split.aksName)..."
+  #       az aks update -n $(split.aksName) -g $(split.resourceGroupName) --disable-local-accounts
