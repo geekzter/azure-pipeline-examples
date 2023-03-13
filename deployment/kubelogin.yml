@@ -47,13 +47,25 @@ jobs:
           Write-Error "Azure RBAC is not enabled on $(split.aksName)"
           exit 1
         }
+
+        Write-Host "`nAKS role assignments for the service connection:"
+        az role assignment list --assignee $env:servicePrincipalId --include-inherited --scope $(aksId) --query "[].{Role:roleDefinitionName, Scope:scope}" -o table
+
         if ($cluster.powerState -ne "Running") {
           Write-Host "Starting cluster..."
           az aks start -n $(split.aksName) -g $(split.resourceGroupName)
         }
 
-        Write-Host "`nAKS role assignments for the service connection:"
-        az role assignment list --assignee $env:servicePrincipalId --include-inherited --scope $(aksId) --query "[].{Role:roleDefinitionName, Scope:scope}" -o table
+  - task: Kubernetes@1
+    displayName: 'Kubernetes@1'
+    inputs:
+      connectionType: 'Azure Resource Manager'
+      azureSubscriptionEndpoint: '$(subscriptionConnection)'
+      azureResourceGroup: $(split.resourceGroupName)
+      kubernetesCluster: $(split.aksName)
+      #useClusterAdmin: false
+      command: 'get'
+      arguments: nodes
 
   # https://learn.microsoft.com/en-us/azure/aks/managed-aad#disable-local-accounts
   - task: AzureCLI@2
