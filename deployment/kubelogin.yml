@@ -140,6 +140,10 @@ jobs:
       Invoke-RestMethod -Uri https://api.github.com/repos/Azure/kubelogin/releases/latest | Set-Variable release
       $release.assets | Format-Table -Property name, browser_download_url
       $release.assets | Where-Object -Property name -eq $zip | Set-Variable asset
+      if (!$asset) {
+        Write-Error "Could not find release for $zip"
+        exit 1
+      }
       $asset | Format-List
 
       # Download and extract kubelogin
@@ -158,13 +162,13 @@ jobs:
     condition: succeededOrFailed()
     displayName: 'Install kubelogin from zip'
     name: kubelogin
+    retryCountOnTaskFailure: 3
 
   - pwsh: |
       kubelogin -h
     displayName: 'Test kubelogin'
 
   - task: AzureCLI@2
-    condition: succeededOrFailed()
     displayName: 'kubectl with kubelogin (azure cli)'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
