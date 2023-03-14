@@ -12,7 +12,7 @@ variables:
 
 jobs:
 - job: inspectCluster
-  displayName: 'Kubernetes access'
+  displayName: 'Kubernetes access & disable local accounts'
   pool:
     vmImage: 'ubuntu-latest'
   steps:
@@ -76,7 +76,7 @@ jobs:
 
 - job: disableLocalAccounts
   dependsOn: inspectCluster
-  displayName: 'Disable Local Accounts'
+  displayName: 'kubectl (local accounts disabled)'
   variables:
     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
@@ -239,6 +239,17 @@ jobs:
     condition: succeededOrFailed()
     displayName: 'Remove kubelogin'
 
+- job: kubectlLocalAccountsEnabled
+  dependsOn: 
+  - inspectCluster
+  - enableLocalAccounts
+  displayName: 'kubectl (local accounts enabled)'
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
+    resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
+  steps:
   - task: AzureCLI@2
     condition: succeededOrFailed()
     continueOnError: true 
@@ -280,7 +291,7 @@ jobs:
   condition: and(succeededOrFailed(),eq(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'))
   dependsOn: 
     - inspectCluster
-    - enableLocalAccounts
+    - kubectlLocalAccountsEnabled
   displayName: 'Disable Local Accounts'
   pool:
     vmImage: 'ubuntu-latest'
