@@ -152,7 +152,6 @@ jobs:
       Expand-Archive $zip -DestinationPath .
       Get-ChildItem -Path . -Filter kubelogin -Recurse -Force | Set-Variable kubeloginFile 
       chmod +X $kubeloginFile.FullName
-
       Write-Host "Installed kubelogin $($release.tag_name) in $($kubeloginFile.DirectoryName)"
 
       # Add kubelogin to PATH
