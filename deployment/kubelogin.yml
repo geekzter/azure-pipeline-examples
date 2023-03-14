@@ -11,7 +11,7 @@ variables:
 - group: 'kubernetes' # should contain subscriptionConnection, aksId
 
 jobs:
-- job: agent
+- job: inspectCluster
   displayName: 'Kubernetes access'
   pool:
     vmImage: 'ubuntu-latest'
@@ -74,6 +74,12 @@ jobs:
         }
         Write-Host "##vso[task.setvariable variable=disableLocalAccountsOriginalState;isOutput=true]${disableLocalAccounts}"
 
+- job: disableLocalAccounts
+  dependsOn: inspectCluster
+  displayName: 'Disable Local Accounts'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
   - task: AzureCLI@2
     condition: succeededOrFailed()
     continueOnError: true 
@@ -195,6 +201,12 @@ jobs:
         kubectl cluster-info
         kubectl get nodes
 
+- job: enableLocalAccounts
+  dependsOn: disableLocalAccounts
+  displayName: 'Enable Local Accounts'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
   - task: AzureCLI@2
     condition: succeededOrFailed()
     displayName: 'Enable local accounts'
@@ -256,8 +268,16 @@ jobs:
         kubectl cluster-info
         kubectl get nodes
 
+- job: redisableLocalAccounts
+  condition: and(succeededOrFailed(),eq(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'))
+  dependsOn: 
+    - inspectCluster
+    - enableLocalAccounts
+  displayName: 'Disable Local Accounts'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
   - task: AzureCLI@2
-    condition: and(succeededOrFailed(),eq(coalesce(variables['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'))
     displayName: 'Re-disable local accounts'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
