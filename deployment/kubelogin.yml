@@ -74,7 +74,7 @@ jobs:
         }
         Write-Host "##vso[task.setvariable variable=disableLocalAccountsOriginalState;isOutput=true]${disableLocalAccounts}"
 
-- job: disableLocalAccounts
+- job: kubectlLocalAccountsDisabled
   dependsOn: inspectCluster
   displayName: 'kubectl (local accounts disabled)'
   variables:
@@ -216,7 +216,7 @@ jobs:
 - job: enableLocalAccounts
   dependsOn: 
   - inspectCluster
-  - disableLocalAccounts
+  - kubectlLocalAccountsDisabled
   displayName: 'Enable Local Accounts'
   pool:
     vmImage: 'ubuntu-latest'
