@@ -137,9 +137,15 @@ jobs:
       $zip = "kubelogin-linux-amd64.zip"
 
       Write-Host "`nDetermining latest release of kubelogin..."
-      Invoke-RestMethod -Uri https://api.github.com/repos/Azure/kubelogin/releases/latest | Set-Variable release
-      $release.assets | Format-Table -Property name, browser_download_url
-      $release.assets | Where-Object -Property name -eq $zip | Set-Variable asset
+      Invoke-RestMethod -Uri https://api.github.com/repos/Azure/kubelogin/releases | Set-Variable releases
+      Write-Host "kubelogin releases:"
+      $releases | Format-Table -Property tag_name, published_at, draft, prerelease
+      $releases | Where-Object {!$_.prerelease -and !$_.draft}
+                | Select-Object -ExpandProperty assets  `
+                | Where-Object -Property name -eq $zip `
+                | Sort-Object -Property created_at -Descending `
+                | Select-Object -First 1 `
+                | Set-Variable asset
       if (!$asset) {
         Write-Error "Could not find release for $zip"
         exit 1
@@ -152,7 +158,7 @@ jobs:
       Expand-Archive $zip -DestinationPath .
       Get-ChildItem -Path . -Filter kubelogin -Recurse -Force | Set-Variable kubeloginFile 
       chmod +X $kubeloginFile.FullName
-      Write-Host "Installed kubelogin $($release.tag_name) in $($kubeloginFile.DirectoryName)"
+      Write-Host "Installed kubelogin in $($kubeloginFile.DirectoryName)"
 
       # Add kubelogin to PATH
       Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
