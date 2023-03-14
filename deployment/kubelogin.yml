@@ -77,6 +77,9 @@ jobs:
 - job: disableLocalAccounts
   dependsOn: inspectCluster
   displayName: 'Disable Local Accounts'
+  variables:
+    aksName: dependencies.inspectCluster.outputs['split.aksName']
+    resourceGroupName: dependencies.inspectCluster.outputs['split.resourceGroupName']
   pool:
     vmImage: 'ubuntu-latest'
   steps:
@@ -93,7 +96,7 @@ jobs:
           Write-Host "Removing ~/.kube/config..."
           Remove-Item ~/.kube/config
         }
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing
+        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
 
         kubectl config view
         kubectl cluster-info
@@ -112,7 +115,7 @@ jobs:
           Write-Host "Removing ~/.kube/config..."
           Remove-Item ~/.kube/config
         }
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing -a
+        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing -a
 
         kubectl config view
         kubectl cluster-info
@@ -173,7 +176,7 @@ jobs:
           Remove-Item ~/.kube/config
         }
         kubelogin remove-tokens
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing
+        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
         kubelogin convert-kubeconfig -l azurecli
 
         kubectl config view
@@ -194,7 +197,7 @@ jobs:
           Remove-Item ~/.kube/config
         }
         kubelogin remove-tokens
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing
+        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
         kubelogin convert-kubeconfig -l spn --client-id $env:servicePrincipalId --client-secret $env:servicePrincipalKey
 
         kubectl config view
@@ -202,10 +205,15 @@ jobs:
         kubectl get nodes
 
 - job: enableLocalAccounts
-  dependsOn: disableLocalAccounts
+  dependsOn: 
+  - inspectCluster
+  - disableLocalAccounts
   displayName: 'Enable Local Accounts'
   pool:
     vmImage: 'ubuntu-latest'
+  variables:
+    aksName: dependencies.inspectCluster.outputs['split.aksName']
+    resourceGroupName: dependencies.inspectCluster.outputs['split.resourceGroupName']
   steps:
   - task: AzureCLI@2
     condition: succeededOrFailed()
@@ -215,8 +223,8 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Write-Host "`nEnabling local accounts on $(split.aksName)..."
-        az aks update -n $(split.aksName) -g $(split.resourceGroupName) --enable-local-accounts
+        Write-Host "`nEnabling local accounts on $(aksName)..."
+        az aks update -n $(aksName) -g $(resourceGroupName) --enable-local-accounts
 
   - bash: |
       echo kubelogin directory before removal: $(kubelogin.directoryName)
@@ -244,7 +252,7 @@ jobs:
           Write-Host "Removing ~/.kube/config..."
           Remove-Item ~/.kube/config
         }
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing
+        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
 
         kubectl config view
         kubectl cluster-info
@@ -262,7 +270,7 @@ jobs:
           Write-Host "Removing ~/.kube/config..."
           Remove-Item ~/.kube/config
         }
-        az aks get-credentials -n $(split.aksName) -g $(split.resourceGroupName) --overwrite-existing -a
+        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing -a
 
         kubectl config view
         kubectl cluster-info
@@ -276,6 +284,9 @@ jobs:
   displayName: 'Disable Local Accounts'
   pool:
     vmImage: 'ubuntu-latest'
+  variables:
+    aksName: dependencies.inspectCluster.outputs['split.aksName']
+    resourceGroupName: dependencies.inspectCluster.outputs['split.resourceGroupName']
   steps:
   - task: AzureCLI@2
     displayName: 'Re-disable local accounts'
@@ -284,5 +295,5 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Write-Host "`nDisabling local accounts on $(split.aksName)..."
-        az aks update -n $(split.aksName) -g $(split.resourceGroupName) --disable-local-accounts
+        Write-Host "`nDisabling local accounts on $(aksName)..."
+        az aks update -n $(aksName) -g $(resourceGroupName) --disable-local-accounts
