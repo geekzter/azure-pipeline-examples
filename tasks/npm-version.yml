@@ -9,7 +9,7 @@ schedules:
 
 jobs:
 - job: ubuntuDefault
-  displayName: 'Default ubuntu-latest'
+  displayName: 'Default'
   pool:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
@@ -17,8 +17,8 @@ jobs:
   - pwsh: npm -v
     displayName: 'npm version'
 
-- job: ubuntuOverride
-  displayName: 'NodeTool@0'
+- job: ubuntuNodeTool
+  displayName: 'NodeTool'
   pool:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
@@ -30,12 +30,19 @@ jobs:
       versionSource: 'spec' # 'spec' | 'fromFile'. Required. Source of version. Default: spec.
       versionSpec: '16.x' # string. Optional. Use when versionSource = spec. Version Spec. Default: 6.x.
       #versionFilePath: # string. Optional. Use when versionSource = fromFile. Path to the .nvmrc file. 
-  # # Use Node.js ecosystem v1
-  # # Set up a Node.js environment and add it to the PATH, additionally providing proxy support.
-  # - task: UseNode@1
-  #   inputs:
-  #     #version: '10.x' # string. Version. Default: 10.x.
-  #     #checkLatest: false # boolean. Check for Latest Version. Default: false.
-  #     #force32bit: false # boolean. Use 32 bit version on x64 agents. Default: false.
+  - pwsh: npm -v
+    displayName: 'npm version'
+
+- job: ubuntuUseNode
+  displayName: 'UseNode'
+  pool:
+    name: 'Azure Pipelines'
+    vmImage: ubuntu-latest
+  steps:
+  # Use Node.js ecosystem v1
+  # Set up a Node.js environment and add it to the PATH, additionally providing proxy support.
+  - task: UseNode@1
+    inputs:
+      version: '16.x' # string. Version. Default: 10.x.
   - pwsh: npm -v
     displayName: 'npm version'
