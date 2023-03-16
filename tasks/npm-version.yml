@@ -1,3 +1,10 @@
+parameters:
+- name: nodeVersion
+  displayName: Node version
+  type: number
+  default: 18
+  
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.workspace }}-$(Build.BuildId)
 trigger: none
 schedules:
 - cron: '0 1 * * *'
@@ -6,6 +13,8 @@ schedules:
   branches:
     include:
     - main
+variables:
+  nodeVersion: ${{ parameters.nodeVersion }}
 
 jobs:
 - job: ubuntuDefault
@@ -28,7 +37,7 @@ jobs:
   - task: NodeTool@0
     inputs:
       versionSource: 'spec' # 'spec' | 'fromFile'. Required. Source of version. Default: spec.
-      versionSpec: '16.x' # string. Optional. Use when versionSource = spec. Version Spec. Default: 6.x.
+      versionSpec: '$(nodeVersion).x' # string. Optional. Use when versionSource = spec. Version Spec. Default: 6.x.
       #versionFilePath: # string. Optional. Use when versionSource = fromFile. Path to the .nvmrc file. 
   - pwsh: npm -v
     displayName: 'npm version'
@@ -43,6 +52,6 @@ jobs:
   # Set up a Node.js environment and add it to the PATH, additionally providing proxy support.
   - task: UseNode@1
     inputs:
-      version: '16.x' # string. Version. Default: 10.x.
+      version: '$(nodeVersion).x' # string. Version. Default: 10.x.
   - pwsh: npm -v
     displayName: 'npm version'
