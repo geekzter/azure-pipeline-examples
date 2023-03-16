@@ -1,0 +1,63 @@
+parameters:
+- name: nodeVersion
+  displayName: Node version
+  type: number
+  default: 16
+  
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-node${{ parameters.nodeVersion }}-$(Build.BuildId)
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+variables:
+  nodeVersion: ${{ parameters.nodeVersion }}
+
+jobs:
+- job: ubuntuDefault
+  displayName: 'Default'
+  pool:
+    name: 'Azure Pipelines'
+    vmImage: ubuntu-latest
+  steps:
+  - pwsh: node -v
+    displayName: 'Node version'
+  - pwsh: npm -v
+    displayName: 'npm version'
+
+- job: ubuntuNodeTool
+  displayName: 'NodeTool'
+  pool:
+    name: 'Azure Pipelines'
+    vmImage: ubuntu-latest
+  steps:
+  # Node.js tool installer v0
+  # Finds or downloads and caches the specified version spec of Node.js and adds it to the PATH.
+  - task: NodeTool@0
+    inputs:
+      versionSource: 'spec' # 'spec' | 'fromFile'. Required. Source of version. Default: spec.
+      versionSpec: '$(nodeVersion).x' # string. Optional. Use when versionSource = spec. Version Spec. Default: 6.x.
+      #versionFilePath: # string. Optional. Use when versionSource = fromFile. Path to the .nvmrc file. 
+  - pwsh: node -v
+    displayName: 'Node version'
+  - pwsh: npm -v
+    displayName: 'npm version'
+
+- job: ubuntuUseNode
+  displayName: 'UseNode'
+  pool:
+    name: 'Azure Pipelines'
+    vmImage: ubuntu-latest
+  steps:
+  # Use Node.js ecosystem v1
+  # Set up a Node.js environment and add it to the PATH, additionally providing proxy support.
+  - task: UseNode@1
+    inputs:
+      version: '$(nodeVersion).x' # string. Version. Default: 10.x.
+  - pwsh: node -v
+    displayName: 'Node version'
+  - pwsh: npm -v
+    displayName: 'npm version'
