@@ -23,6 +23,8 @@ jobs:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
   steps:
+  - pwsh: node -v
+    displayName: 'Node version'
   - pwsh: npm -v
     displayName: 'npm version'
 
@@ -39,6 +41,8 @@ jobs:
       versionSource: 'spec' # 'spec' | 'fromFile'. Required. Source of version. Default: spec.
       versionSpec: '$(nodeVersion).x' # string. Optional. Use when versionSource = spec. Version Spec. Default: 6.x.
       #versionFilePath: # string. Optional. Use when versionSource = fromFile. Path to the .nvmrc file. 
+  - pwsh: node -v
+    displayName: 'Node version'
   - pwsh: npm -v
     displayName: 'npm version'
 
@@ -53,5 +57,7 @@ jobs:
   - task: UseNode@1
     inputs:
       version: '$(nodeVersion).x' # string. Version. Default: 10.x.
+  - pwsh: node -v
+    displayName: 'Node version'
   - pwsh: npm -v
     displayName: 'npm version'
