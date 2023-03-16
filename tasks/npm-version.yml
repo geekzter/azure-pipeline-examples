@@ -8,7 +8,7 @@ schedules:
     - main
 
 jobs:
-- job: ubuntu-latest
+- job: ubuntuDefault
   displayName: 'Default ubuntu-latest'
   pool:
     name: 'Azure Pipelines'
@@ -17,7 +17,7 @@ jobs:
   - pwsh: npm -v
     displayName: 'npm version'
 
-- job: ubuntu-latest-override
+- job: ubuntuOverride
   displayName: 'NodeTool@0'
   pool:
     name: 'Azure Pipelines'
