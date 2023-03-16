@@ -2,7 +2,7 @@ parameters:
 - name: nodeVersion
   displayName: Node version
   type: number
-  default: 18
+  default: 16
   
 name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-node${{ parameters.nodeVersion }}-$(Build.BuildId)
 trigger: none
