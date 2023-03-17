@@ -4,7 +4,7 @@ parameters:
   default: "kubelogin-linux-amd64.zip" # Linux amd64
   type: string
 
-  steps:
+
   - pwsh: |
       $zip = "${{ parameters.zip }}"
 
