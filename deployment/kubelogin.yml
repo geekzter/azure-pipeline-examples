@@ -10,6 +10,7 @@ schedules:
 variables:
 - group: 'kubernetes' # should contain subscriptionConnection, aksId
 
+
 jobs:
 - job: inspectCluster
   displayName: 'Kubernetes access & disable local accounts'
@@ -74,6 +75,7 @@ jobs:
         }
         Write-Host "##vso[task.setvariable variable=disableLocalAccountsOriginalState;isOutput=true]${disableLocalAccounts}"
 
+
 - job: kubectlLocalAccountsDisabled
   dependsOn: inspectCluster
   displayName: 'kubectl (local accounts disabled)'
@@ -132,42 +134,44 @@ jobs:
       inlineScript: |
         az aks install-cli --kubelogin-version latest
 
-  - pwsh: |
-      # Get latest release for Linux amd64
-      $zip = "kubelogin-linux-amd64.zip"
+  - template: kubelogin-installer-template.yml
 
-      Write-Host "`nDetermining latest release of kubelogin..."
-      Invoke-RestMethod -Uri https://api.github.com/repos/Azure/kubelogin/releases | Set-Variable releases
-      Write-Host "kubelogin releases:"
-      $releases | Format-Table -Property tag_name, published_at, draft, prerelease
-      $releases | Where-Object {!$_.prerelease -and !$_.draft}
-                | Select-Object -ExpandProperty assets  `
-                | Where-Object -Property name -eq $zip `
-                | Sort-Object -Property created_at -Descending `
-                | Select-Object -First 1 `
-                | Set-Variable asset
-      if (!$asset) {
-        Write-Error "Could not find release for $zip"
-        exit 1
-      }
-      $asset | Format-List
+  # - pwsh: |
+  #     # Get latest release for Linux amd64
+  #     $zip = "kubelogin-linux-amd64.zip"
 
-      # Download and extract kubelogin
-      Write-Host "`nDownloading kubelogin from $($asset.browser_download_url)..."
-      Invoke-Webrequest -Uri $asset.browser_download_url -OutFile $zip -UseBasicParsing
-      Expand-Archive $zip -DestinationPath .
-      Get-ChildItem -Path . -Filter kubelogin -Recurse -Force | Set-Variable kubeloginFile 
-      chmod +X $kubeloginFile.FullName
-      Write-Host "Installed kubelogin in $($kubeloginFile.DirectoryName)"
+  #     Write-Host "`nDetermining latest release of kubelogin..."
+  #     Invoke-RestMethod -Uri https://api.github.com/repos/Azure/kubelogin/releases | Set-Variable releases
+  #     Write-Host "kubelogin releases:"
+  #     $releases | Format-Table -Property tag_name, published_at, draft, prerelease
+  #     $releases | Where-Object {!$_.prerelease -and !$_.draft}
+  #               | Select-Object -ExpandProperty assets  `
+  #               | Where-Object -Property name -eq $zip `
+  #               | Sort-Object -Property created_at -Descending `
+  #               | Select-Object -First 1 `
+  #               | Set-Variable asset
+  #     if (!$asset) {
+  #       Write-Error "Could not find release for $zip"
+  #       exit 1
+  #     }
+  #     $asset | Format-List
 
-      # Add kubelogin to PATH
-      Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
-      Write-Host "##vso[task.setvariable variable=directoryName;isOutput=true]$($kubeloginFile.DirectoryName)"
-      Write-Host "##vso[task.setvariable variable=fullName;isOutput=true]$($kubeloginFile.FullName)"
-    condition: succeededOrFailed()
-    displayName: 'Install kubelogin from zip'
-    name: kubelogin
-    retryCountOnTaskFailure: 3
+  #     # Download and extract kubelogin
+  #     Write-Host "`nDownloading kubelogin from $($asset.browser_download_url)..."
+  #     Invoke-Webrequest -Uri $asset.browser_download_url -OutFile $zip -UseBasicParsing
+  #     Expand-Archive $zip -DestinationPath .
+  #     Get-ChildItem -Path . -Filter kubelogin -Recurse -Force | Set-Variable kubeloginFile 
+  #     chmod +X $kubeloginFile.FullName
+  #     Write-Host "Installed kubelogin in $($kubeloginFile.DirectoryName)"
+
+  #     # Add kubelogin to PATH
+  #     Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
+  #     Write-Host "##vso[task.setvariable variable=directoryName;isOutput=true]$($kubeloginFile.DirectoryName)"
+  #     Write-Host "##vso[task.setvariable variable=fullName;isOutput=true]$($kubeloginFile.FullName)"
+  #   condition: succeededOrFailed()
+  #   displayName: 'Install kubelogin from zip'
+  #   name: kubelogin
+  #   retryCountOnTaskFailure: 3
 
   - pwsh: |
       kubelogin -h
@@ -213,6 +217,7 @@ jobs:
         kubectl cluster-info
         kubectl get nodes
 
+
 - job: enableLocalAccounts
   dependsOn: 
   - inspectCluster
@@ -247,6 +252,7 @@ jobs:
       ls -al $(kubelogin.directoryName)
     condition: succeededOrFailed()
     displayName: 'Remove kubelogin'
+
 
 - job: kubectlLocalAccountsEnabled
   dependsOn: 
@@ -295,6 +301,7 @@ jobs:
         kubectl config view
         kubectl cluster-info
         kubectl get nodes
+
 
 - job: redisableLocalAccounts
   condition: and(succeededOrFailed(),eq(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'))
