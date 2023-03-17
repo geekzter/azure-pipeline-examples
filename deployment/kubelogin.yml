@@ -134,17 +134,6 @@ jobs:
       inlineScript: |
         az aks install-cli --kubelogin-version latest
 
-  - template: build-image-isolated-template.yml
-    parameters:
-      destroy: ${{ parameters.destroy }}
-      image: Windows2022
-      imageReleaseName: win22
-      imageResourcePrefix: 'packer$(Build.BuildId)w22'
-      numberOfVersionsToKeep: ${{ parameters.numberOfVersionsToKeep }}
-      retryCount: ${{ parameters.retryCount }}
-      upgradeAzureCLI: ${{ parameters.upgradeAzureCLI }}
-      waitForReplication: ${{ parameters.waitForReplication }}
-
   - pwsh: |
       # Get latest release for Linux amd64
       $zip = "kubelogin-linux-amd64.zip"
