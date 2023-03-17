@@ -16,15 +16,25 @@ jobs:
   - task: AzureCLI@2
     displayName: 'Get AAD token to access Azure DevOps'
     inputs:
+      addSpnToEnvironment: true
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
         Write-Host "Obtaining access token for Service Connection identity..."
-        az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 `
-                            --query "accessToken" `
-                            --output tsv `
-                            | Set-Variable aadToken
+        # az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 `
+        #                     --query "accessToken" `
+        #                     --output tsv `
+        #                     | Set-Variable aadToken
+        Invoke-RestMethod -Uri "https://login.microsoftonline.com/${env:tenantId}/oauth2/token" `
+                          -Method Post `
+                          -Body @{"grant_type"="client_credentials";
+                                  "client_id"="${env:servicePrincipalId}";
+                                  "client_secret"="${env:servicePrincipalKey}";
+                                  "resource"="499b84ac-1321-427f-aa17-267ca6975798"} `
+                          -Headers @{"Content-Type"="application/x-www-form-urlencoded"} `
+                          | Select-Object -ExpandProperty access_token `
+                          | Set-Variable aadToken
         Write-Host "Access token for Service Connection identity: " -NoNewline
         $aadToken -replace '.','*' # Mask token
 
