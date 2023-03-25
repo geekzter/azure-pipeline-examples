@@ -14,7 +14,7 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
   - task: AzureCLI@2
-    displayName: 'Display Service Connection permissions'
+    displayName: 'Service Connection permissions'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
