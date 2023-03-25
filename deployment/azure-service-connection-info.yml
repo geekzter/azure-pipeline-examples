@@ -20,8 +20,9 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Write-Host "$($PSStyle.Bold)Service Connection name: '$(subscriptionConnection)'$($PSStyle.Reset)"
+        Write-Host "`n$($PSStyle.Bold)Service Connection name: '$(subscriptionConnection)'$($PSStyle.Reset)"
 
+        Write-Host "`naz account show"
         az account show --query "user.name" -o tsv | Set-Variable appId
         az account show -o json | Out-File -FilePath azureAccount.json
         Get-Content azureAccount.json
