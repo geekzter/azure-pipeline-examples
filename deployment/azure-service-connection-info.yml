@@ -9,38 +9,39 @@ schedules:
 
 jobs:
 - job: agent
-  displayName: 'Get Azure Service Connection Info'
+  displayName: 'Show Azure Service Connection context'
   pool:
     vmImage: 'ubuntu-latest'
   steps:
   - task: AzureCLI@2
-    displayName: 'Display Identity information'
+    displayName: 'ARM Service Connection permissions'
     inputs:
-      azureSubscription: '$(subscriptionConnection)'
+      azureSubscription: '$(subscriptionConnection)' # Task property referencing Service Connection -------------------------------------------------------
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Write-Host "Service Connection name: '$(subscriptionConnection)'"
+        Write-Host "`n$($PSStyle.Bold)Service Connection name: '$(subscriptionConnection)'$($PSStyle.Reset) -----------------------------------------------"
 
+        Write-Host "`naz account show"
         az account show --query "user.name" -o tsv | Set-Variable appId
         az account show -o json | Out-File -FilePath azureAccount.json
         Get-Content azureAccount.json
 
-        Write-Host "`nRole assignments for the identity:"
+        Write-Host "`n$($PSStyle.Bold)Service Connection role assignments:$($PSStyle.Reset) ---------------------------------------------------------------"
         az role assignment list --all --assignee $appId -o json | Out-File -FilePath roleAssignments.json
         Get-Content roleAssignments.json | ConvertFrom-Json `
                                          | Select-Object -Property roleDefinitionName, scope `
                                          | Sort-Object -Property roleDefinitionName
                                          | Format-Table -AutoSize -Wrap
 
-        Write-Host "`nService Principal object of the identity:"
+        Write-Host "`n$($PSStyle.Bold)Service Connection Service Principal object:$($PSStyle.Reset) -------------------------------------------------------"
         az ad sp show --id $appId -o json | Out-File -FilePath servicePrincipal.json
         Get-Content servicePrincipal.json
 
-        Write-Host "`nSubscriptions the identity has access to:"
+        Write-Host "`n$($PSStyle.Bold)Subscriptions the Service Connection has access to:$($PSStyle.Reset) ------------------------------------------------"
         az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" -o table
         
-        Write-Host "`nResource groups that identity has access to in subscription '$(az account show --query name -o tsv)':"
+        Write-Host "`n$($PSStyle.Bold)Resource groups that the Service Connection has access to in subscription '$(az account show --query name -o tsv)':$($PSStyle.Reset) -------------"
         az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" -o table
       workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
