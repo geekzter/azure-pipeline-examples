@@ -16,7 +16,7 @@ jobs:
   - task: AzureCLI@2
     displayName: 'ARM Service Connection permissions'
     inputs:
-      azureSubscription: '$(subscriptionConnection)'
+      azureSubscription: '$(subscriptionConnection)' # Task Service Connection property -------------------------------------------------------------------
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
