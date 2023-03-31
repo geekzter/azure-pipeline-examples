@@ -16,7 +16,7 @@ jobs:
   - task: AzureCLI@2
     displayName: 'Get AAD token to access Azure DevOps'
     inputs:
-      addSpnToEnvironment: true
+      # addSpnToEnvironment: true
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
       scriptLocation: inlineScript
