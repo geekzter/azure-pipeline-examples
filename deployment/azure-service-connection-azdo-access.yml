@@ -22,9 +22,9 @@ jobs:
       inlineScript: |
         Write-Host "Obtaining access token for Service Connection identity..."
         az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 `
-                            --query "accessToken" `
-                            --output tsv `
-                            | Set-Variable aadToken
+                                    --query "accessToken" `
+                                    --output tsv `
+                                    | Set-Variable aadToken
         Write-Host "Access token for Service Connection identity: " -NoNewline
         $aadToken -replace '.','*' # Mask token
 
@@ -45,8 +45,11 @@ jobs:
             Authorization = "Bearer $aadToken"
             "Content-Type" = "application/json"
         }
-        Invoke-RestMethod -Uri $apiUrl -Headers $requestHeaders -Method Get | Select-Object -ExpandProperty value `
-                                                                            | Select-Object id, name
+        Invoke-RestMethod -Uri $apiUrl `
+                          -Headers $requestHeaders `
+                          -Method Get `
+                          | Select-Object -ExpandProperty value `
+                          | Select-Object id, name
       failOnStandardError: true
 
   - task: AzureCLI@2
@@ -60,10 +63,12 @@ jobs:
         Write-Host "Obtaining access token for Service Connection identity..."
         Invoke-RestMethod -Uri "https://login.microsoftonline.com/${env:tenantId}/oauth2/token" `
                           -Method Post `
-                          -Body @{"grant_type"="client_credentials";
-                                  "client_id"="${env:servicePrincipalId}";
-                                  "client_secret"="${env:servicePrincipalKey}";
-                                  "resource"="499b84ac-1321-427f-aa17-267ca6975798"} `
+                          -Body @{
+                              grant_type    = "client_credentials"
+                              client_id     = $env:servicePrincipalId
+                              client_secret = $env:servicePrincipalKey
+                              resource      = "499b84ac-1321-427f-aa17-267ca6975798"
+                            } `
                           -Headers @{"Content-Type"="application/x-www-form-urlencoded"} `
                           | Select-Object -ExpandProperty access_token `
                           | Set-Variable aadToken
@@ -87,6 +92,9 @@ jobs:
             Authorization = "Bearer $aadToken"
             "Content-Type" = "application/json"
         }
-        Invoke-RestMethod -Uri $apiUrl -Headers $requestHeaders -Method Get | Select-Object -ExpandProperty value `
-                                                                            | Select-Object id, name
+        Invoke-RestMethod -Uri $apiUrl `
+                          -Headers $requestHeaders `
+                          -Method Get `
+                          | Select-Object -ExpandProperty value `
+                          | Select-Object id, name
       failOnStandardError: true
