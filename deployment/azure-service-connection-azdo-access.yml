@@ -14,7 +14,7 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
   - task: AzureCLI@2
-    displayName: 'Use az account get-access-token'
+    displayName: 'az ... get-access-token -> REST API'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
@@ -25,17 +25,6 @@ jobs:
                                     --query "accessToken" `
                                     --output tsv `
                                     | Set-Variable aadToken
-        Write-Host "Access token for Service Connection identity: " -NoNewline
-        $aadToken -replace '.','*' # Mask token
-
-        Write-Host "`nConfigure Azure DevOps CLI (az devops) to use the token..."
-        $env:AZURE_DEVOPS_EXT_PAT = $aadToken
-        az devops configure --defaults organization=$(System.CollectionUri) project=$(System.TeamProject)
-        az devops configure -l
-        Write-Host "`nUse token with Azure DevOps CLI (az devops) to list projects in the organization '$(System.CollectionUri)'..."
-        az devops project list --query "value[].{Name:name, Id:id}" -o table
-        Write-Host "`nUse token with Azure DevOps CLI (az pipelines) to list pools in the organization '$(System.CollectionUri)'..."
-        az pipelines pool list --query "[].{Id:id, Name:name}" -o table
 
         Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
         $apiVersion = "7.1-preview.1"
@@ -50,6 +39,29 @@ jobs:
                           -Method Get `
                           | Select-Object -ExpandProperty value `
                           | Select-Object id, name
+      failOnStandardError: true
+
+  - task: AzureCLI@2
+    displayName: 'az ... get-access-token -> DevOps CLI'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        Write-Host "Obtaining access token for Service Connection identity..."
+        az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 `
+                                    --query "accessToken" `
+                                    --output tsv `
+                                    | Set-Item env:AZURE_DEVOPS_EXT_PAT
+
+        Write-Host "`nConfigure Azure DevOps CLI (az devops) to use the token..."
+        az devops configure --defaults organization=$(System.CollectionUri) project=$(System.TeamProject)
+        az devops configure -l
+        Write-Host "`nUse token with Azure DevOps CLI (az devops) to list projects in the organization '$(System.CollectionUri)'..."
+        az devops project list --query "value[].{Name:name, Id:id}" -o table
+        Write-Host "`nUse token with Azure DevOps CLI (az pipelines) to list pools in the organization '$(System.CollectionUri)'..."
+        az pipelines pool list --query "[].{Id:id, Name:name}" -o table
+
       failOnStandardError: true
 
   - task: AzureCLI@2
@@ -72,8 +84,6 @@ jobs:
                           -Headers @{"Content-Type"="application/x-www-form-urlencoded"} `
                           | Select-Object -ExpandProperty access_token `
                           | Set-Variable aadToken
-        Write-Host "Access token for Service Connection identity: " -NoNewline
-        $aadToken -replace '.','*' # Mask token
 
         Write-Host "`nConfigure Azure DevOps CLI (az devops) to use the token..."
         $env:AZURE_DEVOPS_EXT_PAT = $aadToken
