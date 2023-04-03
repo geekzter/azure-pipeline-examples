@@ -299,8 +299,8 @@ jobs:
           Remove-Item ~/.kube/config
         }
 
-        $env:KUBECONFIG=$(Build.ArtifactStagingDirectory)/.kubeconfig-$(aksName)
-        Write-Host "##vso[task.setvariable variable=KUBECONFIG]${KUBECONFIG}"
+        $env:KUBECONFIG="$(Build.ArtifactStagingDirectory)/.kubeconfig-$(aksName)""
+        Write-Host "##vso[task.setvariable variable=KUBECONFIG]${env:KUBECONFIG}"
         $env:AAD_SERVICE_PRINCIPAL_CLIENT_ID=$env:servicePrincipalId
         $env:AAD_SERVICE_PRINCIPAL_CLIENT_SECRET=$env:servicePrincipalKey
 
