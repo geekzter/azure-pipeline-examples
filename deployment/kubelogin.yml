@@ -299,10 +299,9 @@ jobs:
           Write-Host "Removing ${env:KUBECONFIG}..."
           Remove-Item $env:KUBECONFIG
         }
-
         Write-Host "##vso[task.setvariable variable=KUBECONFIG]${env:KUBECONFIG}"
-        $env:AAD_SERVICE_PRINCIPAL_CLIENT_ID=$env:servicePrincipalId
-        $env:AAD_SERVICE_PRINCIPAL_CLIENT_SECRET=$env:servicePrincipalKey
+        # $env:AAD_SERVICE_PRINCIPAL_CLIENT_ID=$env:servicePrincipalId
+        # $env:AAD_SERVICE_PRINCIPAL_CLIENT_SECRET=$env:servicePrincipalKey
 
         kubelogin remove-tokens
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --file $env:KUBECONFIG --overwrite-existing
@@ -313,8 +312,7 @@ jobs:
         kubectl get nodes
 
   - task: Kubernetes@1
-    continueOnError: false 
-    displayName: 'Kubernetes@1 (fails??)'
+    displayName: 'Kubernetes@1'
     inputs:
       connectionType: 'None'
       azureSubscriptionEndpoint: $(subscriptionConnection)
