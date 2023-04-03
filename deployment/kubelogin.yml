@@ -284,38 +284,6 @@ jobs:
     retryCountOnTaskFailure: 3
 
   - task: AzureCLI@2
-    displayName: 'Configure kubelogin (azure cli)'
-    inputs:
-      addSpnToEnvironment: true
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        kubectl config unset contexts.$(aksName)
-        kubectl config unset contexts.$(aksName)-admin
-        kubelogin remove-tokens
-
-        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
-        kubelogin convert-kubeconfig -l azurecli
-        # kubelogin convert-kubeconfig -l spn --client-id $env:servicePrincipalId --client-secret $env:servicePrincipalKey
-
-        kubectl config view
-        kubectl cluster-info
-        kubectl get nodes
-
-  - task: Kubernetes@1
-    displayName: 'Kubernetes@1'
-    inputs:
-      connectionType: 'None'
-      azureSubscriptionEndpoint: $(subscriptionConnection)
-      azureResourceGroup: $(resourceGroupName)
-      kubernetesCluster: $(aksName)
-      command: 'get'
-      arguments: nodes
-      useClusterAdmin: false
-
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
     displayName: 'Configure kubectl with kubelogin (sp)'
     inputs:
       addSpnToEnvironment: true
@@ -333,6 +301,17 @@ jobs:
         kubectl config view
         kubectl cluster-info
         kubectl get nodes
+
+  - task: Kubernetes@1
+    displayName: 'Kubernetes@1'
+    inputs:
+      connectionType: 'None'
+      azureSubscriptionEndpoint: $(subscriptionConnection)
+      azureResourceGroup: $(resourceGroupName)
+      kubernetesCluster: $(aksName)
+      command: 'get'
+      arguments: nodes
+      useClusterAdmin: false
 
 
 # - job: enableLocalAccounts
