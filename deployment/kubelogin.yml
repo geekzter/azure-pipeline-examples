@@ -9,7 +9,8 @@ schedules:
 
 variables:
 - group: 'kubernetes' # should contain subscriptionConnection, aksId
-
+- name: 'KUBECONFIG'
+  value: '~/.kube/config'
 
 jobs:
 - job: inspectCluster
@@ -94,9 +95,13 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        if (Test-Path ~/.kube/config) {
-          Write-Host "Removing ~/.kube/config..."
-          Remove-Item ~/.kube/config
+        # if (Test-Path ~/.kube/config) {
+        #   Write-Host "Removing ~/.kube/config..."
+        #   Remove-Item ~/.kube/config
+        # }
+        if (Test-Path $env:KUBECONFIG) {
+          Write-Host "Removing ${env:KUBECONFIG}..."
+          Remove-Item $env:KUBECONFIG
         }
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
 
@@ -113,9 +118,13 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        if (Test-Path ~/.kube/config) {
-          Write-Host "Removing ~/.kube/config..."
-          Remove-Item ~/.kube/config
+        # if (Test-Path ~/.kube/config) {
+        #   Write-Host "Removing ~/.kube/config..."
+        #   Remove-Item ~/.kube/config
+        # }
+        if (Test-Path $env:KUBECONFIG) {
+          Write-Host "Removing ${env:KUBECONFIG}..."
+          Remove-Item $env:KUBECONFIG
         }
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing -a
 
@@ -182,9 +191,13 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        if (Test-Path ~/.kube/config) {
-          Write-Host "Removing ~/.kube/config..."
-          Remove-Item ~/.kube/config
+        # if (Test-Path ~/.kube/config) {
+        #   Write-Host "Removing ~/.kube/config..."
+        #   Remove-Item ~/.kube/config
+        # }
+        if (Test-Path $env:KUBECONFIG) {
+          Write-Host "Removing ${env:KUBECONFIG}..."
+          Remove-Item $env:KUBECONFIG
         }
         kubelogin remove-tokens
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
@@ -203,9 +216,13 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        if (Test-Path ~/.kube/config) {
-          Write-Host "Removing ~/.kube/config..."
-          Remove-Item ~/.kube/config
+        # if (Test-Path ~/.kube/config) {
+        #   Write-Host "Removing ~/.kube/config..."
+        #   Remove-Item ~/.kube/config
+        # }
+        if (Test-Path $env:KUBECONFIG) {
+          Write-Host "Removing ${env:KUBECONFIG}..."
+          Remove-Item $env:KUBECONFIG
         }
         kubelogin remove-tokens
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
@@ -294,13 +311,12 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        # $env:KUBECONFIG="$(Build.ArtifactStagingDirectory)/.kubeconfig-$(aksName)"
-        $env:KUBECONFIG="~/.kube/config"
+        # $env:KUBECONFIG="~/.kube/config"
         if (Test-Path $env:KUBECONFIG) {
           Write-Host "Removing ${env:KUBECONFIG}..."
           Remove-Item $env:KUBECONFIG
         }
-        Write-Host "##vso[task.setvariable variable=KUBECONFIG]${env:KUBECONFIG}"
+        # Write-Host "##vso[task.setvariable variable=KUBECONFIG]${env:KUBECONFIG}"
 
         kubelogin remove-tokens
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --file $env:KUBECONFIG --overwrite-existing
@@ -330,9 +346,13 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        if (Test-Path ~/.kube/config) {
-          Write-Host "Removing ~/.kube/config..."
-          Remove-Item ~/.kube/config
+        # if (Test-Path ~/.kube/config) {
+        #   Write-Host "Removing ~/.kube/config..."
+        #   Remove-Item ~/.kube/config
+        # }
+        if (Test-Path $env:KUBECONFIG) {
+          Write-Host "Removing ${env:KUBECONFIG}..."
+          Remove-Item $env:KUBECONFIG
         }
         kubelogin remove-tokens
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
@@ -400,9 +420,13 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        if (Test-Path ~/.kube/config) {
-          Write-Host "Removing ~/.kube/config..."
-          Remove-Item ~/.kube/config
+        # if (Test-Path ~/.kube/config) {
+        #   Write-Host "Removing ~/.kube/config..."
+        #   Remove-Item ~/.kube/config
+        # }
+        if (Test-Path $env:KUBECONFIG) {
+          Write-Host "Removing ${env:KUBECONFIG}..."
+          Remove-Item $env:KUBECONFIG
         }
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
 
@@ -418,9 +442,13 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        if (Test-Path ~/.kube/config) {
-          Write-Host "Removing ~/.kube/config..."
-          Remove-Item ~/.kube/config
+        # if (Test-Path ~/.kube/config) {
+        #   Write-Host "Removing ~/.kube/config..."
+        #   Remove-Item ~/.kube/config
+        # }
+        if (Test-Path $env:KUBECONFIG) {
+          Write-Host "Removing ${env:KUBECONFIG}..."
+          Remove-Item $env:KUBECONFIG
         }
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing -a
 
