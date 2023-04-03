@@ -95,10 +95,6 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        # if (Test-Path ~/.kube/config) {
-        #   Write-Host "Removing ~/.kube/config..."
-        #   Remove-Item ~/.kube/config
-        # }
         if (Test-Path $env:KUBECONFIG) {
           Write-Host "Removing ${env:KUBECONFIG}..."
           Remove-Item $env:KUBECONFIG
@@ -118,10 +114,6 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        # if (Test-Path ~/.kube/config) {
-        #   Write-Host "Removing ~/.kube/config..."
-        #   Remove-Item ~/.kube/config
-        # }
         if (Test-Path $env:KUBECONFIG) {
           Write-Host "Removing ${env:KUBECONFIG}..."
           Remove-Item $env:KUBECONFIG
@@ -191,10 +183,6 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        # if (Test-Path ~/.kube/config) {
-        #   Write-Host "Removing ~/.kube/config..."
-        #   Remove-Item ~/.kube/config
-        # }
         if (Test-Path $env:KUBECONFIG) {
           Write-Host "Removing ${env:KUBECONFIG}..."
           Remove-Item $env:KUBECONFIG
@@ -216,10 +204,6 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        # if (Test-Path ~/.kube/config) {
-        #   Write-Host "Removing ~/.kube/config..."
-        #   Remove-Item ~/.kube/config
-        # }
         if (Test-Path $env:KUBECONFIG) {
           Write-Host "Removing ${env:KUBECONFIG}..."
           Remove-Item $env:KUBECONFIG
@@ -311,15 +295,14 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        # $env:KUBECONFIG="~/.kube/config"
         if (Test-Path $env:KUBECONFIG) {
           Write-Host "Removing ${env:KUBECONFIG}..."
           Remove-Item $env:KUBECONFIG
         }
-        # Write-Host "##vso[task.setvariable variable=KUBECONFIG]${env:KUBECONFIG}"
 
         kubelogin remove-tokens
-        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --file $env:KUBECONFIG --overwrite-existing
+        # az aks get-credentials -n $(aksName) -g $(resourceGroupName) --file $env:KUBECONFIG --overwrite-existing
+        az aks get-credentials -n $(aksName) -g $(resourceGroupName) -overwrite-existing
         kubelogin convert-kubeconfig -l spn --client-id $env:servicePrincipalId --client-secret $env:servicePrincipalKey
 
         kubectl config view
@@ -346,10 +329,6 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        # if (Test-Path ~/.kube/config) {
-        #   Write-Host "Removing ~/.kube/config..."
-        #   Remove-Item ~/.kube/config
-        # }
         if (Test-Path $env:KUBECONFIG) {
           Write-Host "Removing ${env:KUBECONFIG}..."
           Remove-Item $env:KUBECONFIG
@@ -420,10 +399,6 @@ jobs:
 #       scriptType: pscore
 #       scriptLocation: inlineScript
 #       inlineScript: |
-#         # if (Test-Path ~/.kube/config) {
-#         #   Write-Host "Removing ~/.kube/config..."
-#         #   Remove-Item ~/.kube/config
-#         # }
 #         if (Test-Path $env:KUBECONFIG) {
 #           Write-Host "Removing ${env:KUBECONFIG}..."
 #           Remove-Item $env:KUBECONFIG
@@ -442,10 +417,6 @@ jobs:
 #       scriptType: pscore
 #       scriptLocation: inlineScript
 #       inlineScript: |
-#         # if (Test-Path ~/.kube/config) {
-#         #   Write-Host "Removing ~/.kube/config..."
-#         #   Remove-Item ~/.kube/config
-#         # }
 #         if (Test-Path $env:KUBECONFIG) {
 #           Write-Host "Removing ${env:KUBECONFIG}..."
 #           Remove-Item $env:KUBECONFIG
