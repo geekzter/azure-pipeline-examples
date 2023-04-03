@@ -95,10 +95,13 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        if (Test-Path $env:KUBECONFIG) {
-          Write-Host "Removing ${env:KUBECONFIG}..."
-          Remove-Item $env:KUBECONFIG
-        }
+        # if (Test-Path $env:KUBECONFIG) {
+        #   Write-Host "Removing ${env:KUBECONFIG}..."
+        #   Remove-Item $env:KUBECONFIG
+        # }
+        kubectl config unset contexts.$(aksName)
+        kubectl config unset contexts.$(aksName)-admin
+
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
 
         kubectl config view
@@ -114,10 +117,13 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        if (Test-Path $env:KUBECONFIG) {
-          Write-Host "Removing ${env:KUBECONFIG}..."
-          Remove-Item $env:KUBECONFIG
-        }
+        # if (Test-Path $env:KUBECONFIG) {
+        #   Write-Host "Removing ${env:KUBECONFIG}..."
+        #   Remove-Item $env:KUBECONFIG
+        # }
+        kubectl config unset contexts.$(aksName)
+        kubectl config unset contexts.$(aksName)-admin
+
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing -a
 
         kubectl config view
@@ -183,10 +189,13 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        if (Test-Path $env:KUBECONFIG) {
-          Write-Host "Removing ${env:KUBECONFIG}..."
-          Remove-Item $env:KUBECONFIG
-        }
+        # if (Test-Path $env:KUBECONFIG) {
+        #   Write-Host "Removing ${env:KUBECONFIG}..."
+        #   Remove-Item $env:KUBECONFIG
+        # }
+        kubectl config unset contexts.$(aksName)
+        kubectl config unset contexts.$(aksName)-admin
+
         kubelogin remove-tokens
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
         kubelogin convert-kubeconfig -l azurecli
@@ -204,10 +213,13 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        if (Test-Path $env:KUBECONFIG) {
-          Write-Host "Removing ${env:KUBECONFIG}..."
-          Remove-Item $env:KUBECONFIG
-        }
+        # if (Test-Path $env:KUBECONFIG) {
+        #   Write-Host "Removing ${env:KUBECONFIG}..."
+        #   Remove-Item $env:KUBECONFIG
+        # }
+        kubectl config unset contexts.$(aksName)
+        kubectl config unset contexts.$(aksName)-admin
+
         kubelogin remove-tokens
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
         kubelogin convert-kubeconfig -l spn --client-id $env:servicePrincipalId --client-secret $env:servicePrincipalKey
@@ -295,13 +307,14 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        if (Test-Path $env:KUBECONFIG) {
-          Write-Host "Removing ${env:KUBECONFIG}..."
-          Remove-Item $env:KUBECONFIG
-        }
+        # if (Test-Path $env:KUBECONFIG) {
+        #   Write-Host "Removing ${env:KUBECONFIG}..."
+        #   Remove-Item $env:KUBECONFIG
+        # }
+        kubectl config unset contexts.$(aksName)
+        kubectl config unset contexts.$(aksName)-admin
 
         kubelogin remove-tokens
-        # az aks get-credentials -n $(aksName) -g $(resourceGroupName) --file $env:KUBECONFIG --overwrite-existing
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
         kubelogin convert-kubeconfig -l spn --client-id $env:servicePrincipalId --client-secret $env:servicePrincipalKey
 
