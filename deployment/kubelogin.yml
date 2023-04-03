@@ -313,10 +313,10 @@ jobs:
         kubectl get nodes
 
   - task: Kubernetes@1
-    continueOnError: true 
-    displayName: 'Kubernetes@1 (fails)'
+    continueOnError: false 
+    displayName: 'Kubernetes@1 (fails??)'
     inputs:
-      connectionType: 'Azure Resource Manager'
+      connectionType: 'None'
       azureSubscriptionEndpoint: $(subscriptionConnection)
       azureResourceGroup: $(resourceGroupName)
       kubernetesCluster: $(aksName)
