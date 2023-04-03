@@ -294,14 +294,13 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        $env:KUBECONFIG="$(Build.ArtifactStagingDirectory)/.kubeconfig-$(aksName)"
+        # $env:KUBECONFIG="$(Build.ArtifactStagingDirectory)/.kubeconfig-$(aksName)"
+        $env:KUBECONFIG="~/.kube/config"
         if (Test-Path $env:KUBECONFIG) {
           Write-Host "Removing ${env:KUBECONFIG}..."
           Remove-Item $env:KUBECONFIG
         }
         Write-Host "##vso[task.setvariable variable=KUBECONFIG]${env:KUBECONFIG}"
-        # $env:AAD_SERVICE_PRINCIPAL_CLIENT_ID=$env:servicePrincipalId
-        # $env:AAD_SERVICE_PRINCIPAL_CLIENT_SECRET=$env:servicePrincipalKey
 
         kubelogin remove-tokens
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --file $env:KUBECONFIG --overwrite-existing
