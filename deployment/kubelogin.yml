@@ -363,118 +363,118 @@ jobs:
         kubectl get nodes
 
 
-- job: enableLocalAccounts
-  dependsOn: 
-  - inspectCluster
-  - kubectlLocalAccountsDisabled
-  # - kubectlTaskLocalAccountsDisabled
-  displayName: 'Enable Local Accounts'
-  pool:
-    vmImage: 'ubuntu-latest'
-  variables:
-    aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
-    resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
-  steps:
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    displayName: 'Enable local accounts'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        Write-Host "`nEnabling local accounts on $(aksName)..."
-        az aks update -n $(aksName) -g $(resourceGroupName) --enable-local-accounts
+# - job: enableLocalAccounts
+#   dependsOn: 
+#   - inspectCluster
+#   - kubectlLocalAccountsDisabled
+#   # - kubectlTaskLocalAccountsDisabled
+#   displayName: 'Enable Local Accounts'
+#   pool:
+#     vmImage: 'ubuntu-latest'
+#   variables:
+#     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
+#     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
+#   steps:
+#   - task: AzureCLI@2
+#     condition: succeededOrFailed()
+#     displayName: 'Enable local accounts'
+#     inputs:
+#       azureSubscription: '$(subscriptionConnection)'
+#       scriptType: pscore
+#       scriptLocation: inlineScript
+#       inlineScript: |
+#         Write-Host "`nEnabling local accounts on $(aksName)..."
+#         az aks update -n $(aksName) -g $(resourceGroupName) --enable-local-accounts
 
-  - bash: |
-      echo kubelogin directory before removal: $(kubelogin.directoryName)
-      ls -al $(kubelogin.directoryName)
+#   - bash: |
+#       echo kubelogin directory before removal: $(kubelogin.directoryName)
+#       ls -al $(kubelogin.directoryName)
 
-      echo removing $(kubelogin.fullName)...
-      kubelogin remove-tokens
-      rm $(kubelogin.fullName)
+#       echo removing $(kubelogin.fullName)...
+#       kubelogin remove-tokens
+#       rm $(kubelogin.fullName)
 
-      echo kubelogin directory after removal: $(kubelogin.directoryName)
-      ls -al $(kubelogin.directoryName)
-    condition: succeededOrFailed()
-    displayName: 'Remove kubelogin'
-
-
-- job: kubectlLocalAccountsEnabled
-  dependsOn: 
-  - inspectCluster
-  - enableLocalAccounts
-  displayName: 'kubectl (local accounts enabled)'
-  pool:
-    vmImage: 'ubuntu-latest'
-  variables:
-    aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
-    resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
-  steps:
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    continueOnError: true 
-    displayName: 'kubectl (fails)'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        # if (Test-Path ~/.kube/config) {
-        #   Write-Host "Removing ~/.kube/config..."
-        #   Remove-Item ~/.kube/config
-        # }
-        if (Test-Path $env:KUBECONFIG) {
-          Write-Host "Removing ${env:KUBECONFIG}..."
-          Remove-Item $env:KUBECONFIG
-        }
-        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
-
-        kubectl config view
-        kubectl cluster-info
-        kubectl get nodes
-
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    displayName: 'kubectl admin'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        # if (Test-Path ~/.kube/config) {
-        #   Write-Host "Removing ~/.kube/config..."
-        #   Remove-Item ~/.kube/config
-        # }
-        if (Test-Path $env:KUBECONFIG) {
-          Write-Host "Removing ${env:KUBECONFIG}..."
-          Remove-Item $env:KUBECONFIG
-        }
-        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing -a
-
-        kubectl config view
-        kubectl cluster-info
-        kubectl get nodes
+#       echo kubelogin directory after removal: $(kubelogin.directoryName)
+#       ls -al $(kubelogin.directoryName)
+#     condition: succeededOrFailed()
+#     displayName: 'Remove kubelogin'
 
 
-- job: redisableLocalAccounts
-  condition: and(succeededOrFailed(),eq(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'))
-  dependsOn: 
-    - inspectCluster
-    - kubectlLocalAccountsEnabled
-  displayName: 'Disable Local Accounts'
-  pool:
-    vmImage: 'ubuntu-latest'
-  variables:
-    aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
-    resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
-  steps:
-  - task: AzureCLI@2
-    displayName: 'Re-disable local accounts'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        Write-Host "`nDisabling local accounts on $(aksName)..."
-        az aks update -n $(aksName) -g $(resourceGroupName) --disable-local-accounts
+# - job: kubectlLocalAccountsEnabled
+#   dependsOn: 
+#   - inspectCluster
+#   - enableLocalAccounts
+#   displayName: 'kubectl (local accounts enabled)'
+#   pool:
+#     vmImage: 'ubuntu-latest'
+#   variables:
+#     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
+#     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
+#   steps:
+#   - task: AzureCLI@2
+#     condition: succeededOrFailed()
+#     continueOnError: true 
+#     displayName: 'kubectl (fails)'
+#     inputs:
+#       azureSubscription: '$(subscriptionConnection)'
+#       scriptType: pscore
+#       scriptLocation: inlineScript
+#       inlineScript: |
+#         # if (Test-Path ~/.kube/config) {
+#         #   Write-Host "Removing ~/.kube/config..."
+#         #   Remove-Item ~/.kube/config
+#         # }
+#         if (Test-Path $env:KUBECONFIG) {
+#           Write-Host "Removing ${env:KUBECONFIG}..."
+#           Remove-Item $env:KUBECONFIG
+#         }
+#         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
+
+#         kubectl config view
+#         kubectl cluster-info
+#         kubectl get nodes
+
+#   - task: AzureCLI@2
+#     condition: succeededOrFailed()
+#     displayName: 'kubectl admin'
+#     inputs:
+#       azureSubscription: '$(subscriptionConnection)'
+#       scriptType: pscore
+#       scriptLocation: inlineScript
+#       inlineScript: |
+#         # if (Test-Path ~/.kube/config) {
+#         #   Write-Host "Removing ~/.kube/config..."
+#         #   Remove-Item ~/.kube/config
+#         # }
+#         if (Test-Path $env:KUBECONFIG) {
+#           Write-Host "Removing ${env:KUBECONFIG}..."
+#           Remove-Item $env:KUBECONFIG
+#         }
+#         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing -a
+
+#         kubectl config view
+#         kubectl cluster-info
+#         kubectl get nodes
+
+
+# - job: redisableLocalAccounts
+#   condition: and(succeededOrFailed(),eq(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'))
+#   dependsOn: 
+#     - inspectCluster
+#     - kubectlLocalAccountsEnabled
+#   displayName: 'Disable Local Accounts'
+#   pool:
+#     vmImage: 'ubuntu-latest'
+#   variables:
+#     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
+#     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
+#   steps:
+#   - task: AzureCLI@2
+#     displayName: 'Re-disable local accounts'
+#     inputs:
+#       azureSubscription: '$(subscriptionConnection)'
+#       scriptType: pscore
+#       scriptLocation: inlineScript
+#       inlineScript: |
+#         Write-Host "`nDisabling local accounts on $(aksName)..."
+#         az aks update -n $(aksName) -g $(resourceGroupName) --disable-local-accounts
