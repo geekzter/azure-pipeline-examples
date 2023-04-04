@@ -76,6 +76,7 @@ jobs:
         }
         Write-Host "##vso[task.setvariable variable=disableLocalAccountsOriginalState;isOutput=true]${disableLocalAccounts}"
 
+# TODO: Add timeout repro when kubelogin is installed, but not configured
 
 - job: kubectlLocalAccountsDisabled
   dependsOn: inspectCluster
@@ -410,6 +411,8 @@ jobs:
         Write-Host "`nEnabling local accounts on $(aksName)..."
         az aks update -n $(aksName) -g $(resourceGroupName) --enable-local-accounts
 
+
+# TODO: Add timeout repro when kubelogin is installed, but not configured
 
 - job: kubectlLocalAccountsEnabled
   dependsOn: 
