@@ -350,7 +350,6 @@ jobs:
     displayName: 'Kubernetes@1'
     inputs:
       connectionType: 'None'
-      # azureSubscriptionEndpoint: $(subscriptionConnection)
       azureResourceGroup: $(resourceGroupName)
       kubernetesCluster: $(aksName)
       command: 'get'
@@ -433,8 +432,6 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Set-PSDebug -Trace 1
-
         kubectl config unset contexts.$(aksName)
         kubectl config unset contexts.$(aksName)-admin
 
