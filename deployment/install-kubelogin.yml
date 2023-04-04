@@ -38,7 +38,7 @@ steps:
     Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
     Write-Host "##vso[task.setvariable variable=directoryName;isOutput=true]$($kubeloginFile.DirectoryName)"
     Write-Host "##vso[task.setvariable variable=fullName;isOutput=true]$($kubeloginFile.FullName)"
-  condition: ${{ parameters.condition }}
+  condition: succeededOrFailed()
   displayName: 'Install kubelogin from zip'
   name: kubelogin
   retryCountOnTaskFailure: ${{ parameters.retryCount }}

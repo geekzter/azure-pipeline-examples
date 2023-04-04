@@ -211,8 +211,6 @@ jobs:
         az aks install-cli --kubelogin-version latest
 
   - template: install-kubelogin.yml
-    parameters: 
-      condition: succeededOrFailed()
 
   # - pwsh: |
   #     # Get latest release for Linux amd64
