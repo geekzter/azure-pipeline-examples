@@ -335,20 +335,7 @@ jobs:
       scriptLocation: inlineScript
       inlineScript: |
         Write-Host "`nEnabling local accounts on $(aksName)..."
-        # az aks update -n $(aksName) -g $(resourceGroupName) --enable-local-accounts
-
-  # - bash: |
-  #     echo kubelogin directory before removal: $(kubelogin.directoryName)
-  #     ls -al $(kubelogin.directoryName)
-
-  #     echo removing $(kubelogin.fullName)...
-  #     kubelogin remove-tokens
-  #     rm $(kubelogin.fullName)
-
-  #     echo kubelogin directory after removal: $(kubelogin.directoryName)
-  #     ls -al $(kubelogin.directoryName)
-  #   condition: succeededOrFailed()
-  #   displayName: 'Remove kubelogin'
+        az aks update -n $(aksName) -g $(resourceGroupName) --enable-local-accounts
 
 
 - job: kubectlLocalAccountsEnabled
