@@ -375,25 +375,25 @@ jobs:
     name: kubelogin
     retryCountOnTaskFailure: 3
 
-  # # Debug
-  # - task: AzureCLI@2
-  #   condition: succeededOrFailed()
-  #   continueOnError: true 
-  #   displayName: 'kubectl (times out)'
-  #   inputs:
-  #     azureSubscription: '$(subscriptionConnection)'
-  #     scriptType: pscore
-  #     scriptLocation: inlineScript
-  #     inlineScript: |
-  #       kubectl config unset contexts.$(aksName)
-  #       kubectl config unset contexts.$(aksName)-admin
+  # Debug
+  - task: AzureCLI@2
+    condition: succeededOrFailed()
+    continueOnError: true 
+    displayName: 'Configure kubectl, but not kubelogin'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        kubectl config unset contexts.$(aksName)
+        kubectl config unset contexts.$(aksName)-admin
 
-  #       az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
+        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
 
-  #       kubectl config view
-  #       Write-Host "##[warning]The next command (kubectl cluster-info) will time out as kubelogin is installed, but not configured and will prompt for interactive login"
-  #       kubectl cluster-info
-  #       kubectl get nodes
+        # kubectl config view
+        # Write-Host "##[warning]The next command (kubectl cluster-info) will time out as kubelogin is installed, but not configured and will prompt for interactive login"
+        # kubectl cluster-info
+        # kubectl get nodes
 
   # Fails as kubelogin is installed, but not configured and will prompt for interactive login
   - task: Kubernetes@1
