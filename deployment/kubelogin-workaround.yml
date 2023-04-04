@@ -561,6 +561,7 @@ jobs:
 
 # TODO: Add timeout repro when kubelogin is installed, but not configured
 - job: kubectlLocalAccountsEnabledTimeout
+  condition: succeededOrFailed()
   dependsOn: 
   - inspectCluster
   - enableLocalAccounts
@@ -634,6 +635,7 @@ jobs:
         kubectl get nodes
 
 - job: kubectlTaskLocalAccountsEnabledTimeout
+  condition: succeededOrFailed()
   dependsOn: 
   - inspectCluster
   - enableLocalAccounts
@@ -710,6 +712,7 @@ jobs:
 
 
 - job: kubectlLocalAccountsEnabled
+  condition: succeededOrFailed()
   dependsOn: 
   - inspectCluster
   - enableLocalAccounts
@@ -760,6 +763,7 @@ jobs:
 
 
 - job: kubectlTaskLocalAccountsEnabled
+  condition: succeededOrFailed()
   dependsOn: 
   - inspectCluster
   - enableLocalAccounts
