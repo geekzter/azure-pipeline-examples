@@ -389,7 +389,7 @@ jobs:
   dependsOn: 
   - inspectCluster
   - enableLocalAccounts
-  displayName: 'kubectl (local accounts enabled)'
+  displayName: 'Kubernetes@1 (local accounts enabled)'
   pool:
     vmImage: 'ubuntu-latest'
   variables:
