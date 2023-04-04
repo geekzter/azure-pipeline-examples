@@ -1,6 +1,4 @@
 parameters:
-- name: condition
-  type: boolean
 - name: retryCount
   type: number
   default: 1
