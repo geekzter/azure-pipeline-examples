@@ -96,6 +96,8 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
+        Set-PSDebug -Trace 1
+
         kubectl config unset contexts.$(aksName)
         kubectl config unset contexts.$(aksName)-admin
 
