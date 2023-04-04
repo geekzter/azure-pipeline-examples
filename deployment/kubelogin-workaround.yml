@@ -533,6 +533,7 @@ jobs:
 
 
 - job: enableLocalAccounts
+  condition: succeededOrFailed()
   dependsOn: 
   - inspectCluster
   - kubectlLocalAccountsDisabled
