@@ -81,7 +81,7 @@ jobs:
 - job: kubectlLocalAccountsDisabledTimeout
   dependsOn: inspectCluster
   displayName: 'kubectl (local accounts disabled, times out)'
-  timeoutInMinutes: 10
+  timeoutInMinutes: 3
   variables:
     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
@@ -327,6 +327,80 @@ jobs:
         Write-Host "##[warning]The next command (az aks get-credentials) fails as local accounts are disabled: https://learn.microsoft.com/azure/aks/managed-aad#disable-local-accounts"
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --admin --overwrite-existing
 
+
+- job: kubectlTaskLocalAccountsDisabledTimeout
+  dependsOn: inspectCluster
+  displayName: 'Kubernetes@1 (local accounts disabled, times out)'
+  timeoutInMinutes: 5
+  variables:
+    aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
+    resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  # Fails as kubelogin is not installed & configured
+  - task: Kubernetes@1
+    continueOnError: true 
+    displayName: 'Kubernetes@1 (fails)'
+    inputs:
+      connectionType: 'Azure Resource Manager'
+      azureSubscriptionEndpoint: $(subscriptionConnection)
+      azureResourceGroup: $(resourceGroupName)
+      kubernetesCluster: $(aksName)
+      command: 'get'
+      arguments: nodes
+      useClusterAdmin: false
+
+  - pwsh: |
+      # Get latest release for Linux amd64
+      $zip = "kubelogin-linux-amd64.zip"
+
+      Write-Host "`nDetermining latest release of kubelogin..."
+      Invoke-RestMethod -Uri https://api.github.com/repos/Azure/kubelogin/releases | Set-Variable releases
+      Write-Host "kubelogin releases:"
+      $releases | Format-Table -Property tag_name, published_at, draft, prerelease
+      $releases | Where-Object {!$_.prerelease -and !$_.draft}
+                | Select-Object -ExpandProperty assets  `
+                | Where-Object -Property name -eq $zip `
+                | Sort-Object -Property created_at -Descending `
+                | Select-Object -First 1 `
+                | Set-Variable asset
+      if (!$asset) {
+        Write-Error "Could not find release for $zip"
+        exit 1
+      }
+      $asset | Format-List
+
+      # Download and extract kubelogin
+      Write-Host "`nDownloading kubelogin from $($asset.browser_download_url)..."
+      Invoke-Webrequest -Uri $asset.browser_download_url -OutFile $zip -UseBasicParsing
+      Expand-Archive $zip -DestinationPath .
+      Get-ChildItem -Path . -Filter kubelogin -Recurse -Force | Set-Variable kubeloginFile 
+      chmod +X $kubeloginFile.FullName
+      Write-Host "Installed kubelogin in $($kubeloginFile.DirectoryName)"
+
+      # Add kubelogin to PATH
+      Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
+      Write-Host "##vso[task.setvariable variable=directoryName;isOutput=true]$($kubeloginFile.DirectoryName)"
+      Write-Host "##vso[task.setvariable variable=fullName;isOutput=true]$($kubeloginFile.FullName)"
+    condition: succeededOrFailed()
+    displayName: 'Install kubelogin from zip'
+    name: kubelogin
+    retryCountOnTaskFailure: 3
+
+  # Fails as kubelogin is installed, but not configured and will prompt for interactive login
+  - task: Kubernetes@1
+    continueOnError: true
+    displayName: 'Kubernetes@1 (times out)'
+    inputs:
+      connectionType: 'None'
+      azureResourceGroup: $(resourceGroupName)
+      kubernetesCluster: $(aksName)
+      command: 'get'
+      arguments: nodes
+      useClusterAdmin: false
+
+
 - job: kubectlTaskLocalAccountsDisabled
   dependsOn: inspectCluster
   displayName: 'Kubernetes@1 (local accounts disabled)'
@@ -360,7 +434,7 @@ jobs:
       kubernetesCluster: $(aksName)
       command: 'get'
       arguments: nodes
-      useClusterAdmin: true
+      useClusterAdmin: false
 
   - pwsh: |
       # Get latest release for Linux amd64
@@ -464,7 +538,8 @@ jobs:
 #   - inspectCluster
 #   - kubectlLocalAccountsDisabled
 #   - kubectlLocalAccountsDisabledTimeout
-#   # - kubectlTaskLocalAccountsDisabled
+#   - kubectlTaskLocalAccountsDisabled
+#   - kubectlTaskLocalAccountsDisabledTimeout
 #   displayName: 'Enable Local Accounts'
 #   pool:
 #     vmImage: 'ubuntu-latest'
