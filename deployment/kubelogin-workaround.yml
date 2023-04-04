@@ -360,14 +360,18 @@ jobs:
       arguments: nodes
       useClusterAdmin: false
 
+  # Fails as admin credentials are not available when local accounts are disabled
   - task: AzureCLI@2
-    displayName: 'Configure kubectl with kubelogin admin (sp)'
+    continueOnError: true
+    displayName: 'Configure kubectl with kubelogin admin (sp, fails)'
     inputs:
       addSpnToEnvironment: true
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
+        Set-PSDebug -Trace 1
+
         kubectl config unset contexts.$(aksName)
         kubectl config unset contexts.$(aksName)-admin
         kubelogin remove-tokens
@@ -379,11 +383,13 @@ jobs:
         kubectl cluster-info
         kubectl get nodes
 
+  # Fails as admin credentials are not available when local accounts are disabled
   - task: Kubernetes@1
-    displayName: 'Kubernetes@1 admin'
+    continueOnError: true
+    displayName: 'Kubernetes@1 admin (fails)'
+    enabled: false # will fail
     inputs:
       connectionType: 'None'
-      # azureSubscriptionEndpoint: $(subscriptionConnection)
       azureResourceGroup: $(resourceGroupName)
       kubernetesCluster: $(aksName)
       command: 'get'
