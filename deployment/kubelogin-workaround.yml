@@ -96,8 +96,6 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Set-PSDebug -Trace 1
-
         kubectl config unset contexts.$(aksName)
         kubectl config unset contexts.$(aksName)-admin
 
@@ -118,8 +116,6 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Set-PSDebug -Trace 1
-
         kubectl config unset contexts.$(aksName)
         kubectl config unset contexts.$(aksName)-admin
 
@@ -213,8 +209,6 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Set-PSDebug -Trace 1
-
         kubectl config unset contexts.$(aksName)
         kubectl config unset contexts.$(aksName)-admin
         kubelogin remove-tokens
@@ -375,8 +369,6 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Set-PSDebug -Trace 1
-
         kubectl config unset contexts.$(aksName)
         kubectl config unset contexts.$(aksName)-admin
         kubelogin remove-tokens
@@ -398,136 +390,139 @@ jobs:
       useClusterAdmin: true
 
 
-# - job: enableLocalAccounts
-#   dependsOn: 
-#   - inspectCluster
-#   - kubectlLocalAccountsDisabled
-#   # - kubectlTaskLocalAccountsDisabled
-#   displayName: 'Enable Local Accounts'
-#   pool:
-#     vmImage: 'ubuntu-latest'
-#   variables:
-#     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
-#     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
-#   steps:
-#   - task: AzureCLI@2
-#     condition: succeededOrFailed()
-#     displayName: 'Enable local accounts'
-#     inputs:
-#       azureSubscription: '$(subscriptionConnection)'
-#       scriptType: pscore
-#       scriptLocation: inlineScript
-#       inlineScript: |
-#         Write-Host "`nEnabling local accounts on $(aksName)..."
-#         az aks update -n $(aksName) -g $(resourceGroupName) --enable-local-accounts
+- job: enableLocalAccounts
+  dependsOn: 
+  - inspectCluster
+  - kubectlLocalAccountsDisabled
+  # - kubectlTaskLocalAccountsDisabled
+  displayName: 'Enable Local Accounts'
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
+    resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
+  steps:
+  - task: AzureCLI@2
+    condition: succeededOrFailed()
+    displayName: 'Enable local accounts'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        Write-Host "`nEnabling local accounts on $(aksName)..."
+        az aks update -n $(aksName) -g $(resourceGroupName) --enable-local-accounts
 
 
-# - job: kubectlLocalAccountsEnabled
-#   dependsOn: 
-#   - inspectCluster
-#   - enableLocalAccounts
-#   displayName: 'kubectl (local accounts enabled)'
-#   pool:
-#     vmImage: 'ubuntu-latest'
-#   variables:
-#     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
-#     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
-#   steps:
-#   # Fails as kubelogin is not installed
-#   - task: AzureCLI@2
-#     condition: succeededOrFailed()
-#     continueOnError: true 
-#     displayName: 'kubectl (fails)'
-#     inputs:
-#       azureSubscription: '$(subscriptionConnection)'
-#       scriptType: pscore
-#       scriptLocation: inlineScript
-#       inlineScript: |
-#         kubectl config unset contexts.$(aksName)
-#         kubectl config unset contexts.$(aksName)-admin
+- job: kubectlLocalAccountsEnabled
+  dependsOn: 
+  - inspectCluster
+  - enableLocalAccounts
+  displayName: 'kubectl (local accounts enabled)'
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
+    resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
+  steps:
+  # Fails as kubelogin is not installed
+  - task: AzureCLI@2
+    condition: succeededOrFailed()
+    continueOnError: true 
+    displayName: 'kubectl (fails)'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        Set-PSDebug -Trace 1
 
-#         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
+        kubectl config unset contexts.$(aksName)
+        kubectl config unset contexts.$(aksName)-admin
 
-#         kubectl config view
-#         kubectl cluster-info
-#         kubectl get nodes
+        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
 
-#   # Works as admin credentials are used and kubelogin is not needed
-#   - task: AzureCLI@2
-#     condition: succeededOrFailed()
-#     displayName: 'kubectl admin'
-#     inputs:
-#       azureSubscription: '$(subscriptionConnection)'
-#       scriptType: pscore
-#       scriptLocation: inlineScript
-#       inlineScript: |
-#         kubectl config unset contexts.$(aksName)
-#         kubectl config unset contexts.$(aksName)-admin
+        kubectl config view
+        Write-Host "##[warning]The next command fails as kubelogin is not installed"
+        kubectl cluster-info
+        kubectl get nodes
 
-#         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing -a
+  # Works as admin credentials are used and kubelogin is not needed
+  - task: AzureCLI@2
+    condition: succeededOrFailed()
+    displayName: 'kubectl admin'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        kubectl config unset contexts.$(aksName)
+        kubectl config unset contexts.$(aksName)-admin
 
-#         kubectl config view
-#         kubectl cluster-info
-#         kubectl get nodes
+        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing -a
 
-
-# - job: kubectlTaskLocalAccountsEnabled
-#   dependsOn: 
-#   - inspectCluster
-#   - enableLocalAccounts
-#   displayName: 'Kubernetes@1 (local accounts enabled)'
-#   pool:
-#     vmImage: 'ubuntu-latest'
-#   variables:
-#     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
-#     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
-#   steps:
-#   # Fails as kubelogin is not installed
-#   - task: Kubernetes@1
-#     continueOnError: true 
-#     displayName: 'Kubernetes@1 (fails)'
-#     inputs:
-#       connectionType: 'Azure Resource Manager'
-#       azureSubscriptionEndpoint: $(subscriptionConnection)
-#       azureResourceGroup: $(resourceGroupName)
-#       kubernetesCluster: $(aksName)
-#       command: 'get'
-#       arguments: nodes
-#       useClusterAdmin: false
-
-#   # Works as admin credentials are used and kubelogin is not needed
-#   - task: Kubernetes@1
-#     condition: succeededOrFailed()
-#     displayName: 'Kubernetes@1 admin'
-#     inputs:
-#       connectionType: 'Azure Resource Manager'
-#       azureSubscriptionEndpoint: $(subscriptionConnection)
-#       azureResourceGroup: $(resourceGroupName)
-#       kubernetesCluster: $(aksName)
-#       command: 'get'
-#       arguments: nodes
-#       useClusterAdmin: true
+        kubectl config view
+        kubectl cluster-info
+        kubectl get nodes
 
 
-# - job: reDisableLocalAccounts
-#   condition: and(succeededOrFailed(),eq(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'))
-#   dependsOn: 
-#     - inspectCluster
-#     - kubectlLocalAccountsEnabled
-#     - kubectlTaskLocalAccountsEnabled
-#   displayName: 'Disable Local Accounts'
-#   pool:
-#     vmImage: 'ubuntu-latest'
-#   variables:
-#     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
-#     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
-#   steps:
-#   - task: AzureCLI@2
-#     displayName: 'Re-disable local accounts'
-#     inputs:
-#       azureSubscription: '$(subscriptionConnection)'
-#       scriptType: pscore
-#       scriptLocation: inlineScript
-#       inlineScript: |
-#         Write-Host "`nDisabling local accounts on $(aksName)..."
-#         az aks update -n $(aksName) -g $(resourceGroupName) --disable-local-accounts
+- job: kubectlTaskLocalAccountsEnabled
+  dependsOn: 
+  - inspectCluster
+  - enableLocalAccounts
+  displayName: 'Kubernetes@1 (local accounts enabled)'
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
+    resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
+  steps:
+  # Fails as kubelogin is not installed
+  - task: Kubernetes@1
+    continueOnError: true 
+    displayName: 'Kubernetes@1 (fails)'
+    inputs:
+      connectionType: 'Azure Resource Manager'
+      azureSubscriptionEndpoint: $(subscriptionConnection)
+      azureResourceGroup: $(resourceGroupName)
+      kubernetesCluster: $(aksName)
+      command: 'get'
+      arguments: nodes
+      useClusterAdmin: false
+
+  # Works as admin credentials are used and kubelogin is not needed
+  - task: Kubernetes@1
+    condition: succeededOrFailed()
+    displayName: 'Kubernetes@1 admin'
+    inputs:
+      connectionType: 'Azure Resource Manager'
+      azureSubscriptionEndpoint: $(subscriptionConnection)
+      azureResourceGroup: $(resourceGroupName)
+      kubernetesCluster: $(aksName)
+      command: 'get'
+      arguments: nodes
+      useClusterAdmin: true
+
+
+- job: reDisableLocalAccounts
+  condition: and(succeededOrFailed(),eq(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'))
+  dependsOn: 
+    - inspectCluster
+    - kubectlLocalAccountsEnabled
+    - kubectlTaskLocalAccountsEnabled
+  displayName: 'Disable Local Accounts'
+  pool:
+    vmImage: 'ubuntu-latest'
+  variables:
+    aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
+    resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
+  steps:
+  - task: AzureCLI@2
+    displayName: 'Re-disable local accounts'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        Write-Host "`nDisabling local accounts on $(aksName)..."
+        az aks update -n $(aksName) -g $(resourceGroupName) --disable-local-accounts
