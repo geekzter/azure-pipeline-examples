@@ -9,8 +9,8 @@ schedules:
 
 variables:
 - group: 'kubernetes' # should contain subscriptionConnection, aksId
-- name: 'KUBECONFIG'
-  value: '~/.kube/config'
+# - name: 'KUBECONFIG'
+#   value: '~/.kube/config'
 
 jobs:
 - job: inspectCluster
