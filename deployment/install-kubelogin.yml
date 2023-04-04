@@ -1,0 +1,44 @@
+parameters:
+- name: condition
+  type: boolean
+- name: retryCount
+  type: number
+  default: 1
+
+steps:
+- pwsh: |
+    # Get latest release for Linux amd64
+    $zip = "kubelogin-linux-amd64.zip"
+
+    Write-Host "`nDetermining latest release of kubelogin..."
+    Invoke-RestMethod -Uri https://api.github.com/repos/Azure/kubelogin/releases | Set-Variable releases
+    Write-Host "kubelogin releases:"
+    $releases | Format-Table -Property tag_name, published_at, draft, prerelease
+    $releases | Where-Object {!$_.prerelease -and !$_.draft}
+              | Select-Object -ExpandProperty assets  `
+              | Where-Object -Property name -eq $zip `
+              | Sort-Object -Property created_at -Descending `
+              | Select-Object -First 1 `
+              | Set-Variable asset
+    if (!$asset) {
+      Write-Error "Could not find release for $zip"
+      exit 1
+    }
+    $asset | Format-List
+
+    # Download and extract kubelogin
+    Write-Host "`nDownloading kubelogin from $($asset.browser_download_url)..."
+    Invoke-Webrequest -Uri $asset.browser_download_url -OutFile $zip -UseBasicParsing
+    Expand-Archive $zip -DestinationPath .
+    Get-ChildItem -Path . -Filter kubelogin -Recurse -Force | Set-Variable kubeloginFile 
+    chmod +X $kubeloginFile.FullName
+    Write-Host "Installed kubelogin in $($kubeloginFile.DirectoryName)"
+
+    # Add kubelogin to PATH
+    Write-Host "##vso[task.prependpath]$($kubeloginFile.DirectoryName)"
+    Write-Host "##vso[task.setvariable variable=directoryName;isOutput=true]$($kubeloginFile.DirectoryName)"
+    Write-Host "##vso[task.setvariable variable=fullName;isOutput=true]$($kubeloginFile.FullName)"
+  condition: ${{ parameters.condition }}
+  displayName: 'Install kubelogin from zip'
+  name: kubelogin
+  retryCountOnTaskFailure: ${{ parameters.retryCount }}
