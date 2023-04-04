@@ -102,7 +102,7 @@ jobs:
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
 
         kubectl config view
-        Write-Host "##[warning]Next command will fail as kubelogin is not installed"
+        Write-Host "##[warning]The next command (kubectl cluster-info) will fail as kubelogin is not installed"
         kubectl cluster-info
         kubectl get nodes
 
@@ -119,7 +119,7 @@ jobs:
         kubectl config unset contexts.$(aksName)
         kubectl config unset contexts.$(aksName)-admin
 
-        Write-Host "##[warning]Next command will fail as admin credentials are not available when local accounts are disabled"
+        Write-Host "##[warning]The next command (az aks get-credentials) will fail as admin credentials are not available when local accounts are disabled"
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing -a
 
         kubectl config view
@@ -136,7 +136,7 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Write-Host "##[warning]Next command will fail due insufficient permissions to install kubelogin in default location on hosted agents"
+        Write-Host "##[warning]The next command (az aks install-cli --kubelogin-version latest) will fail due insufficient permissions to install kubelogin in default location on hosted agents"
         az aks install-cli --kubelogin-version latest
 
   - pwsh: |
@@ -213,7 +213,7 @@ jobs:
         kubectl config unset contexts.$(aksName)-admin
         kubelogin remove-tokens
         
-        Write-Host "##[warning]Next command fails as local accounts are disabled: https://learn.microsoft.com/azure/aks/managed-aad#disable-local-accounts"
+        Write-Host "##[warning]The next command (az aks get-credentials) fails as local accounts are disabled: https://learn.microsoft.com/azure/aks/managed-aad#disable-local-accounts"
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --admin --overwrite-existing
 
   - task: AzureCLI@2
@@ -247,13 +247,11 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Set-PSDebug -Trace 1
-
         kubectl config unset contexts.$(aksName)
         kubectl config unset contexts.$(aksName)-admin
         kubelogin remove-tokens
         
-        Write-Host "##[warning]Next command fails as local accounts are disabled: https://learn.microsoft.com/azure/aks/managed-aad#disable-local-accounts"
+        Write-Host "##[warning]The next command (az aks get-credentials) fails as local accounts are disabled: https://learn.microsoft.com/azure/aks/managed-aad#disable-local-accounts"
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --admin --overwrite-existing
 
 
@@ -373,7 +371,7 @@ jobs:
         kubectl config unset contexts.$(aksName)-admin
         kubelogin remove-tokens
 
-        Write-Host "##[warning]Next command fails as local accounts are disabled: https://learn.microsoft.com/azure/aks/managed-aad#disable-local-accounts"
+        Write-Host "##[warning]The next command (az aks get-credentials) fails as local accounts are disabled: https://learn.microsoft.com/azure/aks/managed-aad#disable-local-accounts"
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --admin --overwrite-existing
 
   # Fails as admin credentials are not available when local accounts are disabled
@@ -443,7 +441,7 @@ jobs:
         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
 
         kubectl config view
-        Write-Host "##[warning]The next command fails as kubelogin is not installed"
+        Write-Host "##[warning]The next command (kubectl cluster-info) fails as kubelogin is not installed"
         kubectl cluster-info
         kubectl get nodes
 
