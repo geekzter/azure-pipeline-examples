@@ -67,7 +67,6 @@ jobs:
 
   # https://learn.microsoft.com/en-us/azure/aks/managed-aad#disable-local-accounts
   - task: AzureCLI@2
-    condition: succeededOrFailed()
     displayName: 'Disable local accounts'
     name: localAccounts
     inputs:
@@ -401,7 +400,7 @@ jobs:
 
 
 - job: enableLocalAccounts
-  condition: succeededOrFailed()
+  condition: and(succeededOrFailed(),ne(coalesce(dependencies.inspectCluster.outputs['split.aksName'],'empty'),'empty'))
   dependsOn: 
   - inspectCluster
   - kubectlLocalAccountsDisabled
