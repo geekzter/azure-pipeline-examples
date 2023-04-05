@@ -591,27 +591,27 @@ jobs:
       useClusterAdmin: true
 
 
-- job: reDisableLocalAccounts
-  condition: and(succeededOrFailed(),eq(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'))
-  dependsOn: 
-    - inspectCluster
-    - kubectlLocalAccountsEnabled
-    - kubectlTaskLocalAccountsEnabled
-    - kubectlLocalAccountsEnabledTimeout
-    - kubectlTaskLocalAccountsEnabledTimeout
-  displayName: 'Disable Local Accounts'
-  pool:
-    vmImage: 'ubuntu-latest'
-  variables:
-    aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
-    resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
-  steps:
-  - task: AzureCLI@2
-    displayName: 'Re-disable local accounts'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        Write-Host "`nDisabling local accounts on $(aksName)..."
-        az aks update -n $(aksName) -g $(resourceGroupName) --disable-local-accounts
+# - job: reDisableLocalAccounts
+#   condition: and(succeededOrFailed(),eq(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'))
+#   dependsOn: 
+#     - inspectCluster
+#     - kubectlLocalAccountsEnabled
+#     - kubectlTaskLocalAccountsEnabled
+#     - kubectlLocalAccountsEnabledTimeout
+#     - kubectlTaskLocalAccountsEnabledTimeout
+#   displayName: 'Disable Local Accounts'
+#   pool:
+#     vmImage: 'ubuntu-latest'
+#   variables:
+#     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
+#     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
+#   steps:
+#   - task: AzureCLI@2
+#     displayName: 'Re-disable local accounts'
+#     inputs:
+#       azureSubscription: '$(subscriptionConnection)'
+#       scriptType: pscore
+#       scriptLocation: inlineScript
+#       inlineScript: |
+#         Write-Host "`nDisabling local accounts on $(aksName)..."
+#         az aks update -n $(aksName) -g $(resourceGroupName) --disable-local-accounts
