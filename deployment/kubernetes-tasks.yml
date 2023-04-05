@@ -1,0 +1,73 @@
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+variables:
+- group: 'kubernetes' # should contain subscriptionConnection, aksId
+
+steps:
+- pwsh: |
+    $aksIdElements = '$(aksId)'.Split('/')
+    $aksName = $aksIdElements[8]
+    $resourceGroupName = $aksIdElements[4]
+    Write-Host "aksId: $(aksId)"
+    Write-Host "aksName: ${aksName}"
+    Write-Host "resourceGroupName: ${resourceGroupName}"
+    Write-Host "##vso[task.setvariable variable=aksName;isOutput=true]${aksName}"
+    Write-Host "##vso[task.setvariable variable=resourceGroupName;isOutput=true]${resourceGroupName}"
+  displayName: 'Prepare variables'
+  name: split
+
+- task: Kubernetes@1
+  continueOnError: true 
+  displayName: 'Kubernetes@1'
+  inputs:
+    connectionType: 'Azure Resource Manager'
+    azureSubscriptionEndpoint: $(subscriptionConnection)
+    azureResourceGroup: $(split.resourceGroupName)
+    kubernetesCluster: $(split.aksName)
+    command: 'get'
+    arguments: nodes
+    useClusterAdmin: false
+
+- task: KubernetesManifest@1
+  continueOnError: true
+  displayName: KubernetesManifest@1
+  inputs:
+    action: 'deploy'
+    connectionType: 'Azure Resource Manager'
+    azureSubscriptionConnection: '$(subscriptionConnection)'
+    azureResourceGroup: $(split.resourceGroupName)
+    kubernetesCluster: $(split.aksName)
+
+- task: HelmDeploy@0
+  continueOnError: true
+  displayName: KubernetesManifest@1
+  inputs:
+    connectionType: 'Azure Resource Manager'
+    azureSubscriptionConnection: '$(subscriptionConnection)'
+    azureResourceGroup: $(split.resourceGroupName)
+    kubernetesCluster: $(split.aksName)
+
+- task: HelmDeploy@0
+  continueOnError: true
+  displayName: HelmDeploy@0
+  inputs:
+    connectionType: 'Azure Resource Manager'
+    azureSubscriptionConnection: '$(subscriptionConnection)'
+    azureResourceGroup: $(split.resourceGroupName)
+    kubernetesCluster: $(split.aksName)
+
+- task: AzureFunctionOnKubernetes@1
+  continueOnError: true
+  displayName: AzureFunctionOnKubernetes@1
+  inputs:
+    connectionType: 'Azure Resource Manager'
+    azureSubscriptionConnection: '$(subscriptionConnection)'
+    azureResourceGroup: $(split.resourceGroupName)
+    kubernetesCluster: $(split.aksName)
