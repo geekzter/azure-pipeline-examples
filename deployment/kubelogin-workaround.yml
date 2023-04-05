@@ -23,10 +23,6 @@ jobs:
         Write-Error "aksId variable is not set"
         exit 1
       }
-      if ([string]::isNullOrEmpty('($subscriptionConnection)') {
-        Write-Error "subscriptionConnection variable is not set"
-        exit 1
-      }
       $aksIdElements = '$(aksId)'.Split('/')
       if ($aksIdElements.Count -ne 9) {
         Write-Error "'$(aksId)'' is not a valid AKS resource id"
