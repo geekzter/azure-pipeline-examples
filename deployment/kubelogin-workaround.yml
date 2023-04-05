@@ -53,7 +53,7 @@ jobs:
         
         $cluster | Format-List
         if (!($cluster.enableAzureRbac)) {
-          Write-Error "Azure RBAC is not enabled on $(split.aksName)"
+          Write-Host "##vso[task.logissue type=error]Azure RBAC is not enabled on $(split.aksName)"
           exit 1
         }
 
@@ -68,7 +68,7 @@ jobs:
         $roleAssignments | Format-Table -AutoSize
         $roleAssignments | Where-Object {$_.Role -match "Kubernetes"} | Set-Variable aksRoleAssignments
         if ($aksRoleAssignments.Count -eq 0) {
-          Write-Host "##vso[task.logissue type=error]No AKS RBAC assignments found for the Service Connection"
+          Write-Host "##vso[task.logissue type=error]No AKS RBAC assignments found on $(split.aksName) for the Service Connection"
           exit 1
         }
 
