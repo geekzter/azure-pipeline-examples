@@ -19,7 +19,19 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
   - pwsh: |
+      if ([string]::isNullOrEmpty('($aksId)') {
+        Write-Error "aksId variable is not set"
+        exit 1
+      }
+      if ([string]::isNullOrEmpty('($subscriptionConnection)') {
+        Write-Error "subscriptionConnection variable is not set"
+        exit 1
+      }
       $aksIdElements = '$(aksId)'.Split('/')
+      if ($aksIdElements.Count -ne 9) {
+        Write-Error "'$(aksId)'' is not a valid AKS resource id"
+        exit 1
+      }
       $aksName = $aksIdElements[8]
       $resourceGroupName = $aksIdElements[4]
       Write-Host "aksId: $(aksId)"
