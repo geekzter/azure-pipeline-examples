@@ -68,7 +68,8 @@ jobs:
         $roleAssignments | Format-Table -AutoSize
         $roleAssignments | Where-Object {$_.Role -match "Kubernetes"} | Set-Variable aksRoleAssignments
         if ($aksRoleAssignments.Count -eq 0) {
-          Write-Host "##vso[task.logissue type=warning]No AKS role assignments found for the Service Connection"
+          Write-Host "##vso[task.logissue type=error]No AKS role assignments found for the Service Connection"
+          exit 1
         }
 
         if ($cluster.powerState -ne "Running") {
