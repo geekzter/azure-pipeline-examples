@@ -19,7 +19,7 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
   - pwsh: |
-      if ([string]::isNullOrEmpty('($aksId)') {
+      if ([string]::isNullOrEmpty('($aksId)')) {
         Write-Error "aksId variable is not set"
         exit 1
       }
