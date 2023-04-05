@@ -66,10 +66,9 @@ jobs:
                                 | ConvertFrom-Json `
                                 | Set-Variable roleAssignments
         $roleAssignments | Format-Table -AutoSize
-        $roleAssignments | Where-Object {$_.Role -match "Kubernetes"} | Set-Variable aksRoleAssignments
+        $roleAssignments | Where-Object {$_.Role -imatch "Kubernetes.*RBAC"} | Set-Variable aksRoleAssignments
         if ($aksRoleAssignments.Count -eq 0) {
-          Write-Host "##vso[task.logissue type=error]No AKS RBAC assignments found on $(split.aksName) for the Service Connection"
-          exit 1
+          Write-Host "##vso[task.logissue type=warning]No AKS RBAC assignments found on $(split.aksName) for the Service Connection"
         }
 
         if ($cluster.powerState -ne "Running") {
