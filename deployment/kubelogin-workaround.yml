@@ -412,7 +412,7 @@ jobs:
 
 
 - job: enableLocalAccounts
-  condition: and(succeededOrFailed(),ne(coalesce(dependencies.inspectCluster.outputs['split.aksName'],'empty'),'empty'))
+  condition: and(succeededOrFailed(),ne(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'empty'),'empty'))
   dependsOn: 
   - inspectCluster
   - kubectlLocalAccountsDisabled
@@ -440,7 +440,7 @@ jobs:
 
 # TODO: Add timeout repro when kubelogin is installed, but not configured
 - job: kubectlLocalAccountsEnabledTimeout
-  condition: and(succeededOrFailed(),ne(coalesce(dependencies.inspectCluster.outputs['split.aksName'],'empty'),'empty'))
+  condition: and(succeededOrFailed(),ne(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'empty'),'empty'))
   dependsOn: 
   - inspectCluster
   - enableLocalAccounts
@@ -479,7 +479,7 @@ jobs:
         kubectl get nodes
 
 - job: kubectlTaskLocalAccountsEnabledTimeout
-  condition: and(succeededOrFailed(),ne(coalesce(dependencies.inspectCluster.outputs['split.aksName'],'empty'),'empty'))
+  condition: and(succeededOrFailed(),ne(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'empty'),'empty'))
   dependsOn: 
   - inspectCluster
   - enableLocalAccounts
@@ -521,7 +521,7 @@ jobs:
 
 
 - job: kubectlLocalAccountsEnabled
-  condition: and(succeededOrFailed(),ne(coalesce(dependencies.inspectCluster.outputs['split.aksName'],'empty'),'empty'))
+  condition: and(succeededOrFailed(),ne(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'empty'),'empty'))
   dependsOn: 
   - inspectCluster
   - enableLocalAccounts
@@ -572,7 +572,7 @@ jobs:
 
 
 - job: kubectlTaskLocalAccountsEnabled
-  condition: and(succeededOrFailed(),ne(coalesce(dependencies.inspectCluster.outputs['split.aksName'],'empty'),'empty'))
+  condition: and(succeededOrFailed(),ne(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'empty'),'empty'))
   dependsOn: 
   - inspectCluster
   - enableLocalAccounts
@@ -611,7 +611,7 @@ jobs:
 
 
 - job: reDisableLocalAccounts
-  condition: and(succeededOrFailed(),eq(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'),ne(coalesce(dependencies.inspectCluster.outputs['split.aksName'],'empty'),'empty'))
+  condition: and(succeededOrFailed(),eq(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'),ne(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'empty'),'empty'))
   dependsOn: 
     - inspectCluster
     - kubectlLocalAccountsEnabled
