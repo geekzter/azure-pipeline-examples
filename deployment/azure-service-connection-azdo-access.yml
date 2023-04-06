@@ -29,13 +29,12 @@ jobs:
         Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
         $apiVersion = "7.1-preview.1"
         $apiUrl = "$(System.CollectionUri)/_apis/distributedtask/pools?api-version=${apiVersion}"
-        $requestHeaders = @{
-            Accept = "application/json"
-            Authorization = "Bearer $aadToken"
-            "Content-Type" = "application/json"
-        }
         Invoke-RestMethod -Uri $apiUrl `
-                          -Headers $requestHeaders `
+                          -Headers @{
+                              Accept         = "application/json"
+                              Authorization  = "Bearer $aadToken"
+                              "Content-Type" = "application/json"
+                          } `
                           -Method Get `
                           | Select-Object -ExpandProperty value `
                           | Select-Object id, name
@@ -80,7 +79,7 @@ jobs:
                               client_id     = $env:servicePrincipalId
                               client_secret = $env:servicePrincipalKey
                               resource      = "499b84ac-1321-427f-aa17-267ca6975798"
-                            } `
+                          } `
                           -Headers @{"Content-Type"="application/x-www-form-urlencoded"} `
                           | Select-Object -ExpandProperty access_token `
                           | Set-Variable aadToken
@@ -88,13 +87,12 @@ jobs:
         Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
         $apiVersion = "7.1-preview.1"
         $apiUrl = "$(System.CollectionUri)/_apis/distributedtask/pools?api-version=${apiVersion}"
-        $requestHeaders = @{
-            Accept = "application/json"
-            Authorization = "Bearer $aadToken"
-            "Content-Type" = "application/json"
-        }
         Invoke-RestMethod -Uri $apiUrl `
-                          -Headers $requestHeaders `
+                          -Headers @{
+                              Accept         = "application/json"
+                              Authorization  = "Bearer $aadToken"
+                              "Content-Type" = "application/json"
+                          } `
                           -Method Get `
                           | Select-Object -ExpandProperty value `
                           | Select-Object id, name
@@ -116,8 +114,10 @@ jobs:
                               client_id     = $env:servicePrincipalId
                               client_secret = $env:servicePrincipalKey
                               resource      = "499b84ac-1321-427f-aa17-267ca6975798"
-                            } `
-                          -Headers @{"Content-Type"="application/x-www-form-urlencoded"} `
+                          } `
+                          -Headers @{
+                              "Content-Type" = "application/x-www-form-urlencoded"
+                          } `
                           | Select-Object -ExpandProperty access_token `
                           | Set-Item env:AZURE_DEVOPS_EXT_PAT
 
