@@ -78,7 +78,8 @@ jobs:
                               grant_type    = "client_credentials"
                               client_id     = $env:servicePrincipalId
                               client_secret = $env:servicePrincipalKey
-                              resource      = "499b84ac-1321-427f-aa17-267ca6975798"
+                              # resource      = "499b84ac-1321-427f-aa17-267ca6975798"
+                              scope         = "499b84ac-1321-427f-aa17-267ca6975798/.default"
                           } `
                           -Headers @{"Content-Type"="application/x-www-form-urlencoded"} `
                           | Select-Object -ExpandProperty access_token `
