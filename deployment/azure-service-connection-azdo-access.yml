@@ -80,7 +80,9 @@ jobs:
                               client_secret = $env:servicePrincipalKey
                               resource      = "499b84ac-1321-427f-aa17-267ca6975798"
                           } `
-                          -Headers @{"Content-Type"="application/x-www-form-urlencoded"} `
+                          -Headers @{
+                              "Content-Type" = "application/x-www-form-urlencoded"
+                          } `
                           | Select-Object -ExpandProperty access_token `
                           | Set-Variable aadToken
 
