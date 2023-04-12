@@ -54,15 +54,6 @@ steps:
     azureResourceGroup: $(split.resourceGroupName)
     kubernetesCluster: $(split.aksName)
 
-- task: HelmDeploy@0
-  continueOnError: true
-  displayName: HelmDeploy@0
-  inputs:
-    connectionType: 'Azure Resource Manager'
-    azureSubscriptionConnection: '$(subscriptionConnection)'
-    azureResourceGroup: $(split.resourceGroupName)
-    kubernetesCluster: $(split.aksName)
-
 - task: AzureFunctionOnKubernetes@1
   continueOnError: true
   displayName: AzureFunctionOnKubernetes@1
