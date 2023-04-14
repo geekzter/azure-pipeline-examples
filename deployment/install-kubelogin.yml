@@ -51,8 +51,10 @@ steps:
     Write-Host "`nDownloading kubelogin from $($asset.browser_download_url)..."
     Invoke-Webrequest -Uri $asset.browser_download_url -OutFile $zip -UseBasicParsing
     Expand-Archive $zip -DestinationPath .
-    Get-ChildItem -Path . -Filter kubelogin -Recurse -Force | Set-Variable kubeloginFile 
-    chmod +X $kubeloginFile.FullName
+    if (!$IsWindows) {
+      Get-ChildItem -Path . -Filter kubelogin -Recurse -Force | Set-Variable kubeloginFile 
+      chmod +X $kubeloginFile.FullName
+    }
     Write-Host "Installed kubelogin in $($kubeloginFile.DirectoryName)"
 
     # Add kubelogin to PATH
