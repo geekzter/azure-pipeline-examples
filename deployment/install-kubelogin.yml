@@ -5,9 +5,32 @@ parameters:
 
 steps:
 - pwsh: |
-    # Get latest release for Linux amd64
-    $zip = "kubelogin-linux-amd64.zip"
+    # Determine package name for OS + architecture
+    if ($IsWindows) {
+        $zip = "kubelogin-windows-"
+        $zip += $env:PROCESSOR_ARCHITECTURE.ToLower()
+        $zip += ".zip"
+    }
+    if ($IsMacOS) {
+        $zip = "kubelogin-darwin-"
+        $zip += (($PSVersionTable.OS -imatch "ARM64") -and $MajorVersion -ge 3) ? "arm64" : "amd64"
+        $zip += ".zip"
+    }
+    if ($IsLinux) {
+        $zip = "kubelogin-linux-"
+        $arch = $(uname -m)
+        if ($arch -in @("arm", "arm64")) {
+            $zip += "arm64"
+        } elseif ($arch -eq "x86_64") {
+            $zip += "amd64"
+        } else {
+            Write-Warning "Unknown architecture '${arch}', defaulting to x64"
+            $zip += "amd64"
+        }
+        $zip += ".zip"
+    }
 
+    # Get latest release
     Write-Host "`nDetermining latest release of kubelogin..."
     Invoke-RestMethod -Uri https://api.github.com/repos/Azure/kubelogin/releases | Set-Variable releases
     Write-Host "kubelogin releases:"
