@@ -7,7 +7,7 @@ steps:
 - pwsh: |
     # Determine package name for OS + architecture
     if ($IsWindows) {
-        $zip = "kubelogin-windows-"
+        $zip = "kubelogin-win-"
         $zip += $env:PROCESSOR_ARCHITECTURE.ToLower()
         $zip += ".zip"
     }
