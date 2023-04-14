@@ -97,6 +97,7 @@ jobs:
         Write-Host "##vso[task.setvariable variable=disableLocalAccountsOriginalState;isOutput=true]${disableLocalAccounts}"
 
 - job: kubectlLocalAccountsDisabledTimeout
+  continueOnError: true
   dependsOn: inspectCluster
   displayName: 'kubectl (local accounts disabled, times out)'
   timeoutInMinutes: 2
@@ -277,6 +278,7 @@ jobs:
 
 
 - job: kubectlTaskLocalAccountsDisabledTimeout
+  continueOnError: true
   dependsOn: inspectCluster
   displayName: 'Kubernetes@1 (local accounts disabled, times out)'
   timeoutInMinutes: 2
@@ -443,6 +445,7 @@ jobs:
 # Timeout repro when kubelogin is installed, but not configured
 - job: kubectlLocalAccountsEnabledTimeout
   condition: and(succeededOrFailed(),ne(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'empty'),'empty'))
+  continueOnError: true
   dependsOn: 
   - inspectCluster
   - enableLocalAccounts
@@ -482,6 +485,7 @@ jobs:
 
 - job: kubectlTaskLocalAccountsEnabledTimeout
   condition: and(succeededOrFailed(),ne(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'empty'),'empty'))
+  continueOnError: true
   dependsOn: 
   - inspectCluster
   - enableLocalAccounts
