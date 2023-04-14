@@ -7,6 +7,7 @@ schedules:
     include:
     - main
 
+jobs:
 - job: 
   displayName: 'Test install-kubelogin.yml'
   strategy:
