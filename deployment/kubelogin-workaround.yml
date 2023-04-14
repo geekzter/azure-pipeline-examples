@@ -440,6 +440,7 @@ jobs:
         Write-Host "`nEnabling local accounts on $(aksName)..."
         az aks wait   -n $(aksName) -g $(resourceGroupName) --updated
         az aks update -n $(aksName) -g $(resourceGroupName) --enable-local-accounts
+        az aks wait   -n $(aksName) -g $(resourceGroupName) --updated
 
 
 # Timeout repro when kubelogin is installed, but not configured
@@ -639,4 +640,6 @@ jobs:
       scriptLocation: inlineScript
       inlineScript: |
         Write-Host "`nDisabling local accounts on $(aksName)..."
+        az aks wait   -n $(aksName) -g $(resourceGroupName) --updated
         az aks update -n $(aksName) -g $(resourceGroupName) --disable-local-accounts
+        az aks wait   -n $(aksName) -g $(resourceGroupName) --updated
