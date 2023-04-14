@@ -12,11 +12,11 @@ jobs:
   displayName: 'Test install-kubelogin.yml'
   strategy:
     matrix:
-    macOS:
+      macOS:
         vmImage: 'macos-latest'
-    ubuntu:
+      ubuntu:
         vmImage: 'ubuntu-latest'
-    Windows:
+      Windows:
         vmImage: 'windows-latest'
   pool:
     vmImage: $(vmImage)
