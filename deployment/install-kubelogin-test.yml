@@ -8,15 +8,15 @@ schedules:
     - main
 
 - job: 
-    displayName: 'Test install-kubelogin.yml'
-    strategy:
-      matrix:
-        macOS:
-          vmImage: 'macos-latest'
-        ubuntu:
-          vmImage: 'ubuntu-latest'
-        Windows:
-          vmImage: 'windows-latest'
+  displayName: 'Test install-kubelogin.yml'
+  strategy:
+    matrix:
+    macOS:
+        vmImage: 'macos-latest'
+    ubuntu:
+        vmImage: 'ubuntu-latest'
+    Windows:
+        vmImage: 'windows-latest'
   pool:
     vmImage: $(vmImage)
     steps:
