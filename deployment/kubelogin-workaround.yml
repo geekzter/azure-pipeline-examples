@@ -73,9 +73,9 @@ jobs:
 
         if ($cluster.powerState -ne "Running") {
           Write-Host "Starting cluster..."
-          az-aks wait  -n $(split.aksName) -g $(split.resourceGroupName) --updated
+          az aks wait  -n $(split.aksName) -g $(split.resourceGroupName) --updated
           az aks start -n $(split.aksName) -g $(split.resourceGroupName)
-          az-aks wait  -n $(split.aksName) -g $(split.resourceGroupName) --updated
+          az aks wait  -n $(split.aksName) -g $(split.resourceGroupName) --updated
         }
 
   # https://learn.microsoft.com/en-us/azure/aks/managed-aad#disable-local-accounts
@@ -436,7 +436,7 @@ jobs:
       scriptLocation: inlineScript
       inlineScript: |
         Write-Host "`nEnabling local accounts on $(aksName)..."
-        az-aks wait   -n $(aksName) -g $(resourceGroupName) --updated
+        az aks wait   -n $(aksName) -g $(resourceGroupName) --updated
         az aks update -n $(aksName) -g $(resourceGroupName) --enable-local-accounts
 
 
