@@ -18,7 +18,8 @@ jobs:
         vmImage: 'ubuntu-latest'
       Windows:
         vmImage: 'windows-latest'
+    maxParallel: 3
   pool:
     vmImage: $(vmImage)
-    steps:
-    - template: install-kubelogin.yml
+  steps:
+  - template: install-kubelogin.yml
