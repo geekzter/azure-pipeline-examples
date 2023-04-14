@@ -437,7 +437,7 @@ jobs:
         az aks update -n $(aksName) -g $(resourceGroupName) --enable-local-accounts
 
 
-# TODO: Add timeout repro when kubelogin is installed, but not configured
+# Timeout repro when kubelogin is installed, but not configured
 - job: kubectlLocalAccountsEnabledTimeout
   condition: and(succeededOrFailed(),ne(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'empty'),'empty'))
   dependsOn: 
