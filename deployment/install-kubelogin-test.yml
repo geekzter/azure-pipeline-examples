@@ -1,0 +1,25 @@
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: 
+  displayName: 'Test install-kubelogin.yml'
+  strategy:
+    matrix:
+      macOS:
+        vmImage: 'macos-latest'
+      Ubuntu:
+        vmImage: 'ubuntu-latest'
+      Windows:
+        vmImage: 'windows-latest'
+    maxParallel: 3
+  pool:
+    vmImage: $(vmImage)
+  steps:
+  - template: install-kubelogin.yml
