@@ -28,7 +28,7 @@ jobs:
 
         Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
         $apiVersion = "7.1-preview.1"
-        $apiUrl = "$(System.CollectionUri)/_apis/distributedtask/pools?api-version=${apiVersion}"
+        $apiUrl = "$(System.CollectionUri)_apis/distributedtask/pools?api-version=${apiVersion}"
         Invoke-RestMethod -Uri $apiUrl `
                           -Headers @{
                               Accept         = "application/json"
@@ -88,7 +88,7 @@ jobs:
 
         Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
         $apiVersion = "7.1-preview.1"
-        $apiUrl = "$(System.CollectionUri)/_apis/distributedtask/pools?api-version=${apiVersion}"
+        $apiUrl = "$(System.CollectionUri)_apis/distributedtask/pools?api-version=${apiVersion}"
         Invoke-RestMethod -Uri $apiUrl `
                           -Headers @{
                               Accept         = "application/json"
@@ -127,7 +127,7 @@ jobs:
 
         Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
         $apiVersion = "7.1-preview.1"
-        $apiUrl = "$(System.CollectionUri)/_apis/distributedtask/pools?api-version=${apiVersion}"
+        $apiUrl = "$(System.CollectionUri)_apis/distributedtask/pools?api-version=${apiVersion}"
         Invoke-RestMethod -Uri $apiUrl `
                           -Headers @{
                               Accept         = "application/json"
@@ -165,7 +165,7 @@ jobs:
 
         Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
         $apiVersion = "7.1-preview.1"
-        $apiUrl = "$(System.CollectionUri)/_apis/distributedtask/pools?api-version=${apiVersion}"
+        $apiUrl = "$(System.CollectionUri)_apis/distributedtask/pools?api-version=${apiVersion}"
         Invoke-RestMethod -Uri $apiUrl `
                           -Headers @{
                               Accept         = "application/json"
