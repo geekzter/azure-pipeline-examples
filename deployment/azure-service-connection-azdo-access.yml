@@ -64,7 +64,7 @@ jobs:
       failOnStandardError: true
 
   - task: AzureCLI@2
-    displayName: 'SP client credentials -> REST API'
+    displayName: 'SP client credentials -> REST API (resource)'
     inputs:
       addSpnToEnvironment: true
       azureSubscription: '$(subscriptionConnection)'
@@ -79,6 +79,83 @@ jobs:
                               client_id     = $env:servicePrincipalId
                               client_secret = $env:servicePrincipalKey
                               resource      = "499b84ac-1321-427f-aa17-267ca6975798"
+                          } `
+                          -Headers @{
+                              "Content-Type" = "application/x-www-form-urlencoded"
+                          } `
+                          | Select-Object -ExpandProperty access_token `
+                          | Set-Variable aadToken
+
+        Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
+        $apiVersion = "7.1-preview.1"
+        $apiUrl = "$(System.CollectionUri)/_apis/distributedtask/pools?api-version=${apiVersion}"
+        Invoke-RestMethod -Uri $apiUrl `
+                          -Headers @{
+                              Accept         = "application/json"
+                              Authorization  = "Bearer $aadToken"
+                              "Content-Type" = "application/json"
+                          } `
+                          -Method Get `
+                          | Select-Object -ExpandProperty value `
+                          | Select-Object id, name
+      failOnStandardError: true
+
+  - task: AzureCLI@2
+    continueOnError: true
+    displayName: 'SP client credentials -> REST API (scope)'
+    inputs:
+      addSpnToEnvironment: true
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        Write-Host "Obtaining access token for Service Connection identity..."
+        Invoke-RestMethod -Uri "https://login.microsoftonline.com/${env:tenantId}/oauth2/token" `
+                          -Method Post `
+                          -Body @{
+                              grant_type    = "client_credentials"
+                              client_id     = $env:servicePrincipalId
+                              client_secret = $env:servicePrincipalKey
+                              scope         = "499b84ac-1321-427f-aa17-267ca6975798/.default"
+                          } `
+                          -Headers @{
+                              "Content-Type" = "application/x-www-form-urlencoded"
+                          } `
+                          | Select-Object -ExpandProperty access_token `
+                          | Set-Variable aadToken
+
+        Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
+        $apiVersion = "7.1-preview.1"
+        $apiUrl = "$(System.CollectionUri)/_apis/distributedtask/pools?api-version=${apiVersion}"
+        Invoke-RestMethod -Uri $apiUrl `
+                          -Headers @{
+                              Accept         = "application/json"
+                              Authorization  = "Bearer $aadToken"
+                              "Content-Type" = "application/json"
+                          } `
+                          -Method Get `
+                          | Select-Object -ExpandProperty value `
+                          | Select-Object id, name
+      failOnStandardError: true
+
+  - task: AzureCLI@2
+    continueOnError: true
+    displayName: 'SP client credentials -> REST API (resource+scope)'
+    inputs:
+      addSpnToEnvironment: true
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        Write-Host "Obtaining access token for Service Connection identity..."
+        Invoke-RestMethod -Uri "https://login.microsoftonline.com/${env:tenantId}/oauth2/token" `
+                          -Method Post `
+                          -Body @{
+                              grant_type    = "client_credentials"
+                              client_id     = $env:servicePrincipalId
+                              client_secret = $env:servicePrincipalKey
+                              resource      = "499b84ac-1321-427f-aa17-267ca6975798"
+                              scope         = ".default"
                           } `
                           -Headers @{
                               "Content-Type" = "application/x-www-form-urlencoded"
