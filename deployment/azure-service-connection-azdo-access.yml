@@ -134,9 +134,9 @@ jobs:
                               Authorization  = "Bearer $aadToken"
                               "Content-Type" = "application/json"
                           } `
-                          -Method Get `
-                          | Select-Object -ExpandProperty value `
-                          | Select-Object id, name
+                          -Method Get 
+                          # | Select-Object -ExpandProperty value `
+                          # | Select-Object id, name
       failOnStandardError: true
 
   - task: AzureCLI@2
