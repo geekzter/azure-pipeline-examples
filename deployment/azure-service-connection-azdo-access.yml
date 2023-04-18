@@ -71,6 +71,8 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
+        . $(Build.SourcesDirectory)/scripts/functions.ps1
+
         Write-Host "Obtaining access token for Service Connection identity..."
         Invoke-RestMethod -Uri "https://login.microsoftonline.com/${env:tenantId}/oauth2/token" `
                           -Method Post `
@@ -85,6 +87,8 @@ jobs:
                           } `
                           | Select-Object -ExpandProperty access_token `
                           | Set-Variable aadToken
+
+        Decode-JWT $aadToken
 
         Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
         $apiVersion = "7.1-preview.1"
@@ -109,6 +113,8 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
+        . $(Build.SourcesDirectory)/scripts/functions.ps1
+
         Set-PSDebug -Trace 1
         Write-Host "Obtaining access token for Service Connection identity..."
         Invoke-RestMethod -Uri "https://login.microsoftonline.com/${env:tenantId}/oauth2/token" `
@@ -117,13 +123,16 @@ jobs:
                               grant_type    = "client_credentials"
                               client_id     = $env:servicePrincipalId
                               client_secret = $env:servicePrincipalKey
-                              scope         = "499b84ac-1321-427f-aa17-267ca6975798/.default"
+                              scope         = "499b84ac-1321-427f-aa17-267ca6975798"
+                              # scope         = "499b84ac-1321-427f-aa17-267ca6975798/.default"
                           } `
                           -Headers @{
                               "Content-Type" = "application/x-www-form-urlencoded"
                           } `
                           | Select-Object -ExpandProperty access_token `
                           | Set-Variable aadToken
+
+        Decode-JWT $aadToken
 
         Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
         $apiVersion = "7.1-preview.1"
@@ -147,6 +156,8 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
+        . $(Build.SourcesDirectory)/scripts/functions.ps1
+
         Write-Host "Obtaining access token for Service Connection identity..."
         Invoke-RestMethod -Uri "https://login.microsoftonline.com/${env:tenantId}/oauth2/token" `
                           -Method Post `
@@ -162,6 +173,8 @@ jobs:
                           } `
                           | Select-Object -ExpandProperty access_token `
                           | Set-Variable aadToken
+
+        Decode-JWT $aadToken
 
         Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
         $apiVersion = "7.1-preview.1"
