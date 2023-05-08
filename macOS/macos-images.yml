@@ -8,16 +8,6 @@ schedules:
     - main
 
 jobs:
-- job: macOS1015
-  pool:
-    vmImage: 'macOS-10.15'
-  steps:
-  - bash: |
-      echo Hello from macOS Catalina
-      sw_vers
-  - pwsh: |
-      Write-Host "`$PSVersionTable.OS"
-      $PSVersionTable.OS
 - job: macOS11
   pool:
     vmImage: 'macOS-11'
