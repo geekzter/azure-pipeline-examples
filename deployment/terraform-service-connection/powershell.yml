@@ -73,7 +73,9 @@ jobs:
                                 'Content-Type' = 'application/json'
                               } `
                               -Uri "${env:ARM_OIDC_REQUEST_URL}" `
-                              -Method Post | Set-Item env:ARM_OIDC_TOKEN
+                              -Method Post | Set-Variable oidcTokenResponse
+            $oidcTokenResponse
+            $oidcTokenResponse | Set-Item env:ARM_OIDC_TOKEN
             if (!$env:ARM_OIDC_TOKEN) {
               Write-Error "Could not get OIDC token"
               exit 1
