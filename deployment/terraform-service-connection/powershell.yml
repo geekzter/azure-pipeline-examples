@@ -58,19 +58,12 @@ jobs:
           Write-Host "Requesting OIDC token from Azure DevOps REST API at $env:ARM_OIDC_REQUEST_URL"
           $env:ARM_OIDC_REQUEST_TOKEN = '$(System.AccessToken)'
 
-          $VerbosePreference = 'Continue'
-          $DebugPreference = 'Continue'
-          # Invoke-RestMethod -Headers @{
-          #                     Authorization  = "Bearer $(System.AccessToken)"
-          #                   } `
-          #                   -Uri $env:ARM_OIDC_REQUEST_URL `
-          #                   -Method Post
-
-          Invoke-WebRequest -Headers @{
+          Invoke-RestMethod -Headers @{
                               Authorization  = "Bearer $(System.AccessToken)"
                             } `
                             -Uri $env:ARM_OIDC_REQUEST_URL `
-                            -Method Post
+                            -Method Post -Verbose -Debug
+
 
           # Invoke-RestMethod -Headers @{
           #                     Authorization  = "Bearer $(System.AccessToken)"
