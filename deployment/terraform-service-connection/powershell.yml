@@ -32,7 +32,6 @@ jobs:
   steps:
     - task: AzureCLI@2
       name: azureCLI
-      continueOnError: true
       displayName: 'Terraform with Azure CLI task'
       inputs:
         azureSubscription: '${{ parameters.serviceConnection }}'
@@ -88,6 +87,9 @@ jobs:
             Write-Host "##vso[task.setvariable variable=ARM_OIDC_REQUEST_TOKEN;isoutput=true;issecret=true]${env:ARM_OIDC_REQUEST_TOKEN}"
           }
           
+          # Logging out from Azure CLI
+          az logout
+
           # Run Terraform within task
           terraform init
           terraform apply -auto-approve          
@@ -95,12 +97,12 @@ jobs:
         failOnStandardError: true
         workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
     - pwsh: |
-        $env:ARM_CLIENT_ID=$(azureCLI.ARM_CLIENT_ID)
-        $env:ARM_OIDC_REQUEST_URL=$(azureCLI.ARM_OIDC_REQUEST_URL)
-        $env:ARM_OIDC_REQUEST_TOKEN=$(azureCLI.ARM_OIDC_REQUEST_TOKEN)
-        $env:ARM_OIDC_TOKEN=$(azureCLI.ARM_OIDC_TOKEN)
-        $env:ARM_TENANT_ID=$(azureCLI.ARM_TENANT_ID)
-        $env:ARM_SUBSCRIPTION_ID=$(azureCLI.ARM_SUBSCRIPTION_ID)
+        $env:ARM_CLIENT_ID='$(azureCLI.ARM_CLIENT_ID)'
+        $env:ARM_OIDC_REQUEST_URL='$(azureCLI.ARM_OIDC_REQUEST_URL)'
+        $env:ARM_OIDC_REQUEST_TOKEN='$(azureCLI.ARM_OIDC_REQUEST_TOKEN)'
+        $env:ARM_OIDC_TOKEN='$(azureCLI.ARM_OIDC_TOKEN)'
+        $env:ARM_TENANT_ID='$(azureCLI.ARM_TENANT_ID)'
+        $env:ARM_SUBSCRIPTION_ID='$(azureCLI.ARM_SUBSCRIPTION_ID)'
 
         terraform init
         terraform apply -auto-approve
