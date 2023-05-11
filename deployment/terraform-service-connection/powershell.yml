@@ -58,28 +58,17 @@ jobs:
           Write-Host "Requesting OIDC token from Azure DevOps REST API at $env:ARM_OIDC_REQUEST_URL"
           $env:ARM_OIDC_REQUEST_TOKEN = '$(System.AccessToken)'
 
-          Invoke-RestMethod -Headers @{
-                              Authorization  = "Bearer $(System.AccessToken)"
+
+          Invoke-WebRequest -Headers @{
+                              Authorization  = "Bearer bla"
                             } `
-                            -Uri $env:ARM_OIDC_REQUEST_URL `
-                            -Method Post -Verbose -Debug
+                            -Uri 'https://dev.azure.com/ericvan/PipelineSamples/_apis/distributedtask/hubs/build/plans/348c3feb-f2b6-46e3-a310-f02d923661d4/jobs/0df11829-723c-52be-8c23-8dd77e9ea2f9/oidctoken?api-version=7.1-preview.1&serviceConnectionId=7fdacada-1485-4763-9a3f-a10a1f2ff66e' `
+                            -Method Post -Verbose -Debug -SkipHttpErrorCheck | Set-Variable response
+          $response.Headers
 
-
-          # Invoke-RestMethod -Headers @{
-          #                     Authorization  = "Bearer $(System.AccessToken)"
-          #                   } `
-          #                   -Uri $env:ARM_OIDC_REQUEST_URL `
-          #                   -Method Get
-
-          # Invoke-RestMethod -Headers @{
-          #                     Authorization  = "Bearer $(System.AccessToken)"
-          #                     "Content-Type" = "application/x-www-form-urlencoded"
-          #                   } `
-          #                   -Body @{
-          #                       serviceConnectionId = $serviceConnectionId
-          #                   } `
-          #                   -Uri $env:ARM_OIDC_REQUEST_URL `
-          #                   -Method Post
+          if ($response.StatusCode -ge 400) {
+            throw $response.StatusDescription
+          }
 
         addSpnToEnvironment: true
         useGlobalConfig: true
