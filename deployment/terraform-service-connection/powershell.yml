@@ -21,10 +21,10 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-    - task: TerraformInstaller@0
-      displayName: 'Install Terraform'
-      inputs:
-        terraformVersion: 'latest'
+    # - task: TerraformInstaller@0
+    #   displayName: 'Install Terraform'
+    #   inputs:
+    #     terraformVersion: 'latest'
     - task: AzureCLI@2
       displayName: 'Terraform with Azure CLI task'
       inputs:
@@ -33,8 +33,25 @@ jobs:
         scriptLocation: inlineScript
         inlineScript: |
           # List environment variables
-          Get-ChildItem -Path Env: -Recurse -Include ARM_*,AZURE_*,ENDPOINT_DATA_*,SYSTEM_*,TF_* | Sort-Object -Property Name | Format-Table -AutoSize
-          # Get-ChildItem -Path Env: -Recurse -Include * | Sort-Object -Property Name
+          # Get-ChildItem -Path Env: -Include * | Sort-Object -Property Name
+          Get-ChildItem -Path Env: -Include ARM_*,AZURE_*,ENDPOINT_DATA_*,SYSTEM_*,TF_* | Sort-Object -Property Name
+
+          Get-ChildItem -Path Env: -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
+                                                            | Select-Object -First 1 -ExpandProperty Name `
+                                                            | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
+                                                            | Set-Variable serviceConnectionId
+
+          # /{{HostName}}/{{ProjectName}}/_apis/distributedtask/hubs/build/plans/{{PlanId}}/jobs/{{JobId}}/oidctoken?api-version=7.1-preview.1&serviceConnectionId={{ServiceConnectionId}}
+          $env:ARM_OIDC_REQUEST_URL = "https://dev.azure.com/$env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI/$env:SYSTEM_TEAMPROJECT/_apis/distributedtask/hubs/build/plans/$env:SYSTEM_PLANID/jobs/$env:SYSTEM_JOBID/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
+          $env:ARM_OIDC_REQUEST_TOKEN = '$(System.AccessToken)'
+
+          Invoke-RestMethod -Headers @{
+                                Accept         = "application/json"
+                                Authorization  = "Bearer $(System.AccessToken)"
+                                "Content-Type" = "application/json"
+                            } `
+                            -Uri $env:ARM_OIDC_REQUEST_URL `
+                            -Method Post
 
         addSpnToEnvironment: true
         useGlobalConfig: true
