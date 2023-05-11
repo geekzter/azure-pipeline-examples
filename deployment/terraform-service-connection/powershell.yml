@@ -1,0 +1,41 @@
+parameters:
+- name: serviceConnection
+  displayName: Azure Service Connection Name
+  type: string
+  default: my-azure-subscription
+
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.workspace }}-$(Build.BuildId)
+
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: terraformSingleStep
+  displayName: 'Same step Azure CLI & Terraform'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+    - task: TerraformInstaller@0
+      displayName: 'Install Terraform'
+      inputs:
+        terraformVersion: 'latest'
+    - task: AzureCLI@2
+      displayName: 'Terraform with Azure CLI task'
+      inputs:
+        azureSubscription: '${{ parameters.serviceConnection }}'
+        scriptType: pwsh
+        scriptLocation: inlineScript
+        inlineScript: |
+          # List environment variables
+          Get-ChildItem -Path Env: -Recurse -Include ALTERNATE_*,ARM_*,AZURE_*,PIPELINE_DEMO_*,SYSTEM_*,TF_* | Sort-Object -Property Name
+
+        addSpnToEnvironment: true
+        useGlobalConfig: true
+        failOnStandardError: true
+        workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'

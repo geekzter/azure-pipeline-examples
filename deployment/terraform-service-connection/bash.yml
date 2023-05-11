@@ -4,6 +4,8 @@ parameters:
   type: string
   default: my-azure-subscription
 
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.workspace }}-$(Build.BuildId)
+
 trigger: none
 schedules:
 - cron: '0 1 * * *'
