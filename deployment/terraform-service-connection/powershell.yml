@@ -39,6 +39,7 @@ jobs:
         scriptLocation: inlineScript
         inlineScript: |
           az account show | ConvertFrom-Json | Set-Variable account
+          $account
           $env:ARM_CLIENT_ID       ??= $account.user.name
           $env:ARM_TENANT_ID       ??= $account.tenantId
           $env:ARM_SUBSCRIPTION_ID ??= $account.id              
