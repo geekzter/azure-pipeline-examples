@@ -60,7 +60,13 @@ jobs:
 
           $VerbosePreference = 'Continue'
           $DebugPreference = 'Continue'
-          Invoke-RestMethod -Headers @{
+          # Invoke-RestMethod -Headers @{
+          #                     Authorization  = "Bearer $(System.AccessToken)"
+          #                   } `
+          #                   -Uri $env:ARM_OIDC_REQUEST_URL `
+          #                   -Method Post
+
+          Invoke-WebRequest -Headers @{
                               Authorization  = "Bearer $(System.AccessToken)"
                             } `
                             -Uri $env:ARM_OIDC_REQUEST_URL `
