@@ -66,51 +66,51 @@ jobs:
           Get-ChildItem -Path Env: -Recurse -Include ARM_*,AZURE_*,ENDPOINT_DATA_*,SYSTEM_*,TF_* | Sort-Object -Property Name | Format-Table
 
           $env:ARM_OIDC_REQUEST_TOKEN = '$(System.AccessToken)'
-          if ($${{ parameters.createIdToken }}) {
+          # if ($${{ parameters.createIdToken }}) {
             Write-Host "`nRequesting OIDC token from Azure DevOps..."
             Invoke-RestMethod -Headers @{
                                 Authorization  = "Bearer ${env:ARM_OIDC_REQUEST_TOKEN}"
                                 'Content-Type' = 'application/json'
                               } `
                               -Uri "${env:ARM_OIDC_REQUEST_URL}" `
-                              -Method Post | Set-Variable oidcTokenResponse
-            $oidcTokenResponse
-            $oidcTokenResponse | Set-Item env:ARM_OIDC_TOKEN
-            if (!$env:ARM_OIDC_TOKEN) {
-              Write-Error "Could not get OIDC token"
-              exit 1
-            }
-            $env:ARM_OIDC_REQUEST_TOKEN = $null
-            $env:ARM_OIDC_REQUEST_URL = $null
-            Write-Host "Using ARM_OIDC_TOKEN to configure Terraform azurerm provider"
-            Write-Host "##vso[task.setvariable variable=ARM_OIDC_TOKEN;isoutput=true;issecret=true]${env:ARM_OIDC_TOKEN}"
-          } else {
-            Write-Host "Using ARM_OIDC_REQUEST_URL and ARM_OIDC_REQUEST_TOKEN to configure Terraform azurerm provider"
-            Write-Host "##vso[task.setvariable variable=ARM_OIDC_REQUEST_TOKEN;isoutput=true;issecret=true]${env:ARM_OIDC_REQUEST_TOKEN}"
-            Write-Host "##vso[task.setvariable variable=ARM_OIDC_REQUEST_URL;isoutput=true]${env:ARM_OIDC_REQUEST_URL}"
-          }
+                              -Method Post #| Set-Variable oidcTokenResponse
+          #   $oidcTokenResponse
+          #   $oidcTokenResponse | Set-Item env:ARM_OIDC_TOKEN
+          #   if (!$env:ARM_OIDC_TOKEN) {
+          #     Write-Error "Could not get OIDC token"
+          #     exit 1
+          #   }
+          #   $env:ARM_OIDC_REQUEST_TOKEN = $null
+          #   $env:ARM_OIDC_REQUEST_URL = $null
+          #   Write-Host "Using ARM_OIDC_TOKEN to configure Terraform azurerm provider"
+          #   Write-Host "##vso[task.setvariable variable=ARM_OIDC_TOKEN;isoutput=true;issecret=true]${env:ARM_OIDC_TOKEN}"
+          # } else {
+          #   Write-Host "Using ARM_OIDC_REQUEST_URL and ARM_OIDC_REQUEST_TOKEN to configure Terraform azurerm provider"
+          #   Write-Host "##vso[task.setvariable variable=ARM_OIDC_REQUEST_TOKEN;isoutput=true;issecret=true]${env:ARM_OIDC_REQUEST_TOKEN}"
+          #   Write-Host "##vso[task.setvariable variable=ARM_OIDC_REQUEST_URL;isoutput=true]${env:ARM_OIDC_REQUEST_URL}"
+          # }
           
-          # Logging out from Azure CLI
-          az logout
+          # # Logging out from Azure CLI
+          # az logout
 
-          # Run Terraform within task
-          terraform init
-          terraform apply -auto-approve          
+          # # Run Terraform within task
+          # terraform init
+          # terraform apply -auto-approve          
         useGlobalConfig: true
         failOnStandardError: true
         workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
-    - pwsh: |
-        $env:ARM_CLIENT_ID='$(azureCLI.ARM_CLIENT_ID)'
-        $env:ARM_TENANT_ID='$(azureCLI.ARM_TENANT_ID)'
-        $env:ARM_SUBSCRIPTION_ID='$(azureCLI.ARM_SUBSCRIPTION_ID)'
-        if ($${{ parameters.createIdToken }}) { 
-          $env:ARM_OIDC_TOKEN='$(azureCLI.ARM_OIDC_TOKEN)'
-        } else {
-          $env:ARM_OIDC_REQUEST_TOKEN='$(azureCLI.ARM_OIDC_REQUEST_TOKEN)'
-          $env:ARM_OIDC_REQUEST_URL='$(azureCLI.ARM_OIDC_REQUEST_URL)'
-        }
+    # - pwsh: |
+    #     $env:ARM_CLIENT_ID='$(azureCLI.ARM_CLIENT_ID)'
+    #     $env:ARM_TENANT_ID='$(azureCLI.ARM_TENANT_ID)'
+    #     $env:ARM_SUBSCRIPTION_ID='$(azureCLI.ARM_SUBSCRIPTION_ID)'
+    #     if ($${{ parameters.createIdToken }}) { 
+    #       $env:ARM_OIDC_TOKEN='$(azureCLI.ARM_OIDC_TOKEN)'
+    #     } else {
+    #       $env:ARM_OIDC_REQUEST_TOKEN='$(azureCLI.ARM_OIDC_REQUEST_TOKEN)'
+    #       $env:ARM_OIDC_REQUEST_URL='$(azureCLI.ARM_OIDC_REQUEST_URL)'
+    #     }
 
-        terraform init
-        terraform apply -auto-approve
-      displayName: Terraform stand-alone
-      workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
+    #     terraform init
+    #     terraform apply -auto-approve
+    #   displayName: Terraform stand-alone
+    #   workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
