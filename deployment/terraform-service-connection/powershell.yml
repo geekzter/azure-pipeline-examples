@@ -78,14 +78,14 @@ jobs:
               Write-Error "Could not get OIDC token"
               exit 1
             }
-            $env:ARM_OIDC_REQUEST_URL = $null
             $env:ARM_OIDC_REQUEST_TOKEN = $null
+            $env:ARM_OIDC_REQUEST_URL = $null
             Write-Host "Using ARM_OIDC_TOKEN to configure Terraform azurerm provider"
             Write-Host "##vso[task.setvariable variable=ARM_OIDC_TOKEN;isoutput=true;issecret=true]${env:ARM_OIDC_TOKEN}"
           } else {
             Write-Host "Using ARM_OIDC_REQUEST_URL and ARM_OIDC_REQUEST_TOKEN to configure Terraform azurerm provider"
-            Write-Host "##vso[task.setvariable variable=ARM_OIDC_REQUEST_URL;isoutput=true]${env:ARM_OIDC_REQUEST_URL}"
             Write-Host "##vso[task.setvariable variable=ARM_OIDC_REQUEST_TOKEN;isoutput=true;issecret=true]${env:ARM_OIDC_REQUEST_TOKEN}"
+            Write-Host "##vso[task.setvariable variable=ARM_OIDC_REQUEST_URL;isoutput=true]${env:ARM_OIDC_REQUEST_URL}"
           }
           
           # Logging out from Azure CLI
@@ -99,12 +99,14 @@ jobs:
         workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
     - pwsh: |
         $env:ARM_CLIENT_ID='$(azureCLI.ARM_CLIENT_ID)'
-        $env:ARM_OIDC_REQUEST_URL='$(azureCLI.ARM_OIDC_REQUEST_URL)'
         $env:ARM_TENANT_ID='$(azureCLI.ARM_TENANT_ID)'
         $env:ARM_SUBSCRIPTION_ID='$(azureCLI.ARM_SUBSCRIPTION_ID)'
-        Get-ChildItem -Path Env: -Recurse -Include ARM_* | Sort-Object -Property Name | Format-Table
-        $env:ARM_OIDC_REQUEST_TOKEN='$(azureCLI.ARM_OIDC_REQUEST_TOKEN)'
-        $env:ARM_OIDC_TOKEN='$(azureCLI.ARM_OIDC_TOKEN)'
+        if ($${{ parameters.createIdToken }}) { 
+          $env:ARM_OIDC_TOKEN='$(azureCLI.ARM_OIDC_TOKEN)'
+        } else {
+          $env:ARM_OIDC_REQUEST_TOKEN='$(azureCLI.ARM_OIDC_REQUEST_TOKEN)'
+        $env:ARM_OIDC_REQUEST_URL='$(azureCLI.ARM_OIDC_REQUEST_URL)'
+        }
 
         terraform init
         terraform apply -auto-approve
