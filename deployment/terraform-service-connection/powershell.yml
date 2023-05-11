@@ -74,7 +74,6 @@ jobs:
                               } `
                               -Uri "${env:ARM_OIDC_REQUEST_URL}" `
                               -Method Post | Set-Variable oidcTokenResponse
-            $oidcTokenResponse | Format-List
             $env:ARM_OIDC_TOKEN = $oidcTokenResponse.oidcToken
             if (!$env:ARM_OIDC_TOKEN) {
               Write-Error "Could not get OIDC token"
