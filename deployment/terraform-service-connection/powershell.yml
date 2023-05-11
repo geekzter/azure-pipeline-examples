@@ -70,6 +70,8 @@ jobs:
                               } `
                               -Uri "${env:ARM_OIDC_REQUEST_URL}" `
                               -Method Post | Set-Item env:ARM_OIDC_TOKEN
+            $env:ARM_OIDC_REQUEST_URL = $null
+            $env:ARM_OIDC_REQUEST_TOKEN = $null
             Write-Host "Using ARM_OIDC_TOKEN to configure Terraform azurerm provider"
           } else {
             Write-Host "Using ARM_OIDC_REQUEST_URL and ARM_OIDC_REQUEST_TOKEN to configure Terraform azurerm provider"
