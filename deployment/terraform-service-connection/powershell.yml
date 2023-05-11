@@ -62,22 +62,27 @@ jobs:
           # base 64 encode access token
           [convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes('$(System.AccessToken)'))  
 
-          try {
-            Invoke-WebRequest -Headers @{
+          # try {
+            # Invoke-WebRequest -Headers @{
+            #                     Authorization  = "Bearer $(System.AccessToken)"
+            #                   } `
+            #                   -Uri $env:ARM_OIDC_REQUEST_URL `
+            #                   -Method Post -Verbose -Debug  | Set-Variable response
+            Invoke-RestMethod -Headers @{
                                 Authorization  = "Bearer $(System.AccessToken)"
                               } `
-                              -Uri $env:ARM_OIDC_REQUEST_URL `
-                              -Method Post -Verbose -Debug  | Set-Variable response
-          } catch {
-            Write-Error $_.Exception.Message
-            exit 1
-          }
-          $response | Format-List
-          $response.Headers | Format-Table
+                              -Uri "${env:ARM_OIDC_REQUEST_URL} `
+                              -Method Post -Verbose -Debug
+          # } catch {
+          #   Write-Error $_.Exception.Message
+          #   exit 1
+          # }
+          # $response | Format-List
+          # $response.Headers | Format-Table
 
-          if ($response.StatusCode -ge 400) {
-            throw $response.StatusDescription
-          }
+          # if ($response.StatusCode -ge 400) {
+          #   throw $response.StatusDescription
+          # }
 
         useGlobalConfig: true
         failOnStandardError: true
