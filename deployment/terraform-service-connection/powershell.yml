@@ -7,6 +7,10 @@ parameters:
   displayName: Azure Service Connection Name
   type: string
   default: my-azure-subscription
+- name: createIdToken
+  displayName: Create OIDC token
+  type: boolean
+  default: false
 
 name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
 
@@ -26,10 +30,6 @@ jobs:
     name: ${{ parameters.pool }}
     vmImage: 'ubuntu-latest'
   steps:
-    # - task: TerraformInstaller@0
-    #   displayName: 'Install Terraform'
-    #   inputs:
-    #     terraformVersion: 'latest'
     - task: AzureCLI@2
       continueOnError: true
       displayName: 'Terraform with Azure CLI task'
@@ -38,41 +38,43 @@ jobs:
         scriptType: pscore
         scriptLocation: inlineScript
         inlineScript: |
+          # Propagate Azure context to Terraform
           az account show | ConvertFrom-Json | Set-Variable account
-          $account
           $env:ARM_CLIENT_ID       ??= $account.user.name
           $env:ARM_TENANT_ID       ??= $account.tenantId
           $env:ARM_SUBSCRIPTION_ID ??= $account.id              
 
-          # List environment variables
-          # Get-ChildItem -Path Env: -Recurse -Include * | Sort-Object -Property Name
-          Get-ChildItem -Path Env: -Recurse -Include ARM_*,AZURE_*,ENDPOINT_DATA_*,SYSTEM_*,TF_* | Sort-Object -Property Name | Format-Table -AutoSize -Wrap
-
+          # Get service connection ID
           Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
                                                                      | Select-Object -First 1 -ExpandProperty Name `
                                                                      | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
                                                                      | Set-Variable serviceConnectionId
-
           if (!$serviceConnectionId) {
+            Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name | Format-Table
             Write-Error "Could not find service connection ID"
             exit 1
           }
 
+          # Build token request URL
           $env:ARM_OIDC_REQUEST_URL = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECTID}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
-          $env:ARM_OIDC_REQUEST_TOKEN = '$(System.AccessToken)'
 
-          # Invoke-RestMethod -Headers @{
-          #                     Authorization  = "Bearer $(System.AccessToken)"
-          #                     'Content-Type' = 'application/json'
-          #                   } `
-          #                   -Uri "${env:ARM_OIDC_REQUEST_URL}" `
-          #                   -Method Post | Set-Item env:ARM_OIDC_TOKEN
+          # List environment variables
+          Get-ChildItem -Path Env: -Recurse -Include ARM_*,AZURE_*,ENDPOINT_DATA_*,SYSTEM_*,TF_* | Sort-Object -Property Name | Format-Table
+
+          $env:ARM_OIDC_REQUEST_TOKEN = '$(System.AccessToken)'
+          if (${{ parameters.serviceConnection }}) {
+            Write-Host "`nRequesting OIDC token from Azure DevOps..."
+            Invoke-RestMethod -Headers @{
+                                Authorization  = "Bearer ${env:ARM_OIDC_REQUEST_TOKEN}"
+                                'Content-Type' = 'application/json'
+                              } `
+                              -Uri "${env:ARM_OIDC_REQUEST_URL}" `
+                              -Method Post | Set-Item env:ARM_OIDC_TOKEN
+          }
           
+          # Run Terraform
           terraform init
           terraform apply -auto-approve          
         useGlobalConfig: true
         failOnStandardError: true
         workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
-
-    # - pwsh: |
-    #     Start-Sleep -Seconds 3600
