@@ -29,7 +29,7 @@ jobs:
       displayName: 'Terraform with Azure CLI task'
       inputs:
         azureSubscription: '${{ parameters.serviceConnection }}'
-        scriptType: pwsh
+        scriptType: pscore
         scriptLocation: inlineScript
         inlineScript: |
           # List environment variables
