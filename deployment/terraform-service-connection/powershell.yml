@@ -33,8 +33,8 @@ jobs:
         scriptLocation: inlineScript
         inlineScript: |
           # List environment variables
-          # Get-ChildItem -Path Env: -Recurse -Include ALTERNATE_*,ARM_*,AZURE_*,PIPELINE_DEMO_*,SYSTEM_*,TF_* | Sort-Object -Property Name
-          Get-ChildItem -Path Env: -Recurse -Include * | Sort-Object -Property Name
+          Get-ChildItem -Path Env: -Recurse -Include ARM_*,AZURE_*,ENDPOINT_DATA_*,SYSTEM_*,TF_* | Sort-Object -Property Name | Format-Table -AutoSize
+          # Get-ChildItem -Path Env: -Recurse -Include * | Sort-Object -Property Name
 
         addSpnToEnvironment: true
         useGlobalConfig: true
