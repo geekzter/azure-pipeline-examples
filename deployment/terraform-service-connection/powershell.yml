@@ -62,7 +62,7 @@ jobs:
           Get-ChildItem -Path Env: -Recurse -Include ARM_*,AZURE_*,ENDPOINT_DATA_*,SYSTEM_*,TF_* | Sort-Object -Property Name | Format-Table
 
           $env:ARM_OIDC_REQUEST_TOKEN = '$(System.AccessToken)'
-          if (${{ parameters.serviceConnection }}) {
+          if ($${{ parameters.createIdToken }}) {
             Write-Host "`nRequesting OIDC token from Azure DevOps..."
             Invoke-RestMethod -Headers @{
                                 Authorization  = "Bearer ${env:ARM_OIDC_REQUEST_TOKEN}"
@@ -70,6 +70,9 @@ jobs:
                               } `
                               -Uri "${env:ARM_OIDC_REQUEST_URL}" `
                               -Method Post | Set-Item env:ARM_OIDC_TOKEN
+            Write-Host "Using ARM_OIDC_TOKEN to configure Terraform azurerm provider"
+          } else {
+            Write-Host "Using ARM_OIDC_REQUEST_URL and ARM_OIDC_REQUEST_TOKEN to configure Terraform azurerm provider"
           }
           
           # Run Terraform
