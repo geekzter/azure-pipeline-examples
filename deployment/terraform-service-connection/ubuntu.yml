@@ -42,7 +42,7 @@ jobs:
         addSpnToEnvironment: true
         useGlobalConfig: true
         failOnStandardError: true
-        workingDirectory: '$(Build.SourcesDirectory)/ubuntu/terraform-service-connection'
+        workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
 
 - job: terraformMultiStep
   displayName: 'Multi step Azure CLI + Terraform'
@@ -79,4 +79,4 @@ jobs:
         terraform init
         terraform apply -auto-approve
       displayName: Terraform
-      workingDirectory: '$(Build.SourcesDirectory)/ubuntu/terraform-service-connection'
+      workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
