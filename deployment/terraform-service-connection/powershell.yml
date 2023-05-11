@@ -34,7 +34,7 @@ jobs:
         inlineScript: |
           # List environment variables
           # Get-ChildItem -Path Env: -Include * | Sort-Object -Property Name
-          Get-ChildItem -Path Env: -Include -Recurse ARM_*,AZURE_*,ENDPOINT_DATA_*,SYSTEM_*,TF_* | Sort-Object -Property Name
+          Get-ChildItem -Path Env: -Recurse -Include ARM_*,AZURE_*,ENDPOINT_DATA_*,SYSTEM_*,TF_* | Sort-Object -Property Name
 
           Get-ChildItem -Path Env: -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
                                                             | Select-Object -First 1 -ExpandProperty Name `
