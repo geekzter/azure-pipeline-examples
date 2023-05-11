@@ -53,7 +53,7 @@ jobs:
           }
 
           # /{{HostName}}/{{ProjectName}}/_apis/distributedtask/hubs/build/plans/{{PlanId}}/jobs/{{JobId}}/oidctoken?api-version=7.1-preview.1&serviceConnectionId={{ServiceConnectionId}}
-          $env:ARM_OIDC_REQUEST_URL = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECT}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
+          $env:ARM_OIDC_REQUEST_URL = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECTID}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
           # $env:ARM_OIDC_REQUEST_URL = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECT}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1"
 
           Write-Host "Requesting OIDC token from Azure DevOps REST API at $env:ARM_OIDC_REQUEST_URL"
