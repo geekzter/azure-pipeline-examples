@@ -38,6 +38,11 @@ jobs:
         scriptType: pscore
         scriptLocation: inlineScript
         inlineScript: |
+          az account show | ConvertFrom-Json | Set-Variable account
+          $env:ARM_CLIENT_ID       ??= $account.user.name
+          $env:ARM_TENANT_ID       ??= $account.tenantId
+          $env:ARM_SUBSCRIPTION_ID ??= $account.id              
+
           # List environment variables
           # Get-ChildItem -Path Env: -Recurse -Include * | Sort-Object -Property Name
           Get-ChildItem -Path Env: -Recurse -Include ARM_*,AZURE_*,ENDPOINT_DATA_*,SYSTEM_*,TF_* | Sort-Object -Property Name
@@ -52,39 +57,16 @@ jobs:
             exit 1
           }
 
-          # /{{HostName}}/{{ProjectName}}/_apis/distributedtask/hubs/build/plans/{{PlanId}}/jobs/{{JobId}}/oidctoken?api-version=7.1-preview.1&serviceConnectionId={{ServiceConnectionId}}
           $env:ARM_OIDC_REQUEST_URL = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECTID}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
-          # $env:ARM_OIDC_REQUEST_URL = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECT}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1"
-
-          Write-Host "Requesting OIDC token from Azure DevOps REST API at $env:ARM_OIDC_REQUEST_URL"
           $env:ARM_OIDC_REQUEST_TOKEN = '$(System.AccessToken)'
 
-          # base 64 encode access token
-          [convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes('$(System.AccessToken)'))  
-
-          # try {
-            # Invoke-WebRequest -Headers @{
-            #                     Authorization  = "Bearer $(System.AccessToken)"
-            #                   } `
-            #                   -Uri $env:ARM_OIDC_REQUEST_URL `
-            #                   -Method Post -Verbose -Debug  | Set-Variable response
-            Invoke-RestMethod -Headers @{
-                                Authorization  = "Bearer $(System.AccessToken)"
-                                'Content-Type' = 'application/json'
-                              } `
-                              -Uri "${env:ARM_OIDC_REQUEST_URL}" `
-                              -Method Post -Verbose -Debug
-          # } catch {
-          #   Write-Error $_.Exception.Message
-          #   exit 1
-          # }
-          # $response | Format-List
-          # $response.Headers | Format-Table
-
-          # if ($response.StatusCode -ge 400) {
-          #   throw $response.StatusDescription
-          # }
-
+          Invoke-RestMethod -Headers @{
+                              Authorization  = "Bearer $(System.AccessToken)"
+                              'Content-Type' = 'application/json'
+                            } `
+                            -Uri "${env:ARM_OIDC_REQUEST_URL}" `
+                            -Method Post | Set-Item env:ARM_OIDC_TOKEN
+          
         useGlobalConfig: true
         failOnStandardError: true
         workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
