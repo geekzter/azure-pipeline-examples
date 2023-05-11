@@ -105,7 +105,7 @@ jobs:
           $env:ARM_OIDC_TOKEN='$(azureCLI.ARM_OIDC_TOKEN)'
         } else {
           $env:ARM_OIDC_REQUEST_TOKEN='$(azureCLI.ARM_OIDC_REQUEST_TOKEN)'
-        $env:ARM_OIDC_REQUEST_URL='$(azureCLI.ARM_OIDC_REQUEST_URL)'
+          $env:ARM_OIDC_REQUEST_URL='$(azureCLI.ARM_OIDC_REQUEST_URL)'
         }
 
         terraform init
