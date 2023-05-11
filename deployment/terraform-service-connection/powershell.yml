@@ -31,6 +31,7 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
     - task: AzureCLI@2
+      name: azureCLI
       continueOnError: true
       displayName: 'Terraform with Azure CLI task'
       inputs:
@@ -43,6 +44,9 @@ jobs:
           $env:ARM_CLIENT_ID       ??= $account.user.name
           $env:ARM_TENANT_ID       ??= $account.tenantId
           $env:ARM_SUBSCRIPTION_ID ??= $account.id              
+          Write-Host "##vso[task.setvariable variable=ARM_CLIENT_ID;isoutput=true;issecret=true]${env:ARM_CLIENT_ID}"
+          Write-Host "##vso[task.setvariable variable=ARM_TENANT_ID;isoutput=true]${env:ARM_TENANT_ID}"
+          Write-Host "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID;isoutput=true]${env:ARM_SUBSCRIPTION_ID}"
 
           # Get service connection ID
           Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
@@ -70,16 +74,35 @@ jobs:
                               } `
                               -Uri "${env:ARM_OIDC_REQUEST_URL}" `
                               -Method Post | Set-Item env:ARM_OIDC_TOKEN
+            if (!$env:ARM_OIDC_TOKEN) {
+              Write-Error "Could not get OIDC token"
+              exit 1
+            }
             $env:ARM_OIDC_REQUEST_URL = $null
             $env:ARM_OIDC_REQUEST_TOKEN = $null
             Write-Host "Using ARM_OIDC_TOKEN to configure Terraform azurerm provider"
+            Write-Host "##vso[task.setvariable variable=ARM_OIDC_TOKEN;isoutput=true;issecret=true]${env:ARM_OIDC_TOKEN}"
           } else {
             Write-Host "Using ARM_OIDC_REQUEST_URL and ARM_OIDC_REQUEST_TOKEN to configure Terraform azurerm provider"
+            Write-Host "##vso[task.setvariable variable=ARM_OIDC_REQUEST_URL;isoutput=true]${env:ARM_OIDC_REQUEST_URL}"
+            Write-Host "##vso[task.setvariable variable=ARM_OIDC_REQUEST_TOKEN;isoutput=true;issecret=true]${env:ARM_OIDC_REQUEST_TOKEN}"
           }
           
-          # Run Terraform
+          # Run Terraform within task
           terraform init
           terraform apply -auto-approve          
         useGlobalConfig: true
         failOnStandardError: true
         workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
+    - pwsh: |
+        $env:ARM_CLIENT_ID=$(azureCLI.ARM_CLIENT_ID)
+        $env:ARM_OIDC_REQUEST_URL=$(azureCLI.ARM_OIDC_REQUEST_URL)
+        $env:ARM_OIDC_REQUEST_TOKEN=$(azureCLI.ARM_OIDC_REQUEST_TOKEN)
+        $env:ARM_OIDC_TOKEN=$(azureCLI.ARM_OIDC_TOKEN)
+        $env:ARM_TENANT_ID=$(azureCLI.ARM_TENANT_ID)
+        $env:ARM_SUBSCRIPTION_ID=$(azureCLI.ARM_SUBSCRIPTION_ID)
+
+        terraform init
+        terraform apply -auto-approve
+      displayName: Terraform
+      workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
