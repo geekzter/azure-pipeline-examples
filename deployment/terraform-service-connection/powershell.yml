@@ -70,6 +70,7 @@ jobs:
             #                   -Method Post -Verbose -Debug  | Set-Variable response
             Invoke-RestMethod -Headers @{
                                 Authorization  = "Bearer $(System.AccessToken)"
+                                Content-Type   = "application/json"
                               } `
                               -Uri "${env:ARM_OIDC_REQUEST_URL}" `
                               -Method Post -Verbose -Debug
