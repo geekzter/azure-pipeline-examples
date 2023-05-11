@@ -100,12 +100,13 @@ jobs:
     - pwsh: |
         $env:ARM_CLIENT_ID='$(azureCLI.ARM_CLIENT_ID)'
         $env:ARM_OIDC_REQUEST_URL='$(azureCLI.ARM_OIDC_REQUEST_URL)'
-        $env:ARM_OIDC_REQUEST_TOKEN='$(azureCLI.ARM_OIDC_REQUEST_TOKEN)'
-        $env:ARM_OIDC_TOKEN='$(azureCLI.ARM_OIDC_TOKEN)'
         $env:ARM_TENANT_ID='$(azureCLI.ARM_TENANT_ID)'
         $env:ARM_SUBSCRIPTION_ID='$(azureCLI.ARM_SUBSCRIPTION_ID)'
+        Get-ChildItem -Path Env: -Recurse -Include ARM_* | Sort-Object -Property Name | Format-Table
+        $env:ARM_OIDC_REQUEST_TOKEN='$(azureCLI.ARM_OIDC_REQUEST_TOKEN)'
+        $env:ARM_OIDC_TOKEN='$(azureCLI.ARM_OIDC_TOKEN)'
 
         terraform init
         terraform apply -auto-approve
-      displayName: Terraform
+      displayName: Terraform stand-alone
       workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
