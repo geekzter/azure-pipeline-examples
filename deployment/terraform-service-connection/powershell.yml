@@ -33,13 +33,13 @@ jobs:
         scriptLocation: inlineScript
         inlineScript: |
           # List environment variables
-          # Get-ChildItem -Path Env: -Include * | Sort-Object -Property Name
+          # Get-ChildItem -Path Env: -Recurse -Include * | Sort-Object -Property Name
           Get-ChildItem -Path Env: -Recurse -Include ARM_*,AZURE_*,ENDPOINT_DATA_*,SYSTEM_*,TF_* | Sort-Object -Property Name
 
-          Get-ChildItem -Path Env: -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
-                                                            | Select-Object -First 1 -ExpandProperty Name `
-                                                            | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
-                                                            | Set-Variable serviceConnectionId
+          Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
+                                                                     | Select-Object -First 1 -ExpandProperty Name `
+                                                                     | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
+                                                                     | Set-Variable serviceConnectionId
 
           if (!$serviceConnectionId) {
             Write-Error "Could not find service connection ID"
