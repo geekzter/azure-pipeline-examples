@@ -46,13 +46,26 @@ jobs:
             exit 1
           }
 
-          # /{{HostName}}/{{ProjectName}}/_apis/distributedtask/hubs/build/plans/{{PlanId}}/jobs/{{JobId}}/oidctoken?api-version=7.1-preview.1&serviceConnectionId={{ServiceConnectionId}}
-          $env:ARM_OIDC_REQUEST_URL = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECT}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
+          #                      /{{HostName}}/{{ProjectName}}/_apis/distributedtask/hubs/build/plans/{{PlanId}}/jobs/{{JobId}}/oidctoken?api-version=7.1-preview.1&serviceConnectionId={{ServiceConnectionId}}
+          https://dev.azure.com/ericvan/PipelineSamples/_apis/distributedtask/hubs/build/plans/c810d511-1e6d-46ee-b7da-665adc47a41d/jobs/0df11829-723c-52be-8c23-8dd77e9ea2f9/oidctoken?api-version=7.1-preview.1&serviceConnectionId=0216fd8c-2fb5-4779-982f-0b62e9dab316
+          # $env:ARM_OIDC_REQUEST_URL = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECT}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
+          $env:ARM_OIDC_REQUEST_URL = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECT}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1"
+
           Write-Host "Requesting OIDC token from Azure DevOps REST API at $env:ARM_OIDC_REQUEST_URL"
           $env:ARM_OIDC_REQUEST_TOKEN = '$(System.AccessToken)'
 
+          # Invoke-RestMethod -Headers @{
+          #                     Authorization  = "Bearer $(System.AccessToken)"
+          #                   } `
+          #                   -Uri $env:ARM_OIDC_REQUEST_URL `
+          #                   -Method Post
+
           Invoke-RestMethod -Headers @{
                               Authorization  = "Bearer $(System.AccessToken)"
+                              "Content-Type" = "application/x-www-form-urlencoded"
+                            } `
+                            -Body @{
+                                serviceConnectionId = $serviceConnectionId
                             } `
                             -Uri $env:ARM_OIDC_REQUEST_URL `
                             -Method Post
