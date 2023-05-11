@@ -89,5 +89,5 @@ jobs:
         failOnStandardError: true
         workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
 
-    - pwsh: |
-        Start-Sleep -Seconds 3600
+    # - pwsh: |
+    #     Start-Sleep -Seconds 3600
