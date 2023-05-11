@@ -71,7 +71,7 @@ jobs:
             Invoke-RestMethod -Headers @{
                                 Authorization  = "Bearer $(System.AccessToken)"
                               } `
-                              -Uri "${env:ARM_OIDC_REQUEST_URL} `
+                              -Uri "${env:ARM_OIDC_REQUEST_URL}" `
                               -Method Post -Verbose -Debug
           # } catch {
           #   Write-Error $_.Exception.Message
