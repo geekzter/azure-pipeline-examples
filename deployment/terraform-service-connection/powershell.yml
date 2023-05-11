@@ -46,7 +46,7 @@ jobs:
 
           # List environment variables
           # Get-ChildItem -Path Env: -Recurse -Include * | Sort-Object -Property Name
-          Get-ChildItem -Path Env: -Recurse -Include ARM_*,AZURE_*,ENDPOINT_DATA_*,SYSTEM_*,TF_* | Sort-Object -Property Name
+          Get-ChildItem -Path Env: -Recurse -Include ARM_*,AZURE_*,ENDPOINT_DATA_*,SYSTEM_*,TF_* | Sort-Object -Property Name | Format-Table -AutoSize -Wrap
 
           Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
                                                                      | Select-Object -First 1 -ExpandProperty Name `
@@ -68,6 +68,8 @@ jobs:
                             -Uri "${env:ARM_OIDC_REQUEST_URL}" `
                             -Method Post | Set-Item env:ARM_OIDC_TOKEN
           
+          terraform init
+          terraform apply -auto-approve          
         useGlobalConfig: true
         failOnStandardError: true
         workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
