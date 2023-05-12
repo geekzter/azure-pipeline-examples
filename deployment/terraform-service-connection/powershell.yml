@@ -48,7 +48,10 @@ jobs:
           Write-Host "##vso[task.setvariable variable=ARM_TENANT_ID;isoutput=true]${env:ARM_TENANT_ID}"
           Write-Host "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID;isoutput=true]${env:ARM_SUBSCRIPTION_ID}"
 
-          # Get service connection ID
+          # Logging out from Azure CLI
+          az logout
+
+          # Get Service Connection ID
           Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
                                                                      | Select-Object -First 1 -ExpandProperty Name `
                                                                      | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
@@ -93,9 +96,6 @@ jobs:
             Write-Host "##vso[task.setvariable variable=ARM_OIDC_REQUEST_URL;isoutput=true]${env:ARM_OIDC_REQUEST_URL}"
           }
           
-          # Logging out from Azure CLI
-          az logout
-
           # Run Terraform within task
           terraform init
           terraform apply -auto-approve          
