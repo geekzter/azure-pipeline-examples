@@ -32,7 +32,6 @@ jobs:
   steps:
     - task: AzureCLI@2
       name: azureCLI
-      continueOnError: true
       displayName: 'Terraform with Azure CLI task'
       inputs:
         azureSubscription: '${{ parameters.serviceConnection }}'
