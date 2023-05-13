@@ -9,7 +9,7 @@
 #Requires -Version 7.2
 
 param ( 
-    [Parameter(Mandatory=$false]
+    [Parameter(Mandatory=$false)]
     [ValidateNotNullOrEmpty()]
     [string]
     $Token
