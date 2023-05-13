@@ -51,6 +51,7 @@ function New-OidcToken()
     Write-Verbose "`nRequesting OIDC token from Azure DevOps..."
     oidcRequestToken = Get-OidcRequestToken
     oidcRequestUrl   = Get-OidcRequestUrl
+    Write-Debug "OIDC Request URL: ${oidcRequestUrl}"
     Invoke-RestMethod -Headers @{
                         Authorization  = "Bearer ${oidcRequestToken}"
                         'Content-Type' = 'application/json'
