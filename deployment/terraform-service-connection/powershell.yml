@@ -99,8 +99,8 @@ jobs:
             }
           }
 
-          Write-Host "`nProvider environment variables:"
-          Get-ChildItem -Path Env: -Recurse -Include ARM_* | Select-Object -Property Name | Sort-Object -Property Name | Format-Table
+          Write-Host "Provider environment variables:"
+          Get-ChildItem -Path Env: -Recurse -Include ARM_* | Select-Object -Property Name | Sort-Object -Property Name
           
           # Run Terraform within task
           terraform init
