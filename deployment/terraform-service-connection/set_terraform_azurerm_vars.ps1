@@ -33,7 +33,7 @@ function Get-ServiceConnectionId()
 
 function New-OidcToken()
 {
-    Write-Host "`nRequesting OIDC token from Azure DevOps..."
+    Write-Verbose "`nRequesting OIDC token from Azure DevOps..."
     Get-OidcRequestToken | Set-Variable oidcRequestToken
     Get-OidcRequestUrl | Set-Variable oidcRequestUrl
     Invoke-RestMethod -Headers @{

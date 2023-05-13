@@ -7,10 +7,6 @@ parameters:
   displayName: Azure Service Connection Name
   type: string
   default: my-azure-subscription
-- name: createIdToken
-  displayName: Create OIDC token
-  type: boolean
-  default: true
 - name: azLogout
   displayName: Logout from Azure CLI
   type: boolean
@@ -45,69 +41,13 @@ jobs:
         scriptType: pscore
         scriptLocation: inlineScript
         inlineScript: |
-          # # Propagate Azure context to Terraform
-          # az account show | ConvertFrom-Json | Set-Variable account
-          # $env:ARM_CLIENT_ID       ??= $account.user.name
-          # $env:ARM_CLIENT_SECRET   ??= $env:servicePrincipalKey
-          # $env:ARM_TENANT_ID       ??= $account.tenantId
-          # $env:ARM_SUBSCRIPTION_ID ??= $account.id              
-
-          # # Logging out from Azure CLI
-          # if ($${{ parameters.azLogout }}) {
-          #   az logout
-          # }
-
-          # if ($env:ARM_CLIENT_SECRET) {
-          #   Write-Host "Using ARM_CLIENT_SECRET to configure Terraform azurerm provider"
-          # } else {
-          #   # Get Service Connection ID
-          #   Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
-          #                                                              | Select-Object -First 1 -ExpandProperty Name `
-          #                                                              | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
-          #                                                              | Set-Variable serviceConnectionId
-          #   if (!$serviceConnectionId) {
-          #     Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name | Format-Table
-          #     Write-Error "Could not find service connection ID"
-          #     exit 1
-          #   }
-
-          #   # Build token request URL
-          #   $env:ARM_OIDC_REQUEST_URL = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECTID}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
-
-          #   $env:ARM_OIDC_REQUEST_TOKEN = '$(System.AccessToken)'
-          #   if ($${{ parameters.createIdToken }}) {
-          #     Write-Host "`nRequesting OIDC token from Azure DevOps..."
-          #     Invoke-RestMethod -Headers @{
-          #                         Authorization  = "Bearer ${env:ARM_OIDC_REQUEST_TOKEN}"
-          #                         'Content-Type' = 'application/json'
-          #                       } `
-          #                       -Uri "${env:ARM_OIDC_REQUEST_URL}" `
-          #                       -Method Post | Set-Variable oidcTokenResponse
-          #     $env:ARM_OIDC_TOKEN = $oidcTokenResponse.oidcToken
-          #     if (!$env:ARM_OIDC_TOKEN) {
-          #       Write-Error "Could not get OIDC token"
-          #       exit 1
-          #     }
-          #     if ($env:ARM_OIDC_TOKEN -notmatch "^ey") {
-          #       Write-Error "OIDC token in unexpected format"
-          #       exit 1
-          #     }
-          #     $env:ARM_OIDC_REQUEST_TOKEN = $null
-          #     $env:ARM_OIDC_REQUEST_URL = $null
-          #     Write-Host "Using ARM_OIDC_TOKEN to configure Terraform azurerm provider"
-          #   } else {
-          #     # BUG: Terraform azurerm performs GET instead of POST
-          #     Write-Host "Using ARM_OIDC_REQUEST_URL and ARM_OIDC_REQUEST_TOKEN to configure Terraform azurerm provider"
-          #   }
-          # }
-
-          # Write-Host "Provider environment variables:"
-          # Get-ChildItem -Path Env: -Recurse -Include ARM_* | Select-Object -Property Name `
-          #                                                  | Sort-Object -Property Name `
-          #                                                  | Format-Table -HideTableHeader
-          
           ./set_terraform_azurerm_vars.ps1
-          
+
+          # Logging out from Azure CLI
+          if ($${{ parameters.azLogout }}) {
+            az logout
+          }
+
           # Run Terraform within task
           terraform init
           terraform apply -auto-approve          
