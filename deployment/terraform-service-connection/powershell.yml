@@ -11,6 +11,10 @@ parameters:
   displayName: Create OIDC token
   type: boolean
   default: true
+- name: azLogout
+  displayName: Logout from Azure CLI
+  type: boolean
+  default: true
 
 name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
 
@@ -42,78 +46,67 @@ jobs:
           # Propagate Azure context to Terraform
           az account show | ConvertFrom-Json | Set-Variable account
           $env:ARM_CLIENT_ID       ??= $account.user.name
+          $env:ARM_CLIENT_SECRET   ??= $env:servicePrincipalKey
           $env:ARM_TENANT_ID       ??= $account.tenantId
           $env:ARM_SUBSCRIPTION_ID ??= $account.id              
-          Write-Host "##vso[task.setvariable variable=ARM_CLIENT_ID;isoutput=true;issecret=true]${env:ARM_CLIENT_ID}"
-          Write-Host "##vso[task.setvariable variable=ARM_TENANT_ID;isoutput=true]${env:ARM_TENANT_ID}"
-          Write-Host "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID;isoutput=true]${env:ARM_SUBSCRIPTION_ID}"
 
           # Logging out from Azure CLI
-          az logout
-
-          # Get Service Connection ID
-          Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
-                                                                     | Select-Object -First 1 -ExpandProperty Name `
-                                                                     | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
-                                                                     | Set-Variable serviceConnectionId
-          if (!$serviceConnectionId) {
-            Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name | Format-Table
-            Write-Error "Could not find service connection ID"
-            exit 1
+          if ($${{ parameters.azLogout }}) {
+            az logout
           }
 
-          # Build token request URL
-          $env:ARM_OIDC_REQUEST_URL = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECTID}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
-
-          # List environment variables
-          Get-ChildItem -Path Env: -Recurse -Include ARM_*,AZURE_*,ENDPOINT_DATA_*,SYSTEM_*,TF_* | Sort-Object -Property Name | Format-Table
-
-          $env:ARM_OIDC_REQUEST_TOKEN = '$(System.AccessToken)'
-          if ($${{ parameters.createIdToken }}) {
-            Write-Host "`nRequesting OIDC token from Azure DevOps..."
-            Invoke-RestMethod -Headers @{
-                                Authorization  = "Bearer ${env:ARM_OIDC_REQUEST_TOKEN}"
-                                'Content-Type' = 'application/json'
-                              } `
-                              -Uri "${env:ARM_OIDC_REQUEST_URL}" `
-                              -Method Post | Set-Variable oidcTokenResponse
-            $env:ARM_OIDC_TOKEN = $oidcTokenResponse.oidcToken
-            if (!$env:ARM_OIDC_TOKEN) {
-              Write-Error "Could not get OIDC token"
-              exit 1
-            }
-            if ($env:ARM_OIDC_TOKEN -notmatch "^ey") {
-              Write-Error "OIDC token in unexpected format"
-              exit 1
-            }
-            $env:ARM_OIDC_REQUEST_TOKEN = $null
-            $env:ARM_OIDC_REQUEST_URL = $null
-            Write-Host "Using ARM_OIDC_TOKEN to configure Terraform azurerm provider"
-            Write-Host "##vso[task.setvariable variable=ARM_OIDC_TOKEN;isoutput=true;issecret=true]${env:ARM_OIDC_TOKEN}"
+          if ($env:ARM_CLIENT_SECRET) {
+            Write-Host "Using ARM_CLIENT_SECRET to configure Terraform azurerm provider"
           } else {
-            Write-Host "Using ARM_OIDC_REQUEST_URL and ARM_OIDC_REQUEST_TOKEN to configure Terraform azurerm provider"
-            Write-Host "##vso[task.setvariable variable=ARM_OIDC_REQUEST_TOKEN;isoutput=true;issecret=true]${env:ARM_OIDC_REQUEST_TOKEN}"
-            Write-Host "##vso[task.setvariable variable=ARM_OIDC_REQUEST_URL;isoutput=true]${env:ARM_OIDC_REQUEST_URL}"
+            # Get Service Connection ID
+            Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
+                                                                       | Select-Object -First 1 -ExpandProperty Name `
+                                                                       | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
+                                                                       | Set-Variable serviceConnectionId
+            if (!$serviceConnectionId) {
+              Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name | Format-Table
+              Write-Error "Could not find service connection ID"
+              exit 1
+            }
+
+            # Build token request URL
+            $env:ARM_OIDC_REQUEST_URL = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECTID}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
+
+            $env:ARM_OIDC_REQUEST_TOKEN = '$(System.AccessToken)'
+            if ($${{ parameters.createIdToken }}) {
+              Write-Host "`nRequesting OIDC token from Azure DevOps..."
+              Invoke-RestMethod -Headers @{
+                                  Authorization  = "Bearer ${env:ARM_OIDC_REQUEST_TOKEN}"
+                                  'Content-Type' = 'application/json'
+                                } `
+                                -Uri "${env:ARM_OIDC_REQUEST_URL}" `
+                                -Method Post | Set-Variable oidcTokenResponse
+              $env:ARM_OIDC_TOKEN = $oidcTokenResponse.oidcToken
+              if (!$env:ARM_OIDC_TOKEN) {
+                Write-Error "Could not get OIDC token"
+                exit 1
+              }
+              if ($env:ARM_OIDC_TOKEN -notmatch "^ey") {
+                Write-Error "OIDC token in unexpected format"
+                exit 1
+              }
+              $env:ARM_OIDC_REQUEST_TOKEN = $null
+              $env:ARM_OIDC_REQUEST_URL = $null
+              Write-Host "Using ARM_OIDC_TOKEN to configure Terraform azurerm provider"
+            } else {
+              # BUG: 
+              Write-Host "Using ARM_OIDC_REQUEST_URL and ARM_OIDC_REQUEST_TOKEN to configure Terraform azurerm provider"
+            }
           }
+
+          Write-Host "`nProvider environment variables:"
+          Get-ChildItem -Path Env: -Recurse -Include ARM_* | Select-Object -Property Name | Sort-Object -Property Name | Format-Table
           
           # Run Terraform within task
           terraform init
           terraform apply -auto-approve          
         useGlobalConfig: true
+        addSpnToEnvironment: true
         failOnStandardError: true
         workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
-    # - pwsh: |
-    #     $env:ARM_CLIENT_ID='$(azureCLI.ARM_CLIENT_ID)'
-    #     $env:ARM_TENANT_ID='$(azureCLI.ARM_TENANT_ID)'
-    #     $env:ARM_SUBSCRIPTION_ID='$(azureCLI.ARM_SUBSCRIPTION_ID)'
-    #     if ($${{ parameters.createIdToken }}) { 
-    #       $env:ARM_OIDC_TOKEN='$(azureCLI.ARM_OIDC_TOKEN)'
-    #     } else {
-    #       $env:ARM_OIDC_REQUEST_TOKEN='$(azureCLI.ARM_OIDC_REQUEST_TOKEN)'
-    #       $env:ARM_OIDC_REQUEST_URL='$(azureCLI.ARM_OIDC_REQUEST_URL)'
-    #     }
 
-    #     terraform init
-    #     terraform apply -auto-approve
-    #   displayName: Terraform stand-alone
-    #   workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
