@@ -1,11 +1,26 @@
 #!/usr/bin/env pwsh
+<# 
+.SYNOPSIS 
+    Prepares Terraform azure provider environment variables
+ 
+.EXAMPLE
+    ./set_terraform_azurerm_vars -Token $(System.AccessToken)
+#> 
+#Requires -Version 7.2
+
+param ( 
+    [Parameter(Mandatory=$false]
+    [ValidateNotNullOrEmpty()]
+    [string]
+    $Token
+) 
 
 function Get-OidcRequestToken()
 {
-    if (!$env:SYSTEM_ACCESSTOKEN) {
-        throw "SYSTEM_ACCESSTOKEN not found"
+    if (!$Token) {
+        throw "Access Token not set"
     }
-    return $env:SYSTEM_ACCESSTOKEN
+    return $Token
 }
 
 function Get-OidcRequestUrl()
@@ -15,7 +30,7 @@ function Get-OidcRequestUrl()
         throw "Unable to determine service connection ID"
     }
     $oidcRequestUrl = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECTID}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
-    Write-Verbose "OIDC Request URL: ${oidcRequestUrl}"
+    Write-Debug "OIDC Request URL: ${oidcRequestUrl}"
     return $oidcRequestUrl
 }
 
@@ -34,8 +49,8 @@ function Get-ServiceConnectionId()
 function New-OidcToken()
 {
     Write-Verbose "`nRequesting OIDC token from Azure DevOps..."
-    Get-OidcRequestToken | Set-Variable oidcRequestToken
-    Get-OidcRequestUrl | Set-Variable oidcRequestUrl
+    oidcRequestToken = Get-OidcRequestToken
+    oidcRequestUrl   = Get-OidcRequestUrl
     Invoke-RestMethod -Headers @{
                         Authorization  = "Bearer ${oidcRequestToken}"
                         'Content-Type' = 'application/json'
