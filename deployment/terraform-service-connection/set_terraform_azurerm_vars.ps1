@@ -73,7 +73,7 @@ if ($env:SYSTEM_DEBUG -eq "true") {
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
     
-    Get-ChildItem -Path Env: -Force -Recurse -Include ENDPOINT_* | Sort-Object -Property Name | Format-Table -AutoSize | Out-String
+    Get-ChildItem -Path Env: -Force -Recurse -Include * | Sort-Object -Property Name | Format-Table -AutoSize | Out-String
 }
 
 # Propagate Azure context to Terraform
@@ -95,7 +95,7 @@ if ($env:ARM_CLIENT_SECRET) {
     $env:ARM_OIDC_TOKEN  ??= New-OidcToken
     Write-Verbose "Using ARM_OIDC_TOKEN"
 }
-Write-Host "Terraform azure provider environment variables:" -NoNewline
+Write-Host "`nTerraform azure provider environment variables:" -NoNewline
 Get-ChildItem -Path Env: -Recurse -Include ARM_* | Select-Object -Property Name `
                                                  | Sort-Object -Property Name `
                                                  | Format-Table -HideTableHeader
