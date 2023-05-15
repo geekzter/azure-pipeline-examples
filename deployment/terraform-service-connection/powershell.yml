@@ -43,7 +43,7 @@ jobs:
           # Logging out from Azure CLI
           if ($${{ parameters.azLogout }}) {
             az logout
-            Write-Host "Logged out from Azure CLI"
+            Write-Host "`nLogged out from Azure CLI"
           }
 
           # Run Terraform within task

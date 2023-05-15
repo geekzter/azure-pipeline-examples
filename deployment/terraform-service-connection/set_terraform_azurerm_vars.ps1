@@ -98,4 +98,7 @@ Get-ChildItem -Path Env: -Recurse -Include ARM_* | Select-Object -Property Name 
                                                  | Sort-Object -Property Name `
                                                  | Format-Table -HideTableHeader
 
-Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_* | Sort-Object -Property Name | Format-Table 
+Get-ChildItem -Path Env: -Force -Recurse -Include ENDPOINT_* | Sort-Object -Property Name | Format-Table 
+
+Write-Host "ENDPOINT_AUTH_SCHEME_7fdacada-1485-4763-9a3f-a10a1f2ff66e: ${env:ENDPOINT_AUTH_SCHEME_7fdacada-1485-4763-9a3f-a10a1f2ff66e}"
+Write-Host "ENDPOINT_AUTH_PARAMETER_7fdacada-1485-4763-9a3f-a10a1f2ff66e_WORKLOADIDENTITYFEDERATIONSUBJECT: ${env:ENDPOINT_AUTH_PARAMETER_7fdacada-1485-4763-9a3f-a10a1f2ff66e_WORKLOADIDENTITYFEDERATIONSUBJECT}"
