@@ -72,10 +72,9 @@ if ($env:SYSTEM_DEBUG -eq "true") {
     $InformationPreference = "Continue"
     $VerbosePreference = "Continue"
     $DebugPreference = "Continue"
+    
+    Get-ChildItem -Path Env: -Force -Recurse -Include ENDPOINT_* | Sort-Object -Property Name | Format-Table -AutoSize | Out-String
 }
-
-Get-ChildItem -Path Env: -Force -Recurse -Include ENDPOINT_* | Sort-Object -Property Name | Format-Table | Out-String | Write-Verbose
-Write-Host "ENDPOINT_DATA_7fdacada-1485-4763-9a3f-a10a1f2ff66e_APPOBJECTID: ${env:ENDPOINT_DATA_7fdacada-1485-4763-9a3f-a10a1f2ff66e_APPOBJECTID}"
 
 # Propagate Azure context to Terraform
 az account show 2>$null | ConvertFrom-Json | Set-Variable account
