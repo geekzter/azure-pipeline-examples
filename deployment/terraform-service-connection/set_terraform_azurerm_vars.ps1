@@ -75,6 +75,7 @@ if ($env:SYSTEM_DEBUG -eq "true") {
     
     Get-ChildItem -Path Env: -Force -Recurse -Include * | Sort-Object -Property Name | Format-Table -AutoSize | Out-String
 }
+az ad app federated-credential list --id 5d23716b-de31-4d43-8dfb-e03485ffc60c
 
 # Propagate Azure context to Terraform
 az account show 2>$null | ConvertFrom-Json | Set-Variable account
