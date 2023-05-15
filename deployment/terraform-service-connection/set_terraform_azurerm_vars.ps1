@@ -90,10 +90,12 @@ $env:ARM_SUBSCRIPTION_ID ??= $account.id
 if ($env:ARM_CLIENT_SECRET) {
     Write-Verbose "Using ARM_CLIENT_SECRET"
 } else {
-    $env:ARM_OIDC_TOKEN  ??= New-OidcToken    
+    $env:ARM_OIDC_TOKEN  ??= New-OidcToken
     Write-Verbose "Using ARM_OIDC_TOKEN"
 }
-Write-Host "Terraform azure provider environment variables:"
+Write-Host "Terraform azure provider environment variables:" -NoNewline
 Get-ChildItem -Path Env: -Recurse -Include ARM_* | Select-Object -Property Name `
                                                  | Sort-Object -Property Name `
                                                  | Format-Table -HideTableHeader
+
+Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_*
