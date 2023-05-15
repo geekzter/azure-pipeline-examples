@@ -98,4 +98,4 @@ Get-ChildItem -Path Env: -Recurse -Include ARM_* | Select-Object -Property Name 
                                                  | Sort-Object -Property Name `
                                                  | Format-Table -HideTableHeader
 
-Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_*
+Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_* | Sort-Object -Property Name | Format-Table 
