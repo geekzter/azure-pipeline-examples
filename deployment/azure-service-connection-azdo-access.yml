@@ -82,7 +82,7 @@ jobs:
       scriptLocation: inlineScript
       inlineScript: |
         if (!$env:servicePrincipalKey) {
-          Write-Host "##[warning]Service connection has no secret, unable to use client credentials"
+          Write-Host "##vso[task.logissue type=warning]Service connection has no secret, unable to use client credentials"
         } else {
           Write-Host "Obtaining access token for Service Connection identity..."
           Invoke-RestMethod -Uri "https://login.microsoftonline.com/${env:tenantId}/oauth2/token" `
@@ -124,7 +124,7 @@ jobs:
       scriptLocation: inlineScript
       inlineScript: |
         if (!$env:servicePrincipalKey) {
-          Write-Host "##[warning]Service connection has no secret, unable to use client credentials"
+          Write-Host "##vso[task.logissue type=warning]Service connection has no secret, unable to use client credentials"
         } else {
           Write-Host "Obtaining access token for Service Connection identity..."
           Invoke-RestMethod -Uri "https://login.microsoftonline.com/${env:tenantId}/oauth2/token" `
