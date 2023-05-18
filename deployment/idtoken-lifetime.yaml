@@ -1,15 +1,14 @@
 parameters:
 - name: intervalMinutes
-  displayName: Agent Pool
+  displayName: Interval (minutes)
   type: number
   default: 1
 - name: maxMinutes
-  displayName: Agent Pool
+  displayName: Maximum time (minutes)
   type: number
   default: 5
   
 trigger: none
-schedules: none
 
 jobs:
 - job: agent
