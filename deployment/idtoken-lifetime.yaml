@@ -6,7 +6,7 @@ parameters:
 - name: maxMinutes
   displayName: Maximum time (minutes)
   type: number
-  default: 5
+  default: 360
   
 trigger: none
 
@@ -14,7 +14,7 @@ jobs:
 - job: agent
   displayName: 'ID Token Lifetime test'
   pool:
-    name: Azure Pipelines' 
+    name: Azure Pipelines
     vmImage: ubuntu-latest
   steps:
   - task: AzureCLI@2
