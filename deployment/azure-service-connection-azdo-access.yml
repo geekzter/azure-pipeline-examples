@@ -4,7 +4,7 @@ parameters:
   type: string
   default: my-azure-subscription
 
-name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)--${{ parameters.serviceConnection }}-$(Build.BuildId)
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.serviceConnection }}-$(Build.BuildId)
 
 trigger: none
 schedules:
