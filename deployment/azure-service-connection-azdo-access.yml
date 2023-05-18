@@ -81,33 +81,37 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Write-Host "Obtaining access token for Service Connection identity..."
-        Invoke-RestMethod -Uri "https://login.microsoftonline.com/${env:tenantId}/oauth2/token" `
-                          -Method Post `
-                          -Body @{
-                              grant_type    = "client_credentials"
-                              client_id     = $env:servicePrincipalId
-                              client_secret = $env:servicePrincipalKey
-                              resource      = "499b84ac-1321-427f-aa17-267ca6975798"
-                          } `
-                          -Headers @{
-                              "Content-Type" = "application/x-www-form-urlencoded"
-                          } `
-                          | Select-Object -ExpandProperty access_token `
-                          | Set-Variable aadToken
+        if (!$env:servicePrincipalKey) {
+          Write-Host "##[warning]Service connection has no secret, unable to use client credentials"
+        } else {
+          Write-Host "Obtaining access token for Service Connection identity..."
+          Invoke-RestMethod -Uri "https://login.microsoftonline.com/${env:tenantId}/oauth2/token" `
+                            -Method Post `
+                            -Body @{
+                                grant_type    = "client_credentials"
+                                client_id     = $env:servicePrincipalId
+                                client_secret = $env:servicePrincipalKey
+                                resource      = "499b84ac-1321-427f-aa17-267ca6975798"
+                            } `
+                            -Headers @{
+                                "Content-Type" = "application/x-www-form-urlencoded"
+                            } `
+                            | Select-Object -ExpandProperty access_token `
+                            | Set-Variable aadToken
 
-        Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
-        $apiVersion = "7.1-preview.1"
-        $apiUrl = "$(System.CollectionUri)_apis/distributedtask/pools?api-version=${apiVersion}"
-        Invoke-RestMethod -Uri $apiUrl `
-                          -Headers @{
-                              Accept         = "application/json"
-                              Authorization  = "Bearer $aadToken"
-                              "Content-Type" = "application/json"
-                          } `
-                          -Method Get `
-                          | Select-Object -ExpandProperty value `
-                          | Select-Object id, name
+          Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
+          $apiVersion = "7.1-preview.1"
+          $apiUrl = "$(System.CollectionUri)_apis/distributedtask/pools?api-version=${apiVersion}"
+          Invoke-RestMethod -Uri $apiUrl `
+                            -Headers @{
+                                Accept         = "application/json"
+                                Authorization  = "Bearer $aadToken"
+                                "Content-Type" = "application/json"
+                            } `
+                            -Method Get `
+                            | Select-Object -ExpandProperty value `
+                            | Select-Object id, name
+        }
       failOnStandardError: true
 
   - task: AzureCLI@2
@@ -119,25 +123,29 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Write-Host "Obtaining access token for Service Connection identity..."
-        Invoke-RestMethod -Uri "https://login.microsoftonline.com/${env:tenantId}/oauth2/token" `
-                          -Method Post `
-                          -Body @{
-                              grant_type    = "client_credentials"
-                              client_id     = $env:servicePrincipalId
-                              client_secret = $env:servicePrincipalKey
-                              resource      = "499b84ac-1321-427f-aa17-267ca6975798"
-                          } `
-                          -Headers @{
-                              "Content-Type" = "application/x-www-form-urlencoded"
-                          } `
-                          | Select-Object -ExpandProperty access_token `
-                          | Set-Item env:AZURE_DEVOPS_EXT_PAT
+        if (!$env:servicePrincipalKey) {
+          Write-Host "##[warning]Service connection has no secret, unable to use client credentials"
+        } else {
+          Write-Host "Obtaining access token for Service Connection identity..."
+          Invoke-RestMethod -Uri "https://login.microsoftonline.com/${env:tenantId}/oauth2/token" `
+                            -Method Post `
+                            -Body @{
+                                grant_type    = "client_credentials"
+                                client_id     = $env:servicePrincipalId
+                                client_secret = $env:servicePrincipalKey
+                                resource      = "499b84ac-1321-427f-aa17-267ca6975798"
+                            } `
+                            -Headers @{
+                                "Content-Type" = "application/x-www-form-urlencoded"
+                            } `
+                            | Select-Object -ExpandProperty access_token `
+                            | Set-Item env:AZURE_DEVOPS_EXT_PAT
 
-        az devops configure --defaults organization=$(System.CollectionUri) project=$(System.TeamProject)
-        az devops configure -l
-        Write-Host "`nUse token with Azure DevOps CLI (az devops) to list projects in the organization '$(System.CollectionUri)'..."
-        az devops project list --query "value[].{Name:name, Id:id}" -o table
-        Write-Host "`nUse token with Azure DevOps CLI (az pipelines) to list pools in the organization '$(System.CollectionUri)'..."
-        az pipelines pool list --query "[].{Id:id, Name:name}" -o table
+          az devops configure --defaults organization=$(System.CollectionUri) project=$(System.TeamProject)
+          az devops configure -l
+          Write-Host "`nUse token with Azure DevOps CLI (az devops) to list projects in the organization '$(System.CollectionUri)'..."
+          az devops project list --query "value[].{Name:name, Id:id}" -o table
+          Write-Host "`nUse token with Azure DevOps CLI (az pipelines) to list pools in the organization '$(System.CollectionUri)'..."
+          az pipelines pool list --query "[].{Id:id, Name:name}" -o table
+        }
       failOnStandardError: true
