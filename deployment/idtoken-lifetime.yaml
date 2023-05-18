@@ -2,11 +2,11 @@ parameters:
 - name: intervalMinutes
   displayName: Interval (minutes)
   type: number
-  default: 5
+  default: 1
 - name: maxMinutes
   displayName: Maximum time (minutes)
   type: number
-  default: 360
+  default: 30
 
 name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.intervalMinutes }}-${{ parameters.maxMinutes }}-$(Build.BuildId)
 trigger: none
@@ -38,10 +38,8 @@ jobs:
                             'Content-Type' = 'application/json'
                           } `
                           -Uri "${oidcRequestUrl}" `
-                          -Method Post | Set-Variable oidcTokenResponse
-        $oidcTokenResponse | Format-List
-        
-        $oidcToken = $oidcTokenResponse.oidcToken
+                          -Method Post | Select-Object -ExpandProperty oidcToken `
+                                       | Set-Variable oidcToken
         if (!$oidcToken) {
           Write-Error "Failed to get OIDC token from ${oidcRequestUrl}"
           exit 1
@@ -60,7 +58,7 @@ jobs:
           Write-Host "`nLog back in with federated token.."
           az login --service-principal -u $serviceConnection.user.name --tenant $serviceConnection.tenantId --allow-no-subscriptions --federated-token $oidcToken
           if (!(az account show 2>$null)) {
-            Write-Host "##vso[task.logissue type=error]Token expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
+            Write-Host "##vso[task.logissue type=warning]Token expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
             exit 1
           }
 
