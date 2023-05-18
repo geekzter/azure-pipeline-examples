@@ -22,6 +22,7 @@ jobs:
   - task: AzureCLI@2
     inputs:
       azureSubscription: $(subscriptionConnection)
+      failOnStandardError: true
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
