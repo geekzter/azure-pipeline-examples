@@ -58,7 +58,7 @@ jobs:
           Write-Host "`nLog back in with federated token.."
           az login --service-principal -u $serviceConnection.user.name --tenant $serviceConnection.tenantId --allow-no-subscriptions --federated-token $oidcToken
           if (!(az account show 2>$null)) {
-            Write-Host "##vso[task.logissue type=warning]Token expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
+            Write-Host "##vso[task.logissue type=error]Token expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
             exit 1
           }
 
