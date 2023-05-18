@@ -2,7 +2,7 @@ parameters:
 - name: intervalMinutes
   displayName: Interval (minutes)
   type: number
-  default: 1
+  default: 5
 - name: maxMinutes
   displayName: Maximum time (minutes)
   type: number
@@ -16,6 +16,7 @@ jobs:
   pool:
     name: Azure Pipelines
     vmImage: ubuntu-latest
+  timeoutInMinutes: ${{ parameters.maxMinutes }}
   steps:
   - task: AzureCLI@2
     inputs:
@@ -24,10 +25,10 @@ jobs:
       scriptLocation: inlineScript
       inlineScript: |
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
-        while ($stopwatch.Elapsed.TotalMinutes -lt ${{ parameters.maxMinutes }}) {
+        do {
           Write-Host "`naz account show"
           az account show
           Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
-        }
+        } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
 
