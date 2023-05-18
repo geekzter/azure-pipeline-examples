@@ -28,6 +28,6 @@ jobs:
           Write-Host "`naz account show"
           az account show
           Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
-          Start-Sleep -Duration (New-TimeSpan -Minutes ${{ parameters.intervalMinutes }})
+          Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
         }
 
