@@ -41,15 +41,22 @@ jobs:
           Write-Error "Failed to get OIDC token from ${oidcRequestUrl}"
           exit 1
         }
+        if ($oidcToken -notmatch "^ey") {
+          Write-Error "OIDC token in unexpected format"
+          exit 1
+        }
 
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
         do {
-          Write-Host "`nLog out and back in with federated token.."
+          Write-Host "`nLogging out.."
           az logout 
+
+          Write-Host "`nLog out and back in with federated token.."
           az login --federated-token $oidcToken
 
           Write-Host "`naz account show"
           az account show
+
           Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
