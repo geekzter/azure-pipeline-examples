@@ -1,3 +1,11 @@
+parameters:
+- name: serviceConnection
+  displayName: Azure Service Connection Name
+  type: string
+  default: my-azure-subscription
+
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)--${{ parameters.serviceConnection }}-$(Build.BuildId)
+
 trigger: none
 schedules:
 - cron: '0 1 * * *'
@@ -16,7 +24,7 @@ jobs:
   - task: AzureCLI@2
     displayName: 'az ... get-access-token -> REST API'
     inputs:
-      azureSubscription: '$(subscriptionConnection)'
+      azureSubscription: '${{ parameters.serviceConnection }}'
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
@@ -43,7 +51,7 @@ jobs:
   - task: AzureCLI@2
     displayName: 'az ... get-access-token -> DevOps CLI'
     inputs:
-      azureSubscription: '$(subscriptionConnection)'
+      azureSubscription: '${{ parameters.serviceConnection }}'
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
@@ -67,7 +75,7 @@ jobs:
     displayName: 'SP client credentials -> REST API (resource)'
     inputs:
       addSpnToEnvironment: true
-      azureSubscription: '$(subscriptionConnection)'
+      azureSubscription: '${{ parameters.serviceConnection }}'
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
@@ -104,7 +112,7 @@ jobs:
     displayName: 'SP client credentials -> DevOps CLI'
     inputs:
       addSpnToEnvironment: true
-      azureSubscription: '$(subscriptionConnection)'
+      azureSubscription: '${{ parameters.serviceConnection }}'
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
