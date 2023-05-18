@@ -49,6 +49,7 @@ jobs:
       failOnStandardError: true
 
   - task: AzureCLI@2
+    condition: succeededOrFailed()
     displayName: 'az ... get-access-token -> DevOps CLI'
     inputs:
       azureSubscription: '${{ parameters.serviceConnection }}'
@@ -72,6 +73,7 @@ jobs:
       failOnStandardError: true
 
   - task: AzureCLI@2
+    condition: succeededOrFailed()
     displayName: 'SP client credentials -> REST API (resource)'
     inputs:
       addSpnToEnvironment: true
@@ -109,6 +111,7 @@ jobs:
       failOnStandardError: true
 
   - task: AzureCLI@2
+    condition: succeededOrFailed()
     displayName: 'SP client credentials -> DevOps CLI'
     inputs:
       addSpnToEnvironment: true
