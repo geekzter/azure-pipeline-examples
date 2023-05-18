@@ -23,6 +23,8 @@ jobs:
     inputs:
       azureSubscription: $(subscriptionConnection)
       failOnStandardError: true
+      powerShellIgnoreLASTEXITCODE: false
+      powerShellErrorActionPreference: Stop
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
@@ -36,8 +38,10 @@ jobs:
                             'Content-Type' = 'application/json'
                           } `
                           -Uri "${oidcRequestUrl}" `
-                          -Method Post | Select-Object -ExpandProperty oidcToken `
-                                       | Set-Variable oidcToken
+                          -Method Post | Set-Variable oidcTokenResponse
+        $oidcTokenResponse | Format-List
+        
+        $oidcToken = $oidcTokenResponse.oidcToken
         if (!$oidcToken) {
           Write-Error "Failed to get OIDC token from ${oidcRequestUrl}"
           exit 1
@@ -46,7 +50,7 @@ jobs:
           Write-Error "OIDC token in unexpected format"
           exit 1
         }
-        az account show 2>$null | ConvertFrom-Json | Set-Variable account
+        az account show 2>$null | ConvertFrom-Json | Set-Variable serviceConnection
 
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
         do {
@@ -54,7 +58,11 @@ jobs:
           az logout 
 
           Write-Host "`nLog back in with federated token.."
-          az login --service-principal -u $account.user.name --tenant $account.tenantId --allow-no-subscriptions --federated-token $oidcToken
+          az login --service-principal -u $serviceConnection.user.name --tenant $serviceConnection.tenantId --allow-no-subscriptions --federated-token $oidcToken
+          if (!(az account show 2>$null)) {
+            Write-Host "##vso[task.logissue type=error]Token expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
+            exit 1
+          }
 
           Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
