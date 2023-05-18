@@ -55,9 +55,6 @@ jobs:
           Write-Host "`nLog back in with federated token.."
           az login --service-principal -u $account.user.name --tenant $account.tenantId --allow-no-subscriptions --federated-token $oidcToken
 
-          Write-Host "`naz account show"
-          az account show
-
           Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
