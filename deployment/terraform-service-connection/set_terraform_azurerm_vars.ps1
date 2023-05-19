@@ -86,16 +86,23 @@ if (![guid]::TryParse($account.user.name, [ref][guid]::Empty)) {
 }
 $env:ARM_CLIENT_ID       ??= $account.user.name
 $env:ARM_CLIENT_SECRET   ??= $env:servicePrincipalKey # requires addSpnToEnvironment: true
-$env:ARM_TENANT_ID       ??= $account.tenantId
 $env:ARM_SUBSCRIPTION_ID ??= $account.id  
+$env:ARM_TENANT_ID       ??= $account.tenantId
+$env:ARM_USE_CLI         ??= "false"
 
 if ($env:ARM_CLIENT_SECRET) {
     Write-Verbose "Using ARM_CLIENT_SECRET"
 } else {
     $env:ARM_OIDC_TOKEN  ??= New-OidcToken
     Write-Verbose "Using ARM_OIDC_TOKEN"
+    $env:ARM_USE_OIDC    ??= "true"
 }
 Write-Host "`nTerraform azure provider environment variables:" -NoNewline
-Get-ChildItem -Path Env: -Recurse -Include ARM_* | Select-Object -Property Name `
+Get-ChildItem -Path Env: -Recurse -Include ARM_* | ForEach-Object { 
+                                                       if ($_.Name -match 'SECRET|TOKEN') {
+                                                           $_.Value = "<redacted>"
+                                                       } 
+                                                       $_
+                                                   } `
                                                  | Sort-Object -Property Name `
                                                  | Format-Table -HideTableHeader
