@@ -6,6 +6,7 @@ terraform {
 }
 
 provider azurerm {
+  use_cli                      = false
   use_oidc                     = true
   features {}
 }
