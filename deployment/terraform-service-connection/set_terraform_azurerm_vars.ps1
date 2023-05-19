@@ -98,6 +98,11 @@ if ($env:ARM_CLIENT_SECRET) {
     $env:ARM_USE_OIDC    ??= "true"
 }
 Write-Host "`nTerraform azure provider environment variables:" -NoNewline
-Get-ChildItem -Path Env: -Recurse -Include ARM_* | Select-Object -Property Name `
+Get-ChildItem -Path Env: -Recurse -Include ARM_* | ForEach-Object { 
+                                                       if ($_.Name -match 'SECRET|TOKEN') {
+                                                           $_.Value = "<redacted>"
+                                                       } 
+                                                       $_
+                                                   } `
                                                  | Sort-Object -Property Name `
                                                  | Format-Table -HideTableHeader
