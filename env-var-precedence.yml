@@ -38,4 +38,5 @@ jobs:
       script: |
         import os
         print(os.getenv("testvar"))
+        print(os.getenv("TESTVAR"))
       
