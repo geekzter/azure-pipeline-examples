@@ -1,0 +1,34 @@
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: 
+  displayName: 'env var precedence'
+  strategy:
+    matrix:
+      macOS:
+        vmImage: 'macos-latest'
+      Ubuntu:
+        vmImage: 'ubuntu-latest'
+      Windows:
+        vmImage: 'windows-latest'
+    maxParallel: 3
+  pool:
+    vmImage: $(vmImage)
+  variables:
+    testvar: job-level-value
+  steps:
+  - task: PythonScript@0
+    env:
+      testvar: task-level-value
+    inputs:
+      scriptSource: 'inline'
+      script: |
+        import os
+        print(os.getenv("testvar"))
