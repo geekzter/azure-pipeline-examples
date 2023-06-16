@@ -7,13 +7,14 @@ schedules:
     include:
     - main
 
+variables:
+  testvar: pipeline-level-value
+
 jobs:
 - job: 
   displayName: 'env var precedence'
   strategy:
     matrix:
-      macOS:
-        vmImage: 'macos-latest'
       Ubuntu:
         vmImage: 'ubuntu-latest'
       Windows:
@@ -35,7 +36,5 @@ jobs:
   - pwsh: |
       Write-Host "`$env:testvar = $env:testvar"
       "[environment]::GetEnvironmentVariable('Process') = {0}" -f [environment]::GetEnvironmentVariable('testvar','Process')
-      "[environment]::GetEnvironmentVariable('User') = {0}" -f [environment]::GetEnvironmentVariable('testvar','User')
-      "[environment]::GetEnvironmentVariable('Machine') = {0}" -f [environment]::GetEnvironmentVariable('testvar','Machine')
     env:
       testvar: task-level-value
