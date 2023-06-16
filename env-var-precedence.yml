@@ -25,6 +25,15 @@ jobs:
   variables:
     testvar: job-level-value
   steps:
+  - pwsh: |
+      Write-Host "##vso[task.setvariable variable=testvar;isoutput=true]predecessor-task-value"
+  - pwsh: |
+      Write-Host "`$env:testvar = $env:testvar"
+      "[environment]::GetEnvironmentVariable('Process') = {0}" -f [environment]::GetEnvironmentVariable('testvar','Process')
+      Write-Host "`$env:testvar2 = $env:testvar2"
+    env:
+      testvar: task-level-value
+      testvar2: task-level-value
   - task: PythonScript@0
     env:
       testvar: task-level-value
@@ -33,11 +42,4 @@ jobs:
       script: |
         import os
         print(os.getenv("testvar"))
-  - pwsh: |
-      Write-Host "`$env:testvar = $env:testvar"
-      "[environment]::GetEnvironmentVariable('Process') = {0}" -f [environment]::GetEnvironmentVariable('testvar','Process')
-      Write-Host "`$env:testvar2 = $env:testvar2"
-    env:
-      testvar: task-level-value
-      testvar2: task-level-value
       
