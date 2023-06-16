@@ -32,3 +32,9 @@ jobs:
       script: |
         import os
         print(os.getenv("testvar"))
+  - pwsh: |
+      Write-Host "`$env:testvar = $env:testvar"
+      "[environment]::testvar = {0}" -f [environment]::testvar
+      "[environment]::GetEnvironmentVariable('Process') = {0}" -f [environment]::GetEnvironmentVariable('testvar','Process')
+    env:
+      testvar: task-level-value
