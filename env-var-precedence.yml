@@ -26,8 +26,10 @@ jobs:
     testvar: job-level-value
   steps:
   - pwsh: |
-      Write-Host "##vso[task.setvariable variable=testvar;isoutput=true]predecessor-task-value"
+      Write-Host "##vso[task.setvariable variable=testvar]predecessor-task-setvariable-value"
+      Write-Host "##vso[task.setvariable variable=testvar;isoutput=true]predecessor-task-setvariable-value"
   - pwsh: |
+      Write-Host "##vso[task.setvariable variable=testvar]predecessor-task-setvariable-value"
       Write-Host "`$env:testvar = $env:testvar"
       "[environment]::GetEnvironmentVariable('Process') = {0}" -f [environment]::GetEnvironmentVariable('testvar','Process')
       Write-Host "`$env:testvar2 = $env:testvar2"
