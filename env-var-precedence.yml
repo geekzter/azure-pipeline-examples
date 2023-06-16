@@ -36,5 +36,8 @@ jobs:
   - pwsh: |
       Write-Host "`$env:testvar = $env:testvar"
       "[environment]::GetEnvironmentVariable('Process') = {0}" -f [environment]::GetEnvironmentVariable('testvar','Process')
+      Write-Host "`$env:testvar2 = $env:testvar2"
     env:
       testvar: task-level-value
+      testvar2: task-level-value
+      
