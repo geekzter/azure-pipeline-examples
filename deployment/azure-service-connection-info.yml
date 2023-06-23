@@ -3,6 +3,13 @@ parameters:
   displayName: Agent Pool
   type: string
   default: Azure Pipelines
+- name: vmImage
+  displayName: Image
+  type: string
+  default: windows-latest
+  values:
+  - 'ubuntu-latest'
+  - 'windows-latest'
 
 trigger: none
 schedules:
@@ -18,7 +25,7 @@ jobs:
   displayName: 'Show Azure Service Connection context'
   pool:
     name: ${{ parameters.pool }}
-    vmImage: 'ubuntu-latest'
+    vmImage: ${{ parameters.vmImage }}
   steps:
   - task: AzureCLI@2
     displayName: 'ARM Service Connection permissions'
@@ -57,6 +64,19 @@ jobs:
         Write-Host "`n$($PSStyle.Bold)Resource groups that the Service Connection has access to in subscription '$(az account show --query name -o tsv)':$($PSStyle.Reset) -------------"
         az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" -o table
       workingDirectory: '$(Build.ArtifactStagingDirectory)'
+
+  - task: AzurePowerShell@5
+    displayName: 'AzurePowerShell context'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: inlineScript
+      inline: |
+        Get-AzContext Format-List
+        Get-AzContext | Select-Object -ExpandProperty Subscription | Format-List
+
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: true
+      failOnStandardError: true
 
   - publish: $(Build.ArtifactStagingDirectory)
     displayName: 'Publish json files'
