@@ -6,7 +6,7 @@ parameters:
 - name: vmImage
   displayName: Image
   type: string
-  default: ubuntu-latest
+  default: windows-latest
   values:
   - 'ubuntu-latest'
   - 'windows-latest'
