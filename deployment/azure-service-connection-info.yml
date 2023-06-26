@@ -69,7 +69,7 @@ jobs:
 
   - publish: $(Build.ArtifactStagingDirectory)
     displayName: 'Publish json files'
-    artifact: indentityInfo
+    artifact: indentityInfo$(System.PlanId)
 
 - job: azurePowerShell
   displayName: 'AzurePowerShell'
