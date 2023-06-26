@@ -69,7 +69,6 @@ jobs:
     displayName: 'Publish json files'
     artifact: indentityInfo
 
-jobs:
 - job: azurePowerShell
   displayName: 'AzurePowerShell'
   strategy:
