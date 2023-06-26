@@ -18,6 +18,8 @@ jobs:
   displayName: 'AzureCLI'
   strategy:
     matrix:
+      MacOS:
+        vmImage: 'macos-latest'
       Ubuntu:
         vmImage: 'ubuntu-latest'
       Windows:
@@ -73,6 +75,8 @@ jobs:
   displayName: 'AzurePowerShell'
   strategy:
     matrix:
+      MacOS:
+        vmImage: 'macos-latest'
       Ubuntu:
         vmImage: 'ubuntu-latest'
       Windows:
