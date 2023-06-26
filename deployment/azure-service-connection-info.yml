@@ -3,13 +3,6 @@ parameters:
   displayName: Agent Pool
   type: string
   default: Azure Pipelines
-- name: vmImage
-  displayName: Image
-  type: string
-  default: windows-latest
-  values:
-  - 'ubuntu-latest'
-  - 'windows-latest'
 
 trigger: none
 schedules:
@@ -21,11 +14,20 @@ schedules:
     - main
 
 jobs:
-- job: agent
-  displayName: 'Show Azure Service Connection context'
+- job: azureCLI
+  displayName: 'AzureCLI'
+  strategy:
+    matrix:
+      MacOS:
+        vmImage: 'macos-latest'
+      Ubuntu:
+        vmImage: 'ubuntu-latest'
+      Windows:
+        vmImage: 'windows-latest'
+    maxParallel: 3
   pool:
     name: ${{ parameters.pool }}
-    vmImage: ${{ parameters.vmImage }}
+    vmImage: $(vmImage)
   steps:
   - task: AzureCLI@2
     displayName: 'ARM Service Connection permissions'
@@ -65,6 +67,25 @@ jobs:
         az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" -o table
       workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
+  - publish: $(Build.ArtifactStagingDirectory)
+    displayName: 'Publish json files'
+    artifact: indentityInfo-$(System.PlanId)-$(System.JobId)
+
+- job: azurePowerShell
+  displayName: 'AzurePowerShell'
+  strategy:
+    matrix:
+      MacOS:
+        vmImage: 'macos-latest'
+      Ubuntu:
+        vmImage: 'ubuntu-latest'
+      Windows:
+        vmImage: 'windows-latest'
+    maxParallel: 3
+  pool:
+    name: ${{ parameters.pool }}
+    vmImage: $(vmImage)
+  steps:
   - task: AzurePowerShell@5
     displayName: 'AzurePowerShell context'
     inputs:
@@ -77,7 +98,3 @@ jobs:
       azurePowerShellVersion: 'latestVersion'
       pwsh: true
       failOnStandardError: true
-
-  - publish: $(Build.ArtifactStagingDirectory)
-    displayName: 'Publish json files'
-    artifact: indentityInfo
