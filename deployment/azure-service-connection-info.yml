@@ -76,10 +76,16 @@ jobs:
   strategy:
     matrix:
       MacOS:
+        pwsh: true
         vmImage: 'macos-latest'
       Ubuntu:
+        pwsh: true
         vmImage: 'ubuntu-latest'
-      Windows:
+      Windows-PowerShell:
+        pwsh: false
+        vmImage: 'windows-latest'
+      Windows-pwsh:
+        pwsh: true
         vmImage: 'windows-latest'
     maxParallel: 3
   pool:
@@ -96,5 +102,5 @@ jobs:
         Get-AzContext | Select-Object -ExpandProperty Subscription | Format-List
 
       azurePowerShellVersion: 'latestVersion'
-      pwsh: true
+      pwsh: $(pwsh)
       failOnStandardError: true
