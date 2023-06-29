@@ -19,10 +19,16 @@ jobs:
   strategy:
     matrix:
       MacOS:
+        scriptType: ps
         vmImage: 'macos-latest'
       Ubuntu:
+        scriptType: ps
         vmImage: 'ubuntu-latest'
-      Windows:
+      Windows-PowerShell:
+        scriptType: ps
+        vmImage: 'windows-latest'
+      Windows-pwsh:
+        scriptType: pscore
         vmImage: 'windows-latest'
     maxParallel: 3
   pool:
