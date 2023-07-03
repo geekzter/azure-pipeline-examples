@@ -3,6 +3,9 @@ parameters:
   displayName: Agent Pool
   type: string
   default: Azure Pipelines
+- name: serviceConnection
+  displayName: Override Service Connection
+  type: string
 
 trigger: none
 schedules:
@@ -12,6 +15,10 @@ schedules:
   branches:
     include:
     - main
+
+variables:
+- name: serviceConnection
+  value: coalesce('${{ parameters.serviceConnection }}', variables['subscriptionConnection'])
 
 jobs:
 - job: azureCLI
@@ -38,11 +45,11 @@ jobs:
   - task: AzureCLI@2
     displayName: 'ARM Service Connection permissions'
     inputs:
-      azureSubscription: '$(subscriptionConnection)' # Task property referencing Service Connection -------------------------------------------------------
+      azureSubscription: '$(serviceConnection)' # Task property referencing Service Connection -------------------------------------------------------
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Write-Host "`n$($PSStyle.Bold)Service Connection name: '$(subscriptionConnection)'$($PSStyle.Reset) -----------------------------------------------"
+        Write-Host "`n$($PSStyle.Bold)Service Connection name: '$(serviceConnection)'$($PSStyle.Reset) -----------------------------------------------"
 
         Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
                                                                    | Select-Object -First 1 -ExpandProperty Name `
@@ -101,7 +108,7 @@ jobs:
   - task: AzurePowerShell@5
     displayName: 'AzurePowerShell context'
     inputs:
-      azureSubscription: '$(subscriptionConnection)'
+      azureSubscription: '$(serviceConnection)'
       scriptType: inlineScript
       inline: |
         Get-AzContext Format-List
