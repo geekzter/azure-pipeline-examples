@@ -6,7 +6,7 @@ parameters:
 - name: serviceConnection
   displayName: Override Service Connection
   type: string
-  default: ''
+  default: ' '
 
 trigger: none
 schedules:
@@ -19,7 +19,7 @@ schedules:
 
 variables:
 - name: serviceConnection
-  value: $[ coalesce('${{ parameters.serviceConnection }}', variables['subscriptionConnection']) ]
+  value: $[ coalesce('${{ replace(parameters.serviceConnection,' ','') }}', variables['subscriptionConnection']) ]
 
 jobs:
 - job: azureCLI
