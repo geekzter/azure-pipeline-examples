@@ -26,16 +26,18 @@ if (![guid]::TryParse($account.user.name, [ref][guid]::Empty)) {
 }
 $env:ARM_CLIENT_ID       ??= $account.user.name
 $env:ARM_CLIENT_SECRET   ??= $env:servicePrincipalKey # requires addSpnToEnvironment: true
+$env:ARM_OIDC_TOKEN      ??= $env:idToken
 $env:ARM_SUBSCRIPTION_ID ??= $account.id  
 $env:ARM_TENANT_ID       ??= $account.tenantId
-$env:ARM_USE_CLI         ??= "false"
+$env:ARM_USE_CLI         ??= (!($env:idToken -or $env:servicePrincipalKey)).ToString().ToLower()
+$env:ARM_USE_OIDC        ??= ($env:idToken -ne $null).ToString().ToLower()
 
 if ($env:ARM_CLIENT_SECRET) {
     Write-Verbose "Using ARM_CLIENT_SECRET"
-} else {
-    $env:ARM_OIDC_TOKEN  ??= $env:idToken
+} elseif ($env:ARM_OIDC_TOKEN) {
     Write-Verbose "Using ARM_OIDC_TOKEN"
-    $env:ARM_USE_OIDC    ??= ($env:idToken -ne $null).ToString().ToLower()
+} else {
+    Write-Warning "No credentials found to propagate as ARM_* environment variables. Using ARM_USE_CLI = true."
 }
 Write-Host "`nTerraform azure provider environment variables:" -NoNewline
 Get-ChildItem -Path Env: -Recurse -Include ARM_* | ForEach-Object { 
