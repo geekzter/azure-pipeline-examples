@@ -13,13 +13,14 @@ trigger: none
 
 jobs:
 - job: agent
-  displayName: 'ID Token Lifetime test $(subscriptionConnection)'
+  displayName: 'ID Token Lifetime test'
   pool:
     name: Azure Pipelines
     vmImage: ubuntu-latest
   timeoutInMinutes: ${{ parameters.maxMinutes }}
   steps:
   - task: AzureCLI@2
+    displayName: '$(subscriptionConnection)'
     inputs:
       addSpnToEnvironment: true
       azureSubscription: $(subscriptionConnection)
@@ -33,6 +34,8 @@ jobs:
           Write-Host "##vso[task.logissue type=error]idToken not available"
           exit 1
         }
+
+        az account show 2>$null | ConvertFrom-Json | Set-Variable serviceConnection
 
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
         do {
