@@ -56,14 +56,20 @@ jobs:
       inlineScript: |
         Write-Host "`n$($PSStyle.Bold)Service Connection name: '$(serviceConnection)'$($PSStyle.Reset) -----------------------------------------------"
 
+        Write-Host "Endpoint environment variables:"
         Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
                                                                    | Select-Object -First 1 -ExpandProperty Name `
                                                                    | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
                                                                    | Set-Variable serviceConnectionId
 
-        Get-ChildItem -Path Env: -Recurse -Include * | Sort-Object -Property Name `
-                                                     | Select-Object -Property Name `
-                                                     | Format-Table -HideTableHeaders
+        Write-Host "Variables added by 'addSpnToEnvironment = true':"
+        Get-ChildItem -Path Env: -Recurse -Include idToken, `
+                                                   servicePrincipalId, `
+                                                   servicePrincipalKey,`
+                                                   tenantId `
+                      | Sort-Object -Property Name `
+                      | Select-Object -Property Name `
+                      | Format-Table -HideTableHeaders
                                                                    
 
         Write-Host "`nService Connection ID: ${serviceConnectionId}"
