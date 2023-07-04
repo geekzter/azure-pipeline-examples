@@ -49,6 +49,7 @@ jobs:
   - task: AzureCLI@2
     displayName: 'ARM Service Connection permissions'
     inputs:
+      addSpnToEnvironment: true
       azureSubscription: '$(serviceConnection)' # Task property referencing Service Connection -------------------------------------------------------
       scriptType: pscore
       scriptLocation: inlineScript
@@ -59,6 +60,12 @@ jobs:
                                                                    | Select-Object -First 1 -ExpandProperty Name `
                                                                    | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
                                                                    | Set-Variable serviceConnectionId
+
+        Get-ChildItem -Path Env: -Recurse -Include * | Sort-Object -Property Name `
+                                                     | Select-Object -Property Name `
+                                                     | Format-Table -HideTableHeaders
+                                                                   
+
         Write-Host "`nService Connection ID: ${serviceConnectionId}"
 
         Write-Host "`naz account show"
