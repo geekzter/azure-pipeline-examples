@@ -8,12 +8,12 @@ parameters:
   type: number
   default: 30
 
-name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ variables.subscriptionConnection }}-${{ parameters.intervalMinutes }}-${{ parameters.maxMinutes }}-$(Build.BuildId)
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.intervalMinutes }}-${{ parameters.maxMinutes }}-$(Build.BuildId)
 trigger: none
 
 jobs:
 - job: agent
-  displayName: 'ID Token Lifetime test'
+  displayName: 'ID Token Lifetime test $(subscriptionConnection)'
   pool:
     name: Azure Pipelines
     vmImage: ubuntu-latest
@@ -21,6 +21,7 @@ jobs:
   steps:
   - task: AzureCLI@2
     inputs:
+      addSpnToEnvironment: true
       azureSubscription: $(subscriptionConnection)
       failOnStandardError: true
       powerShellIgnoreLASTEXITCODE: false
@@ -28,27 +29,10 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
-                                                                   | Select-Object -First 1 -ExpandProperty Name `
-                                                                   | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
-                                                                   | Set-Variable serviceConnectionId
-        $oidcRequestUrl = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECTID}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
-        Invoke-RestMethod -Headers @{
-                            Authorization  = "Bearer $(System.AccessToken)"
-                            'Content-Type' = 'application/json'
-                          } `
-                          -Uri "${oidcRequestUrl}" `
-                          -Method Post | Select-Object -ExpandProperty oidcToken `
-                                       | Set-Variable oidcToken
-        if (!$oidcToken) {
-          Write-Error "Failed to get OIDC token from ${oidcRequestUrl}"
+        if (!$env:idToken) {
+          Write-Host "##vso[task.logissue type=error]idToken not available"
           exit 1
         }
-        if ($oidcToken -notmatch "^ey") {
-          Write-Error "OIDC token in unexpected format"
-          exit 1
-        }
-        az account show 2>$null | ConvertFrom-Json | Set-Variable serviceConnection
 
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
         do {
@@ -56,7 +40,7 @@ jobs:
           az logout 
 
           Write-Host "`nLog back in with federated token.."
-          az login --service-principal -u $serviceConnection.user.name --tenant $serviceConnection.tenantId --allow-no-subscriptions --federated-token $oidcToken
+          az login --service-principal -u $serviceConnection.user.name --tenant $serviceConnection.tenantId --allow-no-subscriptions --federated-token $env:idToken
           if (!(az account show 2>$null)) {
             Write-Host "##vso[task.logissue type=error]Token expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
             exit 1
