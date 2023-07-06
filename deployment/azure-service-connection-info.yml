@@ -91,13 +91,12 @@ jobs:
         Get-Content servicePrincipal.json
         Get-Content servicePrincipal.json | ConvertFrom-Json `
                                           | Set-Variable servicePrincipal
-        $servicePrincipal | Format-List
         if ($servicePrincipal.servicePrincipalType -eq 'ManagedIdentity') {
           "https://portal.azure.com/#@{0}/resource{1}" -f $subscription.tenantId, $servicePrincipal.alternativeNames[1] | Set-Variable azurePortalLink
         } else {
           "https://portal.azure.com/{0}/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/{1}/isMSAApp/" -f $subscription.tenantId, $appId | Set-Variable azurePortalLink
         }
-        Write-Host "`nAzure Portal link for $($servicePrincipal.servicePrincipalType): $($azurePortalLink)"
+        Write-Host "`nAzure Portal link for Service Principal of type '$($servicePrincipal.servicePrincipalType)':`n$($azurePortalLink)"
 
         Write-Host "`n$($PSStyle.Bold)Subscriptions the Service Connection has access to:$($PSStyle.Reset) ------------------------------------------------"
         az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" -o table
