@@ -149,3 +149,19 @@ jobs:
           az pipelines pool list --query "[].{Id:id, Name:name}" -o table
         }
       failOnStandardError: true
+
+  - task: AzureCLI@2
+    condition: succeededOrFailed()
+    displayName: 'Azure CLI -> DevOps CLI'
+    inputs:
+      azureSubscription: '${{ parameters.serviceConnection }}'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        az devops configure --defaults organization=$(System.CollectionUri) project=$(System.TeamProject)
+        az devops configure -l
+        Write-Host "`nUse token with Azure DevOps CLI (az devops) to list projects in the organization '$(System.CollectionUri)'..."
+        az devops project list --query "value[].{Name:name, Id:id}" -o table
+        Write-Host "`nUse token with Azure DevOps CLI (az pipelines) to list pools in the organization '$(System.CollectionUri)'..."
+        az pipelines pool list --query "[].{Id:id, Name:name}" -o table
+      failOnStandardError: true
