@@ -11,7 +11,8 @@ jobs:
 - job: 'usedotnet'
   displayName: 'Use .NET SDK'
   pool:
-    name: 'List SDKs'
+    name: 'Azure Pipelines'
+    vmImage: 'windows-latest'
   steps:
   - pwsh: |
       dotnet --list-sdks
