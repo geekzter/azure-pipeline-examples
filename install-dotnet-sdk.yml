@@ -1,0 +1,22 @@
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: 'usedotnet'
+  displayName: 'Use .NET SDK'
+  pool:
+    name: 'List SDKs'
+  steps:
+  - pwsh: |
+      dotnet --list-sdks
+  - task: UseDotNet@2
+    inputs:
+      version: 3.1
+  - pwsh: |
+      dotnet --list-sdks
