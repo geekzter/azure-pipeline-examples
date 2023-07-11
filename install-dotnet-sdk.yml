@@ -1,0 +1,23 @@
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: 'usedotnet'
+  displayName: 'Use .NET SDK'
+  pool:
+    name: 'Azure Pipelines'
+    vmImage: 'windows-latest'
+  steps:
+  - pwsh: |
+      dotnet --list-sdks
+  - task: UseDotNet@2
+    inputs:
+      version: '3.1.x'
+  - pwsh: |
+      dotnet --list-sdks
