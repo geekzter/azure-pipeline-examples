@@ -100,7 +100,6 @@ jobs:
   continueOnError: true
   dependsOn: inspectCluster
   displayName: 'kubectl (local accounts disabled, times out)'
-  timeoutInMinutes: 2
   variables:
     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
@@ -118,6 +117,7 @@ jobs:
     condition: succeededOrFailed()
     continueOnError: true 
     displayName: 'kubectl (times out)'
+    timeoutInMinutes: 1
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
@@ -281,7 +281,6 @@ jobs:
   continueOnError: true
   dependsOn: inspectCluster
   displayName: 'Kubernetes@1 (local accounts disabled, times out)'
-  timeoutInMinutes: 2
   variables:
     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
@@ -308,6 +307,7 @@ jobs:
   - task: Kubernetes@1
     continueOnError: true
     displayName: 'Kubernetes@1 (times out)'
+    timeoutInMinutes: 1
     inputs:
       connectionType: 'None'
       azureResourceGroup: $(resourceGroupName)
@@ -451,7 +451,6 @@ jobs:
   - inspectCluster
   - enableLocalAccounts
   displayName: 'kubectl (local accounts enabled, times out)'
-  timeoutInMinutes: 2
   variables:
     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
@@ -469,6 +468,7 @@ jobs:
     condition: succeededOrFailed()
     continueOnError: true 
     displayName: 'kubectl (times out)'
+    timeoutInMinutes: 1
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
@@ -491,7 +491,6 @@ jobs:
   - inspectCluster
   - enableLocalAccounts
   displayName: 'Kubernetes@1 (local accounts enabled, times out)'
-  timeoutInMinutes: 2
   variables:
     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
@@ -518,6 +517,7 @@ jobs:
   - task: Kubernetes@1
     continueOnError: true
     displayName: 'Kubernetes@1 (times out)'
+    timeoutInMinutes: 1
     inputs:
       connectionType: 'None'
       azureResourceGroup: $(resourceGroupName)
