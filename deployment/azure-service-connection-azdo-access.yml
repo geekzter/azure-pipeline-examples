@@ -52,11 +52,12 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Write-Host "`nUse Azure DevOps REST API to get Azure DevOps health status '$(System.CollectionUri)'..."
+        Write-Host "`nUse Azure DevOps REST API to get Azure Pipelines health status '$(System.CollectionUri)'..."
         Write-Host "$($PSStyle.Formatting.FormatAccent)az rest --url https://status.dev.azure.com/_apis/status/health?api-version=7.1-preview.1$($PSStyle.Reset)"
         az rest --method get `
                 --url "https://status.dev.azure.com/_apis/status/health?api-version=7.1-preview.1" `
                 --resource 499b84ac-1321-427f-aa17-267ca6975798 `
+                --query "services[?id=='Pipelines'].geographies | []" `
                 -o table
 
         Write-Host "`nObtaining access token for Service Connection identity..."
