@@ -56,7 +56,7 @@ jobs:
         Write-Host "$($PSStyle.Formatting.FormatAccent)az rest --url https://status.dev.azure.com/_apis/status/health?api-version=7.1-preview.1$($PSStyle.Reset)"
         az rest --method get `
                 --url "https://status.dev.azure.com/_apis/status/health?api-version=7.1-preview.1" `
-                --query "value[].{Id:id, Name:name}" `
+                --resource 499b84ac-1321-427f-aa17-267ca6975798 `
                 -o table
 
         Write-Host "`nObtaining access token for Service Connection identity..."
