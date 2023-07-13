@@ -29,7 +29,7 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Write-Host "Using logged-in Azure CLI session $($PSStyle.Formatting.FormatAccent)az devops configure$($PSStyle.Reset))..."
+        Write-Host "Using logged-in Azure CLI session ($($PSStyle.Formatting.FormatAccent)az devops configure$($PSStyle.Reset))..."
         az devops configure --defaults organization=$(System.CollectionUri) project=$(System.TeamProject)
         az devops configure -l
 
@@ -51,8 +51,8 @@ jobs:
       inlineScript: |
         Write-Host "`nUse Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
         az rest --method get `
-                --uri "$(System.CollectionUri)_apis/distributedtask/pools?api-version=7.1-preview.1" ` 
-                --query "value[].{Id:id, Name:name}" ` 
+                --uri "$(System.CollectionUri)_apis/distributedtask/pools?api-version=7.1-preview.1" `
+                --query "value[].{Id:id, Name:name}" `
                 -o table
 
         Write-Host "`nObtaining access token for Service Connection identity..."
