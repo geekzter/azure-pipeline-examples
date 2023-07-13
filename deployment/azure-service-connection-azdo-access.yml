@@ -29,15 +29,18 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Write-Host "Using logged-in Azure CLI session ($($PSStyle.Formatting.FormatAccent)az devops configure$($PSStyle.Reset))..."
+        Write-Host "Using logged-in Azure CLI session..."
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az devops configure$($PSStyle.Reset)"
         az devops configure --defaults organization=$(System.CollectionUri) project=$(System.TeamProject)
         az devops configure -l
 
         Write-Host "`nUse Azure DevOps CLI (az devops) to list projects in the organization '$(System.CollectionUri)'..."
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az devops project list$($PSStyle.Reset)"
         az devops project list --query "value[].{Name:name, Id:id}" `
                                -o table
    
         Write-Host "`nUse Azure DevOps CLI (az pipelines) to list pools in the organization '$(System.CollectionUri)'..."
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az pipelines pool list$($PSStyle.Reset)"
         az pipelines pool list --query "[].{Id:id, Name:name}" `
                                -o table
       failOnStandardError: true
@@ -50,6 +53,7 @@ jobs:
       scriptLocation: inlineScript
       inlineScript: |
         Write-Host "`nUse Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az rest --uri $(System.CollectionUri)_apis/distributedtask/pools?api-version=7.1-preview.1$($PSStyle.Reset)"
         az rest --method get `
                 --uri "$(System.CollectionUri)_apis/distributedtask/pools?api-version=7.1-preview.1" `
                 --query "value[].{Id:id, Name:name}" `
@@ -57,6 +61,7 @@ jobs:
 
         Write-Host "`nObtaining access token for Service Connection identity..."
         # 499b84ac-1321-427f-aa17-267ca6975798 is the Azure DevOps resource ID
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az account get-access-token$($PSStyle.Reset)"
         az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 `
                                     --query "accessToken" `
                                     --output tsv `
