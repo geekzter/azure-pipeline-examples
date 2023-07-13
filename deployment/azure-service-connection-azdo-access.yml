@@ -50,7 +50,7 @@ jobs:
       scriptLocation: inlineScript
       inlineScript: |
         Write-Host "`nUse Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
-        az rest --method get `n
+        az rest --method get `
                 --uri "$(System.CollectionUri)_apis/distributedtask/pools?api-version=7.1-preview.1" ` 
                 --query "value[].{Id:id, Name:name}" ` 
                 -o table
