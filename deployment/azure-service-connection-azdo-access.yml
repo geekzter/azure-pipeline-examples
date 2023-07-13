@@ -52,10 +52,10 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Write-Host "`nUse Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
-        Write-Host "$($PSStyle.Formatting.FormatAccent)az rest --uri $(System.CollectionUri)_apis/distributedtask/pools?api-version=7.1-preview.1$($PSStyle.Reset)"
+        Write-Host "`nUse Azure DevOps REST API to get Azure DevOps health status '$(System.CollectionUri)'..."
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az rest --uri https://status.dev.azure.com/_apis/status/health$($PSStyle.Reset)"
         az rest --method get `
-                --uri "$(System.CollectionUri)_apis/distributedtask/pools?api-version=7.1-preview.1" `
+                --uri "https://status.dev.azure.com/_apis/status/health?api-version=7.1-preview.1" `
                 --query "value[].{Id:id, Name:name}" `
                 -o table
 
