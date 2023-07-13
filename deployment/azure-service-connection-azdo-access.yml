@@ -57,7 +57,7 @@ jobs:
         az rest --method get `
                 --url "https://status.dev.azure.com/_apis/status/health?api-version=7.1-preview.1" `
                 --resource 499b84ac-1321-427f-aa17-267ca6975798 `
-                --query "services[?id=='Pipelines'].geographies | []" `
+                --query "sort_by(services[?id=='Pipelines'].geographies | [], &name)" `
                 -o table
 
         Write-Host "`nObtaining access token for Service Connection identity..."
