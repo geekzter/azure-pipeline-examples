@@ -106,8 +106,8 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-  - template: install-kubelogin.yml
-
+  - task: KubeloginInstaller@0
+  
   - pwsh: |
       kubelogin -h
     displayName: 'Test kubelogin'
@@ -196,7 +196,7 @@ jobs:
         Write-Host "##vso[task.logissue type=warning]The next command (az aks install-cli --kubelogin-version latest) will fail due insufficient permissions to install kubelogin in default location on hosted agents"
         az aks install-cli --kubelogin-version latest
 
-  - template: install-kubelogin.yml
+  - task: KubeloginInstaller@0
 
   - pwsh: |
       kubelogin -h
@@ -287,7 +287,7 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-  - template: install-kubelogin.yml
+  - task: KubeloginInstaller@0
 
   - task: AzureCLI@2
     condition: succeededOrFailed()
@@ -352,7 +352,7 @@ jobs:
       arguments: nodes
       useClusterAdmin: false
 
-  - template: install-kubelogin.yml
+  - task: KubeloginInstaller@0
 
   - task: AzureCLI@2
     displayName: 'Configure kubectl with kubelogin (sp)'
@@ -457,7 +457,7 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-  - template: install-kubelogin.yml
+  - task: KubeloginInstaller@0
 
   - pwsh: |
       kubelogin -h
@@ -497,7 +497,7 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-  - template: install-kubelogin.yml
+  - task: KubeloginInstaller@0
 
   - task: AzureCLI@2
     condition: succeededOrFailed()
