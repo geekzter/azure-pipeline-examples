@@ -20,6 +20,7 @@ steps:
   persistCredentials: true
 
 - pwsh: |
-    terraform init
-    terraform apply -auto-approve
+    ls -alR
+    # terraform init
+    # terraform apply -auto-approve
   workingDirectory: deployment/terraform-modules
