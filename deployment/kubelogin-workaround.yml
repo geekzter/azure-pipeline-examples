@@ -107,6 +107,7 @@ jobs:
 
   - task: AzureCLI@2
     displayName: 'kubectl with kubelogin (azure cli)'
+    timeoutInMinutes: 1
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
@@ -155,6 +156,7 @@ jobs:
 
   - task: Kubernetes@1
     displayName: 'Kubernetes@1'
+    timeoutInMinutes: 1
     inputs:
       connectionType: 'Azure Resource Manager'
       azureSubscriptionEndpoint: $(subscriptionConnection)
@@ -238,6 +240,7 @@ jobs:
 
   - task: AzureCLI@2
     displayName: 'kubectl with kubelogin (azure cli)'
+    timeoutInMinutes: 1
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
@@ -283,6 +286,7 @@ jobs:
 
   - task: Kubernetes@1
     displayName: 'Kubernetes@1 (with kubelogin)'
+    timeoutInMinutes: 1
     inputs:
       connectionType: 'Azure Resource Manager'
       azureSubscriptionEndpoint: $(subscriptionConnection)
