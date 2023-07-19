@@ -17,11 +17,10 @@ steps:
 - checkout: self
 
 - checkout: modules
+  fetchDepth: 1
   persistCredentials: true
 
 - pwsh: |
-    pwd
-    ls -alR
     terraform init
     terraform apply -auto-approve
   displayName: 'Terraform apply'
