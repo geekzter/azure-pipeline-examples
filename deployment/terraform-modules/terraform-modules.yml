@@ -23,4 +23,5 @@ steps:
     ls -alR
     # terraform init
     # terraform apply -auto-approve
-  workingDirectory: deployment/terraform-modules
+  displayName: 'Terraform apply'
+  # workingDirectory: deployment/terraform-modules
