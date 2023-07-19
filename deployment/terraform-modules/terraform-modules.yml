@@ -1,0 +1,26 @@
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+resources:
+  repositories:
+  - repository: modules
+    type: git
+    endpoint: github.com # Service Connection name
+    name: PipelineSamples/terraform-modules-sample
+
+steps:
+- checkout: self
+
+- checkout: modules
+  persistCredentials: true
+
+- pwsh: |
+    terraform init
+    terraform apply -auto-approve
+  workingDirectory: deployment/terraform-modules
