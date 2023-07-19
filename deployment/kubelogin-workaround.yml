@@ -96,42 +96,42 @@ jobs:
         }
         Write-Host "##vso[task.setvariable variable=disableLocalAccountsOriginalState;isOutput=true]${disableLocalAccounts}"
 
-- job: kubectlLocalAccountsDisabledTimeout
-  continueOnError: true
-  dependsOn: inspectCluster
-  displayName: 'kubectl (local accounts disabled, times out)'
-  variables:
-    aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
-    resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  - task: KubeloginInstaller@0
+# - job: kubectlLocalAccountsDisabledTimeout
+#   continueOnError: true
+#   dependsOn: inspectCluster
+#   displayName: 'kubectl (local accounts disabled, times out)'
+#   variables:
+#     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
+#     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
+#   pool:
+#     vmImage: 'ubuntu-latest'
+#   steps:
+#   - task: KubeloginInstaller@0
   
-  - pwsh: |
-      kubelogin -h
-    displayName: 'Test kubelogin'
+#   - pwsh: |
+#       kubelogin -h
+#     displayName: 'Test kubelogin'
 
-  # Fails as kubelogin is installed, but not configured and will prompt for interactive login
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    continueOnError: true 
-    displayName: 'kubectl (times out)'
-    timeoutInMinutes: 1
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        kubectl config unset contexts.$(aksName)
-        kubectl config unset contexts.$(aksName)-admin
+#   # Fails as kubelogin is installed, but not configured and will prompt for interactive login
+#   - task: AzureCLI@2
+#     condition: succeededOrFailed()
+#     continueOnError: true 
+#     displayName: 'kubectl (times out)'
+#     timeoutInMinutes: 1
+#     inputs:
+#       azureSubscription: '$(subscriptionConnection)'
+#       scriptType: pscore
+#       scriptLocation: inlineScript
+#       inlineScript: |
+#         kubectl config unset contexts.$(aksName)
+#         kubectl config unset contexts.$(aksName)-admin
 
-        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
+#         az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
 
-        kubectl config view
-        Write-Host "##vso[task.logissue type=warning]The next command (kubectl cluster-info) will time out as kubelogin is installed, but not configured and will prompt for interactive login"
-        kubectl cluster-info
-        kubectl get nodes
+#         kubectl config view
+#         Write-Host "##vso[task.logissue type=warning]The next command (kubectl cluster-info) will time out as kubelogin is installed, but not configured and will prompt for interactive login"
+#         kubectl cluster-info
+#         kubectl get nodes
 
 
 - job: kubectlLocalAccountsDisabled
@@ -143,58 +143,58 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-  # Fails as kubelogin is not installed
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    continueOnError: true 
-    displayName: 'kubectl (fails)'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        kubectl config unset contexts.$(aksName)
-        kubectl config unset contexts.$(aksName)-admin
+  # # Fails as kubelogin is not installed
+  # - task: AzureCLI@2
+  #   condition: succeededOrFailed()
+  #   continueOnError: true 
+  #   displayName: 'kubectl (fails)'
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       kubectl config unset contexts.$(aksName)
+  #       kubectl config unset contexts.$(aksName)-admin
 
-        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
+  #       az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
 
-        kubectl config view
-        Write-Host "##vso[task.logissue type=warning]The next command (kubectl cluster-info) will fail as kubelogin is not installed"
-        kubectl cluster-info
-        kubectl get nodes
+  #       kubectl config view
+  #       Write-Host "##vso[task.logissue type=warning]The next command (kubectl cluster-info) will fail as kubelogin is not installed"
+  #       kubectl cluster-info
+  #       kubectl get nodes
 
-  # Fails as admin credentials are not available when local accounts are disabled
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    continueOnError: true 
-    displayName: 'kubectl admin (fails)'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        kubectl config unset contexts.$(aksName)
-        kubectl config unset contexts.$(aksName)-admin
+  # # Fails as admin credentials are not available when local accounts are disabled
+  # - task: AzureCLI@2
+  #   condition: succeededOrFailed()
+  #   continueOnError: true 
+  #   displayName: 'kubectl admin (fails)'
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       kubectl config unset contexts.$(aksName)
+  #       kubectl config unset contexts.$(aksName)-admin
 
-        Write-Host "##vso[task.logissue type=warning]The next command (az aks get-credentials) will fail as admin credentials are not available when local accounts are disabled"
-        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing -a
+  #       Write-Host "##vso[task.logissue type=warning]The next command (az aks get-credentials) will fail as admin credentials are not available when local accounts are disabled"
+  #       az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing -a
 
-        kubectl config view
-        kubectl cluster-info
-        kubectl get nodes
+  #       kubectl config view
+  #       kubectl cluster-info
+  #       kubectl get nodes
 
-  # Fails due to insufficient permissions to install kubelogin on hosted agents
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    continueOnError: true 
-    displayName: 'Install kubelogin with az cli (fails)'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        Write-Host "##vso[task.logissue type=warning]The next command (az aks install-cli --kubelogin-version latest) will fail due insufficient permissions to install kubelogin in default location on hosted agents"
-        az aks install-cli --kubelogin-version latest
+  # # Fails due to insufficient permissions to install kubelogin on hosted agents
+  # - task: AzureCLI@2
+  #   condition: succeededOrFailed()
+  #   continueOnError: true 
+  #   displayName: 'Install kubelogin with az cli (fails)'
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       Write-Host "##vso[task.logissue type=warning]The next command (az aks install-cli --kubelogin-version latest) will fail due insufficient permissions to install kubelogin in default location on hosted agents"
+  #       az aks install-cli --kubelogin-version latest
 
   - task: KubeloginInstaller@0
 
@@ -221,22 +221,22 @@ jobs:
         kubectl cluster-info
         kubectl get nodes
 
-  # Fails as admin credentials are not available when local accounts are disabled
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    continueOnError: true 
-    displayName: 'kubectl with kubelogin admin (azure cli, fails)'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        kubectl config unset contexts.$(aksName)
-        kubectl config unset contexts.$(aksName)-admin
-        kubelogin remove-tokens
+  # # Fails as admin credentials are not available when local accounts are disabled
+  # - task: AzureCLI@2
+  #   condition: succeededOrFailed()
+  #   continueOnError: true 
+  #   displayName: 'kubectl with kubelogin admin (azure cli, fails)'
+  #   inputs:
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       kubectl config unset contexts.$(aksName)
+  #       kubectl config unset contexts.$(aksName)-admin
+  #       kubelogin remove-tokens
         
-        Write-Host "##vso[task.logissue type=warning]The next command (az aks get-credentials) fails as local accounts are disabled: https://learn.microsoft.com/azure/aks/managed-aad#disable-local-accounts"
-        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --admin --overwrite-existing
+  #       Write-Host "##vso[task.logissue type=warning]The next command (az aks get-credentials) fails as local accounts are disabled: https://learn.microsoft.com/azure/aks/managed-aad#disable-local-accounts"
+  #       az aks get-credentials -n $(aksName) -g $(resourceGroupName) --admin --overwrite-existing
 
   - task: AzureCLI@2
     condition: succeededOrFailed()
@@ -258,29 +258,29 @@ jobs:
         kubectl cluster-info
         kubectl get nodes
 
-  # Fails as admin credentials are not available when local accounts are disabled
-  - task: AzureCLI@2
-    condition: succeededOrFailed()
-    continueOnError: true 
-    displayName: 'kubectl with kubelogin admin (sp, fails)'
-    inputs:
-      addSpnToEnvironment: true
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        kubectl config unset contexts.$(aksName)
-        kubectl config unset contexts.$(aksName)-admin
-        kubelogin remove-tokens
+  # # Fails as admin credentials are not available when local accounts are disabled
+  # - task: AzureCLI@2
+  #   condition: succeededOrFailed()
+  #   continueOnError: true 
+  #   displayName: 'kubectl with kubelogin admin (sp, fails)'
+  #   inputs:
+  #     addSpnToEnvironment: true
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       kubectl config unset contexts.$(aksName)
+  #       kubectl config unset contexts.$(aksName)-admin
+  #       kubelogin remove-tokens
         
-        Write-Host "##vso[task.logissue type=warning]The next command (az aks get-credentials) fails as local accounts are disabled: https://learn.microsoft.com/azure/aks/managed-aad#disable-local-accounts"
-        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --admin --overwrite-existing
+  #       Write-Host "##vso[task.logissue type=warning]The next command (az aks get-credentials) fails as local accounts are disabled: https://learn.microsoft.com/azure/aks/managed-aad#disable-local-accounts"
+  #       az aks get-credentials -n $(aksName) -g $(resourceGroupName) --admin --overwrite-existing
 
 
 - job: kubectlTaskLocalAccountsDisabledTimeout
   continueOnError: true
   dependsOn: inspectCluster
-  displayName: 'Kubernetes@1 (local accounts disabled, times out)'
+  displayName: 'Kubernetes@1 (local accounts disabled, no longer times out)'
   variables:
     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
@@ -328,53 +328,53 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-  # Fails as kubelogin is not installed & configured
-  - task: Kubernetes@1
-    continueOnError: true 
-    displayName: 'Kubernetes@1 (fails)'
-    inputs:
-      connectionType: 'Azure Resource Manager'
-      azureSubscriptionEndpoint: $(subscriptionConnection)
-      azureResourceGroup: $(resourceGroupName)
-      kubernetesCluster: $(aksName)
-      command: 'get'
-      arguments: nodes
-      useClusterAdmin: false
+  # # Fails as kubelogin is not installed & configured
+  # - task: Kubernetes@1
+  #   continueOnError: true 
+  #   displayName: 'Kubernetes@1 (fails)'
+  #   inputs:
+  #     connectionType: 'Azure Resource Manager'
+  #     azureSubscriptionEndpoint: $(subscriptionConnection)
+  #     azureResourceGroup: $(resourceGroupName)
+  #     kubernetesCluster: $(aksName)
+  #     command: 'get'
+  #     arguments: nodes
+  #     useClusterAdmin: false
 
-  # Fails as local accounts are disabled: https://learn.microsoft.com/azure/aks/managed-aad#disable-local-accounts
-  - task: Kubernetes@1
-    continueOnError: true 
-    displayName: 'Kubernetes@1 admin (fails)'
-    inputs:
-      connectionType: 'Azure Resource Manager'
-      azureSubscriptionEndpoint: $(subscriptionConnection)
-      azureResourceGroup: $(resourceGroupName)
-      kubernetesCluster: $(aksName)
-      command: 'get'
-      arguments: nodes
-      useClusterAdmin: false
+  # # Fails as local accounts are disabled: https://learn.microsoft.com/azure/aks/managed-aad#disable-local-accounts
+  # - task: Kubernetes@1
+  #   continueOnError: true 
+  #   displayName: 'Kubernetes@1 admin (fails)'
+  #   inputs:
+  #     connectionType: 'Azure Resource Manager'
+  #     azureSubscriptionEndpoint: $(subscriptionConnection)
+  #     azureResourceGroup: $(resourceGroupName)
+  #     kubernetesCluster: $(aksName)
+  #     command: 'get'
+  #     arguments: nodes
+  #     useClusterAdmin: false
 
   - task: KubeloginInstaller@0
 
-  - task: AzureCLI@2
-    displayName: 'Configure kubectl with kubelogin (sp)'
-    enabled: false # No longer needed
-    inputs:
-      addSpnToEnvironment: true
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        kubectl config unset contexts.$(aksName)
-        kubectl config unset contexts.$(aksName)-admin
-        kubelogin remove-tokens
+  # - task: AzureCLI@2
+  #   displayName: 'Configure kubectl with kubelogin (sp)'
+  #   enabled: false # No longer needed
+  #   inputs:
+  #     addSpnToEnvironment: true
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       kubectl config unset contexts.$(aksName)
+  #       kubectl config unset contexts.$(aksName)-admin
+  #       kubelogin remove-tokens
 
-        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
-        kubelogin convert-kubeconfig -l spn --client-id $env:servicePrincipalId --client-secret $env:servicePrincipalKey
+  #       az aks get-credentials -n $(aksName) -g $(resourceGroupName) --overwrite-existing
+  #       kubelogin convert-kubeconfig -l spn --client-id $env:servicePrincipalId --client-secret $env:servicePrincipalKey
 
-        kubectl config view
-        kubectl cluster-info
-        kubectl get nodes
+  #       kubectl config view
+  #       kubectl cluster-info
+  #       kubectl get nodes
 
   - task: Kubernetes@1
     displayName: 'Kubernetes@1'
@@ -387,29 +387,29 @@ jobs:
       arguments: nodes
       useClusterAdmin: false
 
-  # Fails as admin credentials are not available when local accounts are disabled
-  - task: AzureCLI@2
-    continueOnError: true
-    displayName: 'Configure kubectl with kubelogin admin (sp, fails)'
-    enabled: false # No longer needed
-    inputs:
-      addSpnToEnvironment: true
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        kubectl config unset contexts.$(aksName)
-        kubectl config unset contexts.$(aksName)-admin
-        kubelogin remove-tokens
+  # # Fails as admin credentials are not available when local accounts are disabled
+  # - task: AzureCLI@2
+  #   continueOnError: true
+  #   displayName: 'Configure kubectl with kubelogin admin (sp, fails)'
+  #   enabled: false # No longer needed
+  #   inputs:
+  #     addSpnToEnvironment: true
+  #     azureSubscription: '$(subscriptionConnection)'
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       kubectl config unset contexts.$(aksName)
+  #       kubectl config unset contexts.$(aksName)-admin
+  #       kubelogin remove-tokens
 
-        Write-Host "##vso[task.logissue type=warning]The next command (az aks get-credentials) fails as local accounts are disabled: https://learn.microsoft.com/azure/aks/managed-aad#disable-local-accounts"
-        az aks get-credentials -n $(aksName) -g $(resourceGroupName) --admin --overwrite-existing
+  #       Write-Host "##vso[task.logissue type=warning]The next command (az aks get-credentials) fails as local accounts are disabled: https://learn.microsoft.com/azure/aks/managed-aad#disable-local-accounts"
+  #       az aks get-credentials -n $(aksName) -g $(resourceGroupName) --admin --overwrite-existing
 
   # Fails as admin credentials are not available when local accounts are disabled
   - task: Kubernetes@1
     continueOnError: true
     displayName: 'Kubernetes@1 admin (fails)'
-    enabled: false # will fail
+    enabled: true
     inputs:
       connectionType: 'Azure Resource Manager'
       azureSubscriptionEndpoint: $(subscriptionConnection)
@@ -496,7 +496,7 @@ jobs:
   dependsOn: 
   - inspectCluster
   - enableLocalAccounts
-  displayName: 'Kubernetes@1 (local accounts enabled, times out)'
+  displayName: 'Kubernetes@1 (local accounts enabled, no longer times out)'
   variables:
     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
@@ -616,7 +616,7 @@ jobs:
   # No longer fails as kubelogin is now installed
   - task: Kubernetes@1
     continueOnError: true 
-    displayName: 'Kubernetes@1 (fails)'
+    displayName: 'Kubernetes@1 (no longer fails)'
     inputs:
       connectionType: 'Azure Resource Manager'
       azureSubscriptionEndpoint: $(subscriptionConnection)
