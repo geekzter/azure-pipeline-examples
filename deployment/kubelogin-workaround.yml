@@ -307,10 +307,11 @@ jobs:
   # Fails as kubelogin is installed, but not configured and will prompt for interactive login
   - task: Kubernetes@1
     continueOnError: true
-    displayName: 'Kubernetes@1 (times out)'
+    displayName: 'Kubernetes@1 (no longer times out)'
     timeoutInMinutes: 1
     inputs:
-      connectionType: 'None'
+      connectionType: 'Azure Resource Manager'
+      azureSubscriptionEndpoint: $(subscriptionConnection)
       azureResourceGroup: $(resourceGroupName)
       kubernetesCluster: $(aksName)
       command: 'get'
@@ -378,7 +379,8 @@ jobs:
   - task: Kubernetes@1
     displayName: 'Kubernetes@1'
     inputs:
-      connectionType: 'None'
+      connectionType: 'Azure Resource Manager'
+      azureSubscriptionEndpoint: $(subscriptionConnection)
       azureResourceGroup: $(resourceGroupName)
       kubernetesCluster: $(aksName)
       command: 'get'
@@ -409,7 +411,8 @@ jobs:
     displayName: 'Kubernetes@1 admin (fails)'
     enabled: false # will fail
     inputs:
-      connectionType: 'None'
+      connectionType: 'Azure Resource Manager'
+      azureSubscriptionEndpoint: $(subscriptionConnection)
       azureResourceGroup: $(resourceGroupName)
       kubernetesCluster: $(aksName)
       command: 'get'
@@ -520,10 +523,11 @@ jobs:
   # Fails as kubelogin is installed, but not configured and will prompt for interactive login
   - task: Kubernetes@1
     continueOnError: true
-    displayName: 'Kubernetes@1 (times out)'
+    displayName: 'Kubernetes@1 (no longer times out)'
     timeoutInMinutes: 1
     inputs:
-      connectionType: 'None'
+      connectionType: 'Azure Resource Manager'
+      azureSubscriptionEndpoint: $(subscriptionConnection)
       azureResourceGroup: $(resourceGroupName)
       kubernetesCluster: $(aksName)
       command: 'get'
