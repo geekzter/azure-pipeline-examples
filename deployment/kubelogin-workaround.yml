@@ -293,6 +293,7 @@ jobs:
     condition: succeededOrFailed()
     continueOnError: true 
     displayName: 'Configure kubectl, but not kubelogin'
+    enabled: false # No longer needed
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
@@ -356,6 +357,7 @@ jobs:
 
   - task: AzureCLI@2
     displayName: 'Configure kubectl with kubelogin (sp)'
+    enabled: false # No longer needed
     inputs:
       addSpnToEnvironment: true
       azureSubscription: '$(subscriptionConnection)'
@@ -387,6 +389,7 @@ jobs:
   - task: AzureCLI@2
     continueOnError: true
     displayName: 'Configure kubectl with kubelogin admin (sp, fails)'
+    enabled: false # No longer needed
     inputs:
       addSpnToEnvironment: true
       azureSubscription: '$(subscriptionConnection)'
@@ -503,6 +506,7 @@ jobs:
     condition: succeededOrFailed()
     continueOnError: true 
     displayName: 'Configure kubectl, but not kubelogin'
+    enabled: false # No longer needed
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: pscore
@@ -590,19 +594,6 @@ jobs:
     aksName: $[ dependencies.inspectCluster.outputs['split.aksName'] ]
     resourceGroupName: $[ dependencies.inspectCluster.outputs['split.resourceGroupName'] ]
   steps:
-  # Fails as kubelogin is not installed
-  - task: Kubernetes@1
-    continueOnError: true 
-    displayName: 'Kubernetes@1 (fails)'
-    inputs:
-      connectionType: 'Azure Resource Manager'
-      azureSubscriptionEndpoint: $(subscriptionConnection)
-      azureResourceGroup: $(resourceGroupName)
-      kubernetesCluster: $(aksName)
-      command: 'get'
-      arguments: nodes
-      useClusterAdmin: false
-
   # Works as admin credentials are used and kubelogin is not needed
   - task: Kubernetes@1
     condition: succeededOrFailed()
@@ -616,6 +607,20 @@ jobs:
       arguments: nodes
       useClusterAdmin: true
 
+  - task: KubeloginInstaller@0
+
+  # No longer fails as kubelogin is now installed
+  - task: Kubernetes@1
+    continueOnError: true 
+    displayName: 'Kubernetes@1 (fails)'
+    inputs:
+      connectionType: 'Azure Resource Manager'
+      azureSubscriptionEndpoint: $(subscriptionConnection)
+      azureResourceGroup: $(resourceGroupName)
+      kubernetesCluster: $(aksName)
+      command: 'get'
+      arguments: nodes
+      useClusterAdmin: false
 
 - job: reDisableLocalAccounts
   condition: and(succeededOrFailed(),eq(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'false'),'true'),ne(coalesce(dependencies.inspectCluster.outputs['localAccounts.disableLocalAccountsOriginalState'],'empty'),'empty'))
