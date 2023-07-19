@@ -20,8 +20,9 @@ steps:
   persistCredentials: true
 
 - pwsh: |
+    pwd
     ls -alR
-    # terraform init
-    # terraform apply -auto-approve
+    terraform init
+    terraform apply -auto-approve
   displayName: 'Terraform apply'
-  # workingDirectory: deployment/terraform-modules
+  workingDirectory: azure-pipeline-examples/deployment/terraform-modules
