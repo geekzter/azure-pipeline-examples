@@ -11,7 +11,6 @@ resources:
   repositories:
   - repository: modules
     type: git
-    endpoint: github.com # Service Connection name
     name: PipelineSamples/terraform-modules-sample
 
 steps:
