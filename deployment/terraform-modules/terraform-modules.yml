@@ -37,4 +37,5 @@ steps:
     terraform init
     terraform apply -auto-approve
   displayName: 'Terraform apply'
-  workingDirectory: azure-pipeline-examples/deployment/terraform-modules
+  workingDirectory: deployment/terraform-modules
+  # workingDirectory: azure-pipeline-examples/deployment/terraform-modules
