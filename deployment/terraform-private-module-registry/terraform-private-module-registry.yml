@@ -34,12 +34,13 @@ jobs:
 
   # Required if 'Protect access to repositories in YAML pipelines' is enabled
   - checkout: modules
-    fetchDepth: 0
+    fetchDepth: 1
     persistCredentials: true
-
+    submodules: recursive
+    
   - pwsh: |
       # git config --global http.${env:MODULE_PROJECT_URL}.extraheader "Authorization: Bearer $env:SYSTEM_ACCESSTOKEN"
-      # Get-Content ~/.gitconfig
+      Get-Content ~/.gitconfig -ErrorAction SilentlyContinue
 
       terraform init
       terraform apply -auto-approve
