@@ -21,7 +21,9 @@ steps:
   persistCredentials: true
 
 - pwsh: |
-    Get-Content ~/.gitconfig
+    ls -alR ~/.gitconfig
+
+    where .gitconfig   
 
 
     terraform init
