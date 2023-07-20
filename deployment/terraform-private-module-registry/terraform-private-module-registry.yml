@@ -39,6 +39,7 @@ jobs:
     persistCredentials: true # Does not always work
 
   - pwsh: |
+      cat ./terraform-modules-sample/.git/config
       ls -alR
       # ls -alR /home/vsts/work/1/s/terraform-modules-sample/
     # workingDirectory: azure-pipeline-examples/deployment/terraform-private-module-registry
