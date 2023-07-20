@@ -23,7 +23,7 @@ resources:
     type: git
     # name: PipelineSamples/terraform-modules-sample
     # name: $(moduleQualifiedRepository)
-    name: $(System.TeamProject)/terraform-modules-sample
+    name: ${{ variables['System.TeamProject'] }}/terraform-modules-sample
 
 steps:
 - checkout: self
