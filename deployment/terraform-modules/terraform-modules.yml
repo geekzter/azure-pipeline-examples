@@ -23,9 +23,9 @@ resources:
 steps:
 - checkout: self
 
-# - checkout: modules
-#   fetchDepth: 1
-#   persistCredentials: true
+- checkout: modules
+  fetchDepth: 1
+  persistCredentials: true
 
 - pwsh: |
 
@@ -38,6 +38,8 @@ steps:
 
     terraform init
     terraform apply -auto-approve
+
+    git config --global --unset-all http.https://dev.azure.com/ericvan/PipelineSamples.extraheader
   displayName: 'Terraform apply'
-  workingDirectory: deployment/terraform-modules
-  # workingDirectory: azure-pipeline-examples/deployment/terraform-modules
+  # workingDirectory: deployment/terraform-modules
+  workingDirectory: azure-pipeline-examples/deployment/terraform-modules
