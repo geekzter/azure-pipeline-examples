@@ -7,26 +7,30 @@ schedules:
     include:
     - main
 
+variables:
+  - group: 'terraform-modules' # should populate organizationName, projectName and repositoryName
+
 pool:
   name: 'Azure Pipelines'
   vmImage: ubuntu-latest
 
-resources:
-  repositories:
-  - repository: modules
-    type: git
-    name: PipelineSamples/terraform-modules-sample
+# resources:
+#   repositories:
+#   - repository: modules
+#     type: git
+#     name: PipelineSamples/terraform-modules-sample
 
 steps:
 - checkout: self
 
-- checkout: modules
-  fetchDepth: 1
-  persistCredentials: true
+# - checkout: modules
+#   fetchDepth: 1
+#   persistCredentials: true
 
 - pwsh: |
 
-    git config --global url."https://user:$(System.AccessToken)@dev.azure.com/ericvan/PipelineSamples".insteadOf "https://dev.azure.com/ericvan/PipelineSamples"
+    # git config --global url."https://user:$(System.AccessToken)@dev.azure.com/ericvan/PipelineSamples".insteadOf "https://dev.azure.com/ericvan/PipelineSamples"
+    git -c http.extraheader="Authorization: bearer $(System.AccessToken)"
 
     Get-Content /home/vsts/.gitconfig
 
