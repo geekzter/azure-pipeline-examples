@@ -23,8 +23,9 @@ resources:
 steps:
 - checkout: self
 
+# Required if 'Protect access to repositories in YAML pipelines' is enabled
 - checkout: modules
-  fetchDepth: 1
+  fetchDepth: 0
   persistCredentials: true
 
 - pwsh: |
@@ -43,3 +44,8 @@ steps:
   displayName: 'Terraform apply'
   # workingDirectory: deployment/terraform-modules
   workingDirectory: azure-pipeline-examples/deployment/terraform-modules
+
+- pwsh: |
+    git config --global --unset-all http.https://dev.azure.com/ericvan/PipelineSamples.extraheader
+  condition: always()
+  displayName: 'Cleanup git config'
