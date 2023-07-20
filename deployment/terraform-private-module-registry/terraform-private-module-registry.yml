@@ -34,6 +34,7 @@ jobs:
 
   # Required if 'Protect access to repositories in YAML pipelines' is enabled
   - checkout: modules
+    clean: true
     fetchDepth: 1
     persistCredentials: true
     submodules: recursive
