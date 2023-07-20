@@ -33,9 +33,9 @@ jobs:
   - checkout: self
 
   # Required if 'Protect access to repositories in YAML pipelines' is enabled
-  - checkout: modules
-    fetchDepth: 0
-    persistCredentials: true
+  # - checkout: modules
+  #   fetchDepth: 0
+  #   persistCredentials: true
 
   - pwsh: |
       git config --global http.${env:MODULE_PROJECT_URL}.extraheader "Authorization: Bearer $env:SYSTEM_ACCESSTOKEN"
