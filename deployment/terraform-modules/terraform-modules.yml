@@ -21,6 +21,9 @@ steps:
   persistCredentials: true
 
 - pwsh: |
+    Get-Content ~/.gitconfig
+
+
     terraform init
     terraform apply -auto-approve
   displayName: 'Terraform apply'
