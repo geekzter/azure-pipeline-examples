@@ -36,22 +36,28 @@ jobs:
   - checkout: modules
     displayName: 'Make token valid for modules repository'
     fetchDepth: 0
-        
-  - pwsh: |
-      git config --global http.${env:MODULE_PROJECT_URL}.extraheader "Authorization: Bearer $env:SYSTEM_ACCESSTOKEN"
-      Get-Content ~/.gitconfig -ErrorAction SilentlyContinue
+    persistCredentials: true # Does not always work
 
-      terraform init
-      terraform apply -auto-approve
-    displayName: 'Terraform apply'
-    env:
-      MODULE_PROJECT_URL: $(moduleProjectUrl)
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  - pwsh: |
+      ls -al
     workingDirectory: azure-pipeline-examples/deployment/terraform-private-module-registry
 
-  - pwsh: git config --global --unset-all http.${env:MODULE_PROJECT_URL}.extraheader
-    condition: always()
-    continueOnError: true
-    displayName: 'Cleanup git config'
-    env:
-      MODULE_PROJECT_URL: $(moduleProjectUrl)
+  # - pwsh: |
+  #     # git config --global url."https://user:${env:SYSTEM_ACCESSTOKEN}@dev.azure.com/ericvan/$(moduleProject)".insteadOf "${env:MODULE_PROJECT_URL}"
+  #     git config --global http.${env:MODULE_PROJECT_URL}.extraheader "Authorization: Bearer $env:SYSTEM_ACCESSTOKEN"
+  #     Get-Content ~/.gitconfig -ErrorAction SilentlyContinue
+
+  #     terraform init
+  #     terraform apply -auto-approve
+  #   displayName: 'Terraform apply'
+  #   env:
+  #     MODULE_PROJECT_URL: $(moduleProjectUrl)
+  #     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  #   workingDirectory: azure-pipeline-examples/deployment/terraform-private-module-registry
+
+  # - pwsh: git config --global --unset-all http.${env:MODULE_PROJECT_URL}.extraheader
+  #   condition: always()
+  #   continueOnError: true
+  #   displayName: 'Cleanup git config'
+  #   env:
+  #     MODULE_PROJECT_URL: $(moduleProjectUrl)
