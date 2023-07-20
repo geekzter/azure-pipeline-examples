@@ -1,3 +1,5 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
+
 parameters:
 - name: vmImage
   displayName: Agent Image
@@ -11,9 +13,11 @@ parameters:
   type: string
   default: 'Azure Pipelines'
   
-trigger: none
-
-name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
+resources:
+  repositories:
+  - repository: modules
+    type: git
+    name: PipelineSamples/terraform-modules-sample
 
 schedules:
 - cron: '0 1 * * *'
@@ -22,6 +26,8 @@ schedules:
   branches:
     include:
     - main
+
+trigger: none
 
 variables:
   moduleProject: 'PipelineSamples'
@@ -35,12 +41,6 @@ jobs:
   pool:
     name: ${{ parameters.pool }}
     value: ${{ parameters.vmImage }}
-
-  resources:
-    repositories:
-    - repository: modules
-      type: git
-      name: PipelineSamples/terraform-modules-sample
 
   steps:
   - checkout: self
