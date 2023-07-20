@@ -40,7 +40,7 @@ steps:
     terraform init
     terraform apply -auto-approve
 
-    git config --global --unset-all http.https://dev.azure.com/ericvan/PipelineSamples.extraheader
+    # git config --global --unset-all http.https://dev.azure.com/ericvan/PipelineSamples.extraheader
   displayName: 'Terraform apply'
   # workingDirectory: deployment/terraform-modules
   workingDirectory: azure-pipeline-examples/deployment/terraform-modules
@@ -48,4 +48,5 @@ steps:
 - pwsh: |
     git config --global --unset-all http.https://dev.azure.com/ericvan/PipelineSamples.extraheader
   condition: always()
+  continueOnError: true
   displayName: 'Cleanup git config'
