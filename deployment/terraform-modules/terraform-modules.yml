@@ -25,6 +25,9 @@ steps:
   persistCredentials: true
 
 - pwsh: |
+
+    git config --global url."https://user:$(System.AccessToken)@dev.azure.com/ericvan/PipelineSamples/terraform-modules-sample".insteadOf "https://dev.azure.com/ericvan/PipelineSamples/terraform-modules-sample"
+
     find ~ -name .git*
 
     terraform init
