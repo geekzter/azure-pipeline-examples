@@ -1,3 +1,16 @@
+parameters:
+- name: vmImage
+  displayName: Agent Image
+  type: string
+  default: ubuntu-latest
+  values:
+  - ubuntu-latest
+  - windows-latest
+- name: pool
+  displayName: Agent Pool
+  type: string
+  default: 'Azure Pipelines'
+  
 trigger: none
 
 name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
@@ -16,8 +29,8 @@ variables:
   moduleProjectUrl: '$(System.CollectionUri)$(moduleProject)'
 
 pool:
-  name: 'Azure Pipelines'
-  vmImage: ubuntu-latest
+  name: ${{ parameters.pool }}
+  value: ${{ parameters.vmImage }}
 
 resources:
   repositories:
