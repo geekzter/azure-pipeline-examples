@@ -8,10 +8,10 @@ schedules:
     - main
 
 variables:
-- moduleProject: '$(System.TeamProject)'
-- moduleRepository: 'terraform-modules-sample'
-- moduleQualifiedRepository: '$(moduleProject)/$(moduleRepository)'
-- moduleRepositoryUrl: '$(System.CollectionUri)$(moduleQualifiedRepository)'
+  moduleProject: '$(System.TeamProject)'
+  moduleRepository: 'terraform-modules-sample'
+  moduleQualifiedRepository: '$(moduleProject)/$(moduleRepository)'
+  moduleRepositoryUrl: '$(System.CollectionUri)$(moduleQualifiedRepository)'
 
 pool:
   name: 'Azure Pipelines'
