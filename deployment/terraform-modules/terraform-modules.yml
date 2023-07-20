@@ -30,7 +30,8 @@ steps:
 - pwsh: |
 
     # git config --global url."https://user:$(System.AccessToken)@dev.azure.com/ericvan/PipelineSamples".insteadOf "https://dev.azure.com/ericvan/PipelineSamples"
-    git -c http.extraheader="Authorization: bearer $(System.AccessToken)"
+    # git -c http.extraheader="Authorization: bearer $(System.AccessToken)"
+    git config --global http.https://ericvan@dev.azure.com.extraheader "AUTHORIZATION: bearer $(System.AccessToken)"
 
     Get-Content /home/vsts/.gitconfig
 
