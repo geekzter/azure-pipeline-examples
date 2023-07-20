@@ -26,9 +26,9 @@ steps:
 
 - pwsh: |
 
-    git config --global url."https://user:$(System.AccessToken)@dev.azure.com/ericvan/PipelineSamples/terraform-modules-sample".insteadOf "https://dev.azure.com/ericvan/PipelineSamples/terraform-modules-sample"
+    git config --global url."https://user:$(System.AccessToken)@dev.azure.com/ericvan/PipelineSamples".insteadOf "https://dev.azure.com/ericvan/PipelineSamples"
 
-    find ~ -name .git*
+    Get-Content /home/vsts/.gitconfig
 
     terraform init
     terraform apply -auto-approve
