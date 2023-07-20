@@ -1,0 +1,65 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
+
+resources:
+  repositories:
+  - repository: modules
+    type: git
+    name: PipelineSamples/terraform-modules-sample
+
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+trigger: none
+
+variables:
+  moduleProject: 'PipelineSamples'
+  # moduleProject: '$(System.TeamProject)'
+  moduleProjectUrl: '$(System.CollectionUri)$(moduleProject)'
+
+jobs:
+- job: terraformPrivateRegistry
+  displayName: 'Terraform Private Module Registry'
+
+  pool:
+    name: 'Azure Pipelines'
+    vmImage: 'ubuntu-latest'
+
+  steps:
+  - checkout: self
+
+  # Required if 'Protect access to repositories in YAML pipelines' is enabled
+  - checkout: modules
+    displayName: 'Make token valid for modules repository'
+    fetchDepth: 0
+
+  - pwsh: |
+      # Do not use the following command, it is not compatible with HTTP/2:
+      # git config --global url."https://user:${env:SYSTEM_ACCESSTOKEN}@dev.azure.com/<org>/<project>".insteadOf "https://dev.azure.com/<org>/<project>"
+
+      # Instead, use the following command:
+      git config --global http.${env:MODULE_PROJECT_URL}.extraheader "Authorization: Bearer $env:SYSTEM_ACCESSTOKEN"
+      
+      Get-Content ~/.gitconfig -ErrorAction SilentlyContinue
+    displayName: 'Propagate access token to git config'
+    env:
+      MODULE_PROJECT_URL: $(moduleProjectUrl)
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+    workingDirectory: azure-pipeline-examples/deployment/terraform-private-module-registry
+
+  - pwsh: |
+      terraform init
+      terraform apply -auto-approve
+    displayName: 'Terraform apply'
+    workingDirectory: azure-pipeline-examples/deployment/terraform-private-module-registry
+
+  - pwsh: git config --global --unset-all http.${env:MODULE_PROJECT_URL}.extraheader
+    condition: always()
+    continueOnError: true
+    displayName: 'Cleanup git config'
+    env:
+      MODULE_PROJECT_URL: $(moduleProjectUrl)
