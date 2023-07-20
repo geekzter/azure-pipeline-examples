@@ -8,7 +8,7 @@ schedules:
     - main
 
 variables:
-  moduleProject: '$PipelineSamples'
+  moduleProject: 'PipelineSamples'
   # moduleProject: '$(System.TeamProject)'
   moduleProjectUrl: '$(System.CollectionUri)$(moduleProject)'
 #   moduleRepository: 'terraform-modules-sample'
