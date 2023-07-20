@@ -9,6 +9,7 @@ schedules:
 
 variables:
   moduleProject: '$(System.TeamProject)'
+  moduleProjectUrl: '$(System.CollectionUri)$(System.TeamProject)'
   moduleRepository: 'terraform-modules-sample'
   moduleQualifiedRepository: '$(moduleProject)/$(moduleRepository)'
   moduleRepositoryUrl: '$(System.CollectionUri)$(moduleQualifiedRepository)'
@@ -34,26 +35,26 @@ steps:
   persistCredentials: true
 
 - pwsh: |
-    Write-Host "MODULE_REPOSITORY_URL: $env:MODULE_REPOSITORY_URL"
+    Write-Host "MODULE_PROJECT_URL: $env:MODULE_PROJECT_URL"
 
     # git config --global http.https://dev.azure.com/ericvan/PipelineSamples.extraheader "Authorization: bearer $(System.AccessToken)"
-    git config --global http.${env:MODULE_REPOSITORY_URL}.extraheader "Authorization: bearer $env:SYSTEM_ACCESSTOKEN"
+    git config --global http.${env:MODULE_PROJECT_URL}.extraheader "Authorization: bearer $env:SYSTEM_ACCESSTOKEN"
     Get-Content ~/.gitconfig
 
     terraform init
     terraform apply -auto-approve
   displayName: 'Terraform apply'
   env:
-    MODULE_REPOSITORY_URL: $(moduleRepositoryUrl)
+    MODULE_PROJECT_URL: $(moduleProjectUrl)
     SYSTEM_ACCESSTOKEN: $(System.AccessToken)
   # workingDirectory: deployment/terraform-modules
   workingDirectory: azure-pipeline-examples/deployment/terraform-modules
 
 - pwsh: |
     # git config --global --unset-all http.https://dev.azure.com/ericvan/PipelineSamples.extraheader
-    git config --global --unset-all http.${env:MODULE_REPOSITORY_URL}.extraheader
+    git config --global --unset-all http.${env:MODULE_PROJECT_URL}.extraheader
   condition: always()
   continueOnError: true
   displayName: 'Cleanup git config'
   env:
-    MODULE_REPOSITORY_URL: $(moduleRepositoryUrl)
+    MODULE_PROJECT_URL: $(moduleProjectUrl)
