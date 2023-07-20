@@ -14,11 +14,11 @@ pool:
   name: 'Azure Pipelines'
   vmImage: ubuntu-latest
 
-# resources:
-#   repositories:
-#   - repository: modules
-#     type: git
-#     name: PipelineSamples/terraform-modules-sample
+resources:
+  repositories:
+  - repository: modules
+    type: git
+    name: PipelineSamples/terraform-modules-sample
 
 steps:
 - checkout: self
@@ -39,5 +39,5 @@ steps:
     terraform init
     terraform apply -auto-approve
   displayName: 'Terraform apply'
-  workingDirectory: deployment/terraform-modules
-  # workingDirectory: azure-pipeline-examples/deployment/terraform-modules
+  # workingDirectory: deployment/terraform-modules
+  workingDirectory: azure-pipeline-examples/deployment/terraform-modules
