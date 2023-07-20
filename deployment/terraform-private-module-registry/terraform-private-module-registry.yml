@@ -33,8 +33,8 @@ jobs:
   - checkout: self
 
   # Required if 'Protect access to repositories in YAML pipelines' is enabled
-  # - checkout: modules
-  #   fetchDepth: 0
+  - checkout: modules
+    fetchDepth: 0
   #   persistCredentials: true
 
   - pwsh: |
