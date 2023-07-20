@@ -7,8 +7,8 @@ schedules:
     include:
     - main
 
-variables:
-  - group: 'terraform-modules' # should populate organizationName, projectName and repositoryName
+# variables:
+#   - group: 'terraform-modules' # should populate organizationName, projectName and repositoryName
 
 pool:
   name: 'Azure Pipelines'
