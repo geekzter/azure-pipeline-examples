@@ -25,11 +25,7 @@ steps:
   persistCredentials: true
 
 - pwsh: |
-    ls -alR ~/.gitconfig
-
-    where .gitconfig   
-    ~/.git-credentials
-
+    find ~ -name .git*
 
     terraform init
     terraform apply -auto-approve
