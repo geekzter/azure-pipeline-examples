@@ -8,11 +8,12 @@ schedules:
     - main
 
 variables:
-  moduleProject: '$(System.TeamProject)'
-  moduleProjectUrl: '$(System.CollectionUri)$(System.TeamProject)'
-  moduleRepository: 'terraform-modules-sample'
-  moduleQualifiedRepository: '$(moduleProject)/$(moduleRepository)'
-  moduleRepositoryUrl: '$(System.CollectionUri)$(moduleQualifiedRepository)'
+  moduleProject: '$PipelineSamples'
+  # moduleProject: '$(System.TeamProject)'
+  moduleProjectUrl: '$(System.CollectionUri)$(moduleProject)'
+#   moduleRepository: 'terraform-modules-sample'
+#   moduleQualifiedRepository: '$(moduleProject)/$(moduleRepository)'
+#   moduleRepositoryUrl: '$(System.CollectionUri)$(moduleQualifiedRepository)'
 
 pool:
   name: 'Azure Pipelines'
@@ -38,7 +39,7 @@ steps:
     Write-Host "MODULE_PROJECT_URL: $env:MODULE_PROJECT_URL"
 
     # git config --global http.https://dev.azure.com/ericvan/PipelineSamples.extraheader "Authorization: bearer $(System.AccessToken)"
-    git config --global http.${env:MODULE_PROJECT_URL}.extraheader "Authorization: bearer $env:SYSTEM_ACCESSTOKEN"
+    git config --global http.${env:MODULE_PROJECT_URL}.extraheader "Authorization: Bearer $env:SYSTEM_ACCESSTOKEN"
     Get-Content ~/.gitconfig
 
     terraform init
