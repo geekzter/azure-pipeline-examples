@@ -7,11 +7,19 @@ schedules:
     include:
     - main
 
+pool:
+  name: 'Azure Pipelines'
+  vmImage: ubuntu-latest
+
 resources:
   repositories:
   - repository: modules
     type: git
     name: PipelineSamples/terraform-modules-sample
+
+pool:
+  name: 'Azure Pipelines'
+  vmImage: $(vmImage)
 
 steps:
 - checkout: self
