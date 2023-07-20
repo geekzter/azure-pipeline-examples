@@ -7,8 +7,11 @@ schedules:
     include:
     - main
 
-# variables:
-#   - group: 'terraform-modules' # should populate organizationName, projectName and repositoryName
+variables:
+- moduleProject: '$(System.TeamProject)'
+- moduleRepository: 'terraform-modules-sample'
+- moduleQualifiedRepository: '$(moduleProject)/$(moduleRepository)'
+- moduleRepositoryUrl: '$(System.CollectionUri)$(moduleQualifiedRepository)'
 
 pool:
   name: 'Azure Pipelines'
@@ -18,7 +21,8 @@ resources:
   repositories:
   - repository: modules
     type: git
-    name: PipelineSamples/terraform-modules-sample
+    # name: PipelineSamples/terraform-modules-sample
+    name: $(moduleQualifiedRepository)
 
 steps:
 - checkout: self
@@ -29,24 +33,26 @@ steps:
   persistCredentials: true
 
 - pwsh: |
+    Write-Host "MODULE_REPOSITORY_URL: $env:MODULE_REPOSITORY_URL"
 
-    # git config --global url."https://user:$(System.AccessToken)@dev.azure.com/ericvan/PipelineSamples".insteadOf "https://dev.azure.com/ericvan/PipelineSamples" # May not work with HTTP/2
-    # git -c http.extraheader="Authorization: bearer $(System.AccessToken)"
-    # git config --global http.https://ericvan@dev.azure.com.extraheader "Authorization: bearer $(System.AccessToken)"
-    git config --global http.https://dev.azure.com/ericvan/PipelineSamples.extraheader "Authorization: bearer $(System.AccessToken)"
-
-    Get-Content /home/vsts/.gitconfig
+    # git config --global http.https://dev.azure.com/ericvan/PipelineSamples.extraheader "Authorization: bearer $(System.AccessToken)"
+    git config --global http.${env:MODULE_REPOSITORY_URL}.extraheader "Authorization: bearer $env:SYSTEM_ACCESSTOKEN"
+    Get-Content ~/.gitconfig
 
     terraform init
     terraform apply -auto-approve
-
-    # git config --global --unset-all http.https://dev.azure.com/ericvan/PipelineSamples.extraheader
   displayName: 'Terraform apply'
+  env:
+    MODULE_REPOSITORY_URL: $(moduleRepositoryUrl)
+    SYSTEM_ACCESSTOKEN: $(System.AccessToken)
   # workingDirectory: deployment/terraform-modules
   workingDirectory: azure-pipeline-examples/deployment/terraform-modules
 
 - pwsh: |
-    git config --global --unset-all http.https://dev.azure.com/ericvan/PipelineSamples.extraheader
+    # git config --global --unset-all http.https://dev.azure.com/ericvan/PipelineSamples.extraheader
+    git config --global --unset-all http.${env:MODULE_REPOSITORY_URL}.extraheader
   condition: always()
   continueOnError: true
   displayName: 'Cleanup git config'
+  env:
+    MODULE_REPOSITORY_URL: $(moduleRepositoryUrl)
