@@ -24,6 +24,7 @@ steps:
     ls -alR ~/.gitconfig
 
     where .gitconfig   
+    ~/.git-credentials
 
 
     terraform init
