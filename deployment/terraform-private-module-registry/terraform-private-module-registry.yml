@@ -34,13 +34,11 @@ jobs:
 
   # Required if 'Protect access to repositories in YAML pipelines' is enabled
   - checkout: modules
-    clean: true
-    fetchDepth: 1
-    persistCredentials: true
-    submodules: recursive
-    
+    displayName: 'Make token valid for modules repository'
+    fetchDepth: 0
+        
   - pwsh: |
-      # git config --global http.${env:MODULE_PROJECT_URL}.extraheader "Authorization: Bearer $env:SYSTEM_ACCESSTOKEN"
+      git config --global http.${env:MODULE_PROJECT_URL}.extraheader "Authorization: Bearer $env:SYSTEM_ACCESSTOKEN"
       Get-Content ~/.gitconfig -ErrorAction SilentlyContinue
 
       terraform init
@@ -51,8 +49,7 @@ jobs:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     workingDirectory: azure-pipeline-examples/deployment/terraform-private-module-registry
 
-  - pwsh: |
-      git config --global --unset-all http.${env:MODULE_PROJECT_URL}.extraheader
+  - pwsh: git config --global --unset-all http.${env:MODULE_PROJECT_URL}.extraheader
     condition: always()
     continueOnError: true
     displayName: 'Cleanup git config'
