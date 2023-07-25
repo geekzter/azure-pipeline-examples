@@ -1,5 +1,4 @@
-# name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.serviceConnection }}-$(Build.BuildId)
-# name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ variables.subscriptionConnection }}-$(Build.BuildId)
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ variables['subscriptionConnection'] }}-$(Build.BuildId)
 
 parameters:
 - name: serviceConnection
@@ -25,7 +24,7 @@ variables:
 
 jobs:
 - job: azureCLI
-  displayName: 'AzureCLI'
+  displayName: 'AzureCLI $(serviceConnection)'
   pool:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
@@ -93,12 +92,13 @@ jobs:
 
         Write-Host "`n$($PSStyle.Bold)Subscriptions the Service Connection has access to:$($PSStyle.Reset) ------------------------------------------------"
         Write-Host "`n$($PSStyle.Formatting.FormatAccent)az account list$($PSStyle.Reset)"
-        az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" `n
+        az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" `
                         -o table
         
         Write-Host "`n$($PSStyle.Bold)Resource groups that the Service Connection has access to in subscription '$(az account show --query name -o tsv)':$($PSStyle.Reset) -------------"
         Write-Host "`n$($PSStyle.Formatting.FormatAccent)az group list$($PSStyle.Reset)"
-        az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" -o table
+        az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" `
+                      -o table
       workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
   - publish: $(Build.ArtifactStagingDirectory)
@@ -106,7 +106,7 @@ jobs:
     artifact: indentityInfo-$(System.PlanId)-$(System.JobId)
 
 - job: azurePowerShell
-  displayName: 'AzurePowerShell'
+  displayName: 'AzurePowerShell $(serviceConnection)'
   pool:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
