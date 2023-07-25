@@ -39,14 +39,12 @@ jobs:
       inlineScript: |
         Write-Host "`n$($PSStyle.Bold)Service Connection name: '$(serviceConnection)'$($PSStyle.Reset) -----------------------------------------------"
 
-        Write-Host "`nEndpoint environment variables:"
-        Get-ChildItem -Path Env: -Recurse -Include * | Sort-Object -Property Name
         Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
                                                                    | Select-Object -First 1 -ExpandProperty Name `
                                                                    | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
                                                                    | Set-Variable serviceConnectionId
 
-        Write-Host "`nVariables added by 'addSpnToEnvironment = true':" -NoNewline
+        Write-Host "`nVariables added by 'addSpnToEnvironment':" -NoNewline
         Get-ChildItem -Path Env: -Recurse -Include idToken, `
                                                    servicePrincipalId, `
                                                    servicePrincipalKey,`
@@ -54,6 +52,11 @@ jobs:
                       | Sort-Object -Property Name `
                       | Select-Object -Property Name `
                       | Format-Table -HideTableHeaders
+        if ($env:servicePrincipalKey) {
+          Write-Host "Using Service Principal secret for authentication"
+        } elseif ($env:idToken) {
+          Write-Host "Using Workload Identity federation (OIDC) for authentication"
+        }
 
         Write-Host "`nService Connection ID: ${serviceConnectionId}"
 
