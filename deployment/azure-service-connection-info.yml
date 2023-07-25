@@ -1,4 +1,4 @@
-name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ variables['subscriptionConnection'] }}-$(Build.BuildId)
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
 
 parameters:
 - name: serviceConnection
@@ -59,7 +59,7 @@ jobs:
           Write-Host "Using Workload Identity federation (OIDC) for authentication"
         }
 
-        Write-Host "$($PSStyle.Formatting.FormatAccent)az account show$($PSStyle.Reset)"
+        Write-Host "`n$($PSStyle.Formatting.FormatAccent)az account show$($PSStyle.Reset)"
         az account show -o json `
                         | Tee-Object -FilePath subscription.json `
                         | ConvertFrom-Json `
