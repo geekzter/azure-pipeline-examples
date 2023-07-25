@@ -1,4 +1,4 @@
-name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.serviceConnection }}-$(Build.BuildId)
+# name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.serviceConnection }}-$(Build.BuildId)
 # name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ variables.subscriptionConnection }}-$(Build.BuildId)
 
 parameters:
@@ -57,7 +57,7 @@ jobs:
 
         Write-Host "`nService Connection ID: ${serviceConnectionId}"
 
-        Write-Host "`naz account show"
+        Write-Host "`n$($PSStyle.Formatting.FormatAccent)az account show$($PSStyle.Reset)"
         az account show -o json `
                         | Tee-Object -FilePath subscription.json `
                         | ConvertFrom-Json `
@@ -66,6 +66,7 @@ jobs:
         $appId = $subscription.user.name
 
         Write-Host "`n$($PSStyle.Bold)Service Connection role assignments:$($PSStyle.Reset) ---------------------------------------------------------------"
+        Write-Host "`n$($PSStyle.Formatting.FormatAccent)az role assignment list --assignee <appId>$($PSStyle.Reset)"
         az role assignment list --all `
                                 --assignee $appId `
                                 -o json `
@@ -76,6 +77,7 @@ jobs:
                                 | Format-Table -AutoSize -Wrap
 
         Write-Host "`n$($PSStyle.Bold)Service Connection Service Principal object:$($PSStyle.Reset) -------------------------------------------------------"
+        Write-Host "`n$($PSStyle.Formatting.FormatAccent)az ad sp show --id <appId>$($PSStyle.Reset)"
         az ad sp show --id $appId `
                       -o json `
                       | Tee-Object -FilePath servicePrincipal.json `
@@ -90,9 +92,12 @@ jobs:
         Write-Host "`nAzure Portal link for Service Principal of type '$($servicePrincipal.servicePrincipalType)':`n$($azurePortalLink)"
 
         Write-Host "`n$($PSStyle.Bold)Subscriptions the Service Connection has access to:$($PSStyle.Reset) ------------------------------------------------"
-        az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" -o table
+        Write-Host "`n$($PSStyle.Formatting.FormatAccent)az account list$($PSStyle.Reset)"
+        az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" `n
+                        -o table
         
         Write-Host "`n$($PSStyle.Bold)Resource groups that the Service Connection has access to in subscription '$(az account show --query name -o tsv)':$($PSStyle.Reset) -------------"
+        Write-Host "`n$($PSStyle.Formatting.FormatAccent)az group list$($PSStyle.Reset)"
         az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" -o table
       workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
