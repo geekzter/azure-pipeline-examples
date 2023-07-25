@@ -1,14 +1,11 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
+
 parameters:
-- name: pool
-  displayName: Agent Pool
-  type: string
-  default: Azure Pipelines
 - name: serviceConnection
   displayName: Override Service Connection
   type: string
   default: '<from subscriptionConnection variable>'
 
-trigger: none
 schedules:
 - cron: '0 1 * * *'
   displayName: 'Nightly build (UTC)'
@@ -16,6 +13,7 @@ schedules:
   branches:
     include:
     - main
+trigger: none
 
 variables:
 - name: serviceConnection
@@ -27,27 +25,12 @@ variables:
 jobs:
 - job: azureCLI
   displayName: 'AzureCLI'
-  strategy:
-    matrix:
-      MacOS:
-        scriptType: ps
-        vmImage: 'macos-latest'
-      Ubuntu:
-        scriptType: ps
-        vmImage: 'ubuntu-latest'
-      Windows-PowerShell:
-        scriptType: ps
-        vmImage: 'windows-latest'
-      Windows-pwsh:
-        scriptType: pscore
-        vmImage: 'windows-latest'
-    maxParallel: 3
   pool:
-    name: ${{ parameters.pool }}
-    vmImage: $(vmImage)
+    name: 'Azure Pipelines'
+    vmImage: ubuntu-latest
   steps:
   - task: AzureCLI@2
-    displayName: 'ARM Service Connection permissions'
+    displayName: 'AzureCLI $(serviceConnection)'
     inputs:
       addSpnToEnvironment: true
       azureSubscription: '$(serviceConnection)' # Task property referencing Service Connection -------------------------------------------------------
@@ -56,13 +39,13 @@ jobs:
       inlineScript: |
         Write-Host "`n$($PSStyle.Bold)Service Connection name: '$(serviceConnection)'$($PSStyle.Reset) -----------------------------------------------"
 
-        Write-Host "`nEndpoint environment variables:"
         Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
                                                                    | Select-Object -First 1 -ExpandProperty Name `
                                                                    | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
                                                                    | Set-Variable serviceConnectionId
+        Write-Host "Service Connection ID: ${serviceConnectionId}"
 
-        Write-Host "`nVariables added by 'addSpnToEnvironment = true':"
+        Write-Host "`nVariables added by 'addSpnToEnvironment':" -NoNewline
         Get-ChildItem -Path Env: -Recurse -Include idToken, `
                                                    servicePrincipalId, `
                                                    servicePrincipalKey,`
@@ -70,27 +53,39 @@ jobs:
                       | Sort-Object -Property Name `
                       | Select-Object -Property Name `
                       | Format-Table -HideTableHeaders
+        if ($env:servicePrincipalKey) {
+          Write-Host "Using Service Principal secret for authentication"
+        } elseif ($env:idToken) {
+          Write-Host "Using Workload Identity federation (OIDC) for authentication"
+        }
 
-        Write-Host "`nService Connection ID: ${serviceConnectionId}"
-
-        Write-Host "`naz account show"
-        az account show -o json | Out-File -FilePath subscription.json
+        Write-Host "`n$($PSStyle.Formatting.FormatAccent)az account show$($PSStyle.Reset)"
+        az account show -o json `
+                        | Tee-Object -FilePath subscription.json `
+                        | ConvertFrom-Json `
+                        | Set-Variable subscription
         Get-Content subscription.json
-        Get-Content subscription.json | ConvertFrom-Json | Set-Variable subscription
         $appId = $subscription.user.name
 
         Write-Host "`n$($PSStyle.Bold)Service Connection role assignments:$($PSStyle.Reset) ---------------------------------------------------------------"
-        az role assignment list --all --assignee $appId -o json | Out-File -FilePath roleAssignments.json
-        Get-Content roleAssignments.json | ConvertFrom-Json `
-                                         | Select-Object -Property roleDefinitionName, scope `
-                                         | Sort-Object -Property roleDefinitionName
-                                         | Format-Table -AutoSize -Wrap
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az role assignment list --assignee <appId>$($PSStyle.Reset)"
+        az role assignment list --all `
+                                --assignee $appId `
+                                -o json `
+                                | Tee-Object -FilePath roleAssignments.json `
+                                | ConvertFrom-Json `
+                                | Select-Object -Property roleDefinitionName, scope `
+                                | Sort-Object -Property roleDefinitionName
+                                | Format-Table -AutoSize -Wrap
 
         Write-Host "`n$($PSStyle.Bold)Service Connection Service Principal object:$($PSStyle.Reset) -------------------------------------------------------"
-        az ad sp show --id $appId -o json | Out-File -FilePath servicePrincipal.json
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az ad sp show --id <appId>$($PSStyle.Reset)"
+        az ad sp show --id $appId `
+                      -o json `
+                      | Tee-Object -FilePath servicePrincipal.json `
+                      | ConvertFrom-Json `
+                      | Set-Variable servicePrincipal
         Get-Content servicePrincipal.json
-        Get-Content servicePrincipal.json | ConvertFrom-Json `
-                                          | Set-Variable servicePrincipal
         if ($servicePrincipal.servicePrincipalType -eq 'ManagedIdentity') {
           "https://portal.azure.com/#@{0}/resource{1}" -f $subscription.tenantId, $servicePrincipal.alternativeNames[1] | Set-Variable azurePortalLink
         } else {
@@ -99,10 +94,14 @@ jobs:
         Write-Host "`nAzure Portal link for Service Principal of type '$($servicePrincipal.servicePrincipalType)':`n$($azurePortalLink)"
 
         Write-Host "`n$($PSStyle.Bold)Subscriptions the Service Connection has access to:$($PSStyle.Reset) ------------------------------------------------"
-        az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" -o table
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az account list$($PSStyle.Reset)"
+        az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" `
+                        -o table
         
         Write-Host "`n$($PSStyle.Bold)Resource groups that the Service Connection has access to in subscription '$(az account show --query name -o tsv)':$($PSStyle.Reset) -------------"
-        az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" -o table
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az group list$($PSStyle.Reset)"
+        az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" `
+                      -o table
       workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
   - publish: $(Build.ArtifactStagingDirectory)
@@ -111,27 +110,12 @@ jobs:
 
 - job: azurePowerShell
   displayName: 'AzurePowerShell'
-  strategy:
-    matrix:
-      MacOS:
-        pwsh: true
-        vmImage: 'macos-latest'
-      Ubuntu:
-        pwsh: true
-        vmImage: 'ubuntu-latest'
-      Windows-PowerShell:
-        pwsh: false
-        vmImage: 'windows-latest'
-      Windows-pwsh:
-        pwsh: true
-        vmImage: 'windows-latest'
-    maxParallel: 3
   pool:
-    name: ${{ parameters.pool }}
-    vmImage: $(vmImage)
+    name: 'Azure Pipelines'
+    vmImage: ubuntu-latest
   steps:
   - task: AzurePowerShell@5
-    displayName: 'AzurePowerShell context'
+    displayName: 'AzurePowerShell $(serviceConnection)'
     inputs:
       azureSubscription: '$(serviceConnection)'
       scriptType: inlineScript
@@ -140,5 +124,5 @@ jobs:
         Get-AzContext | Select-Object -ExpandProperty Subscription | Format-List
 
       azurePowerShellVersion: 'latestVersion'
-      pwsh: $(pwsh)
+      pwsh: true
       failOnStandardError: true
