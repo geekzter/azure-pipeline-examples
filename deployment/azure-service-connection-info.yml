@@ -1,12 +1,20 @@
 parameters:
-- name: pool
-  displayName: Agent Pool
-  type: string
-  default: Azure Pipelines
 - name: serviceConnection
   displayName: Override Service Connection
   type: string
   default: '<from subscriptionConnection variable>'
+- name: pool
+  displayName: Agent Pool
+  type: string
+  default: Azure Pipelines
+- name: vmImage
+  displayName: Image
+  type: string
+  default: ubuntu-latest
+  values:
+  - macos-latest
+  - ubuntu-latest
+  - windows-latest
 
 trigger: none
 schedules:
@@ -27,24 +35,9 @@ variables:
 jobs:
 - job: azureCLI
   displayName: 'AzureCLI'
-  strategy:
-    matrix:
-      MacOS:
-        scriptType: ps
-        vmImage: 'macos-latest'
-      Ubuntu:
-        scriptType: ps
-        vmImage: 'ubuntu-latest'
-      Windows-PowerShell:
-        scriptType: ps
-        vmImage: 'windows-latest'
-      Windows-pwsh:
-        scriptType: pscore
-        vmImage: 'windows-latest'
-    maxParallel: 3
   pool:
     name: ${{ parameters.pool }}
-    vmImage: $(vmImage)
+    vmImage: ${{ parameters.vmImage }}
   steps:
   - task: AzureCLI@2
     displayName: 'ARM Service Connection permissions'
@@ -111,24 +104,9 @@ jobs:
 
 - job: azurePowerShell
   displayName: 'AzurePowerShell'
-  strategy:
-    matrix:
-      MacOS:
-        pwsh: true
-        vmImage: 'macos-latest'
-      Ubuntu:
-        pwsh: true
-        vmImage: 'ubuntu-latest'
-      Windows-PowerShell:
-        pwsh: false
-        vmImage: 'windows-latest'
-      Windows-pwsh:
-        pwsh: true
-        vmImage: 'windows-latest'
-    maxParallel: 3
   pool:
     name: ${{ parameters.pool }}
-    vmImage: $(vmImage)
+    vmImage: ${{ parameters.vmImage }}
   steps:
   - task: AzurePowerShell@5
     displayName: 'AzurePowerShell context'
@@ -140,5 +118,5 @@ jobs:
         Get-AzContext | Select-Object -ExpandProperty Subscription | Format-List
 
       azurePowerShellVersion: 'latestVersion'
-      pwsh: $(pwsh)
+      pwsh: true
       failOnStandardError: true
