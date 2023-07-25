@@ -43,6 +43,7 @@ jobs:
                                                                    | Select-Object -First 1 -ExpandProperty Name `
                                                                    | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
                                                                    | Set-Variable serviceConnectionId
+        Write-Host "Service Connection ID: ${serviceConnectionId}"
 
         Write-Host "`nVariables added by 'addSpnToEnvironment':" -NoNewline
         Get-ChildItem -Path Env: -Recurse -Include idToken, `
@@ -57,8 +58,6 @@ jobs:
         } elseif ($env:idToken) {
           Write-Host "Using Workload Identity federation (OIDC) for authentication"
         }
-
-        Write-Host "`nService Connection ID: ${serviceConnectionId}"
 
         Write-Host "$($PSStyle.Formatting.FormatAccent)az account show$($PSStyle.Reset)"
         az account show -o json `
