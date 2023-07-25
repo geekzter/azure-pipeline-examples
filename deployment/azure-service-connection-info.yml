@@ -24,13 +24,13 @@ variables:
 
 jobs:
 - job: azureCLI
-  displayName: 'AzureCLI $(serviceConnection)'
+  displayName: 'AzureCLI'
   pool:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
   steps:
   - task: AzureCLI@2
-    displayName: 'ARM Service Connection permissions'
+    displayName: 'AzureCLI $(serviceConnection)'
     inputs:
       addSpnToEnvironment: true
       azureSubscription: '$(serviceConnection)' # Task property referencing Service Connection -------------------------------------------------------
@@ -56,7 +56,7 @@ jobs:
 
         Write-Host "`nService Connection ID: ${serviceConnectionId}"
 
-        Write-Host "`n$($PSStyle.Formatting.FormatAccent)az account show$($PSStyle.Reset)"
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az account show$($PSStyle.Reset)"
         az account show -o json `
                         | Tee-Object -FilePath subscription.json `
                         | ConvertFrom-Json `
@@ -65,7 +65,7 @@ jobs:
         $appId = $subscription.user.name
 
         Write-Host "`n$($PSStyle.Bold)Service Connection role assignments:$($PSStyle.Reset) ---------------------------------------------------------------"
-        Write-Host "`n$($PSStyle.Formatting.FormatAccent)az role assignment list --assignee <appId>$($PSStyle.Reset)"
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az role assignment list --assignee <appId>$($PSStyle.Reset)"
         az role assignment list --all `
                                 --assignee $appId `
                                 -o json `
@@ -76,7 +76,7 @@ jobs:
                                 | Format-Table -AutoSize -Wrap
 
         Write-Host "`n$($PSStyle.Bold)Service Connection Service Principal object:$($PSStyle.Reset) -------------------------------------------------------"
-        Write-Host "`n$($PSStyle.Formatting.FormatAccent)az ad sp show --id <appId>$($PSStyle.Reset)"
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az ad sp show --id <appId>$($PSStyle.Reset)"
         az ad sp show --id $appId `
                       -o json `
                       | Tee-Object -FilePath servicePrincipal.json `
@@ -91,12 +91,12 @@ jobs:
         Write-Host "`nAzure Portal link for Service Principal of type '$($servicePrincipal.servicePrincipalType)':`n$($azurePortalLink)"
 
         Write-Host "`n$($PSStyle.Bold)Subscriptions the Service Connection has access to:$($PSStyle.Reset) ------------------------------------------------"
-        Write-Host "`n$($PSStyle.Formatting.FormatAccent)az account list$($PSStyle.Reset)"
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az account list$($PSStyle.Reset)"
         az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" `
                         -o table
         
         Write-Host "`n$($PSStyle.Bold)Resource groups that the Service Connection has access to in subscription '$(az account show --query name -o tsv)':$($PSStyle.Reset) -------------"
-        Write-Host "`n$($PSStyle.Formatting.FormatAccent)az group list$($PSStyle.Reset)"
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az group list$($PSStyle.Reset)"
         az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" `
                       -o table
       workingDirectory: '$(Build.ArtifactStagingDirectory)'
@@ -106,13 +106,13 @@ jobs:
     artifact: indentityInfo-$(System.PlanId)-$(System.JobId)
 
 - job: azurePowerShell
-  displayName: 'AzurePowerShell $(serviceConnection)'
+  displayName: 'AzurePowerShell'
   pool:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
   steps:
   - task: AzurePowerShell@5
-    displayName: 'AzurePowerShell context'
+    displayName: 'AzurePowerShell $(serviceConnection)'
     inputs:
       azureSubscription: '$(serviceConnection)'
       scriptType: inlineScript
