@@ -1,5 +1,5 @@
-# name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.serviceConnection }}-$(Build.BuildId)
-name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ variables.subscriptionConnection }}-$(Build.BuildId)
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.serviceConnection }}-$(Build.BuildId)
+# name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ variables.subscriptionConnection }}-$(Build.BuildId)
 
 parameters:
 - name: serviceConnection
@@ -58,23 +58,30 @@ jobs:
         Write-Host "`nService Connection ID: ${serviceConnectionId}"
 
         Write-Host "`naz account show"
-        az account show -o json | Out-File -FilePath subscription.json
+        az account show -o json `
+                        | Tee-Object -FilePath subscription.json `
+                        | ConvertFrom-Json `
+                        | Set-Variable subscription
         Get-Content subscription.json
-        Get-Content subscription.json | ConvertFrom-Json | Set-Variable subscription
         $appId = $subscription.user.name
 
         Write-Host "`n$($PSStyle.Bold)Service Connection role assignments:$($PSStyle.Reset) ---------------------------------------------------------------"
-        az role assignment list --all --assignee $appId -o json | Out-File -FilePath roleAssignments.json
-        Get-Content roleAssignments.json | ConvertFrom-Json `
-                                         | Select-Object -Property roleDefinitionName, scope `
-                                         | Sort-Object -Property roleDefinitionName
-                                         | Format-Table -AutoSize -Wrap
+        az role assignment list --all `
+                                --assignee $appId `
+                                -o json `
+                                | Tee-Object -FilePath roleAssignments.json `
+                                | ConvertFrom-Json `
+                                | Select-Object -Property roleDefinitionName, scope `
+                                | Sort-Object -Property roleDefinitionName
+                                | Format-Table -AutoSize -Wrap
 
         Write-Host "`n$($PSStyle.Bold)Service Connection Service Principal object:$($PSStyle.Reset) -------------------------------------------------------"
-        az ad sp show --id $appId -o json | Out-File -FilePath servicePrincipal.json
+        az ad sp show --id $appId `
+                      -o json `
+                      | Tee-Object -FilePath servicePrincipal.json `
+                      | ConvertFrom-Json `
+                      | Set-Variable servicePrincipal
         Get-Content servicePrincipal.json
-        Get-Content servicePrincipal.json | ConvertFrom-Json `
-                                          | Set-Variable servicePrincipal
         if ($servicePrincipal.servicePrincipalType -eq 'ManagedIdentity') {
           "https://portal.azure.com/#@{0}/resource{1}" -f $subscription.tenantId, $servicePrincipal.alternativeNames[1] | Set-Variable azurePortalLink
         } else {
