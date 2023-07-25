@@ -3,18 +3,6 @@ parameters:
   displayName: Override Service Connection
   type: string
   default: '<from subscriptionConnection variable>'
-- name: pool
-  displayName: Agent Pool
-  type: string
-  default: Azure Pipelines
-- name: vmImage
-  displayName: Image
-  type: string
-  default: ubuntu-latest
-  values:
-  - macos-latest
-  - ubuntu-latest
-  - windows-latest
 
 trigger: none
 schedules:
@@ -36,8 +24,8 @@ jobs:
 - job: azureCLI
   displayName: 'AzureCLI'
   pool:
-    name: ${{ parameters.pool }}
-    vmImage: ${{ parameters.vmImage }}
+    name: 'Azure Pipelines'
+    vmImage: ubuntu-latest
   steps:
   - task: AzureCLI@2
     displayName: 'ARM Service Connection permissions'
@@ -105,8 +93,8 @@ jobs:
 - job: azurePowerShell
   displayName: 'AzurePowerShell'
   pool:
-    name: ${{ parameters.pool }}
-    vmImage: ${{ parameters.vmImage }}
+    name: 'Azure Pipelines'
+    vmImage: ubuntu-latest
   steps:
   - task: AzurePowerShell@5
     displayName: 'AzurePowerShell context'
