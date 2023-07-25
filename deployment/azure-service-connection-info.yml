@@ -1,10 +1,12 @@
+# name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.serviceConnection }}-$(Build.BuildId)
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ variables.subscriptionConnection }}-$(Build.BuildId)
+
 parameters:
 - name: serviceConnection
   displayName: Override Service Connection
   type: string
   default: '<from subscriptionConnection variable>'
 
-trigger: none
 schedules:
 - cron: '0 1 * * *'
   displayName: 'Nightly build (UTC)'
@@ -12,6 +14,7 @@ schedules:
   branches:
     include:
     - main
+trigger: none
 
 variables:
 - name: serviceConnection
