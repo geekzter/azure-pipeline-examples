@@ -13,4 +13,5 @@ pool:
 container: ubuntu:20.04
 
 steps:
-- script: printenv
+- script: az --version
+  displayName: 'Azure CLI version'
