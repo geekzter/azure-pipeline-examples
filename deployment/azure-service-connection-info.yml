@@ -5,6 +5,10 @@ parameters:
   displayName: Override Service Connection
   type: string
   default: '<from subscriptionConnection variable>'
+- name: containerJob
+  displayName: Use container job
+  type: boolean
+  default: false
 
 schedules:
 - cron: '0 1 * * *'
@@ -25,6 +29,9 @@ variables:
 jobs:
 - job: azureCLI
   displayName: 'AzureCLI'
+  ${{ if containerJob }}:
+    value: ubuntu:20.04
+
   pool:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
