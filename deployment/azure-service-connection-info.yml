@@ -35,6 +35,9 @@ jobs:
   ${{ if parameters.containerJob }}:
     container: mcr.microsoft.com/azure-cli:latest
   steps:
+  - ${{ if parameters.containerJob }}:
+    - script: apt-get install -y powershell
+      displayName: 'Install PowerShell'
   - task: AzureCLI@2
     displayName: 'AzureCLI $(serviceConnection)'
     inputs:
