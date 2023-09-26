@@ -33,7 +33,7 @@ jobs:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
   ${{ if parameters.containerJob }}:
-    container: mcr.microsoft.com/azure-cli
+    container: mcr.microsoft.com/azure-cli:latest
   steps:
   - task: AzureCLI@2
     displayName: 'AzureCLI $(serviceConnection)'
@@ -120,7 +120,7 @@ jobs:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
   ${{ if parameters.containerJob }}:
-    container: mcr.microsoft.com/powershell
+    container: mcr.microsoft.com/powershell:latest
   steps:
   - task: AzurePowerShell@5
     displayName: 'AzurePowerShell $(serviceConnection)'
