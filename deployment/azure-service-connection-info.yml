@@ -122,6 +122,10 @@ jobs:
   ${{ if parameters.containerJob }}:
     container: mcr.microsoft.com/powershell:latest
   steps:
+  - ${{ if parameters.containerJob }}:
+    - pwsh: |
+        Install-Module -Name Az -Repository PSGallery -Force
+      displayName: 'Install Az module'
   - task: AzurePowerShell@5
     displayName: 'AzurePowerShell $(serviceConnection)'
     inputs:
