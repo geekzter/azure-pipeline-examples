@@ -29,13 +29,15 @@ variables:
 jobs:
 - job: azureCLI
   displayName: 'AzureCLI'
-  ${{ if containerJob }}:
-    value: ubuntu:20.04
-
   pool:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
+  ${{ if containerJob }}:
+    value: ubuntu:20.04
   steps:
+  - ${{ if containerJob }}:
+    - script: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+      displayName: 'Install Azure CLI'
   - task: AzureCLI@2
     displayName: 'AzureCLI $(serviceConnection)'
     inputs:
