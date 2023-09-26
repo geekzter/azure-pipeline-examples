@@ -32,10 +32,10 @@ jobs:
   pool:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
-  ${{ if containerJob }}:
+  ${{ if parameters.containerJob }}:
     value: ubuntu:20.04
   steps:
-  - ${{ if containerJob }}:
+  - ${{ if parameters.containerJob }}:
     - script: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
       displayName: 'Install Azure CLI'
   - task: AzureCLI@2
