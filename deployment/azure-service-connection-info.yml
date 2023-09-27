@@ -37,11 +37,11 @@ jobs:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
   ${{ if parameters.containerJob }}:
-    container: mcr.microsoft.com/cbl-mariner/base/azure-cli:2
+    container: ubuntu:22.04
   steps:
-  # - ${{ if parameters.containerJob }}:
-  #   - script: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-  #     displayName: 'Install Azure CLI'
+  - ${{ if parameters.containerJob }}:
+    - script: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+      displayName: 'Install Azure CLI'
   - task: AzureCLI@2
     displayName: 'AzureCLI $(serviceConnection)'
     inputs:
