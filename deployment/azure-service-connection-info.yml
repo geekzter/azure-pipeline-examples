@@ -40,7 +40,19 @@ jobs:
     container: ubuntu:22.04
   steps:
   - ${{ if parameters.containerJob }}:
-    - script: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+    - script: |
+        apt-get install -y -qq --no-install-recommends \
+          apt-transport-https \
+          apt-utils \
+          ca-certificates \
+          curl \
+          git \
+          iputils-ping \
+          jq \
+          lsb-release \
+          software-properties-common \
+          wget
+        curl -sL https://aka.ms/InstallAzureCLIDeb | bash
       displayName: 'Install Azure CLI'
   - task: AzureCLI@2
     displayName: 'AzureCLI $(serviceConnection)'
