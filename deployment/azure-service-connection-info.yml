@@ -9,10 +9,6 @@ parameters:
   displayName: Use container job
   type: boolean
   default: false
-- name: containerImage
-  displayName: Use container job
-  type: boolean
-  default: false
 
 schedules:
 - cron: '0 1 * * *'
