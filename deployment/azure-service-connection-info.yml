@@ -37,23 +37,10 @@ jobs:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
   ${{ if parameters.containerJob }}:
-    container: ubuntu:22.04
+    container:
+      image: ericvanimages.azurecr.io/pipelineagent/ubuntu:latest
+      endpoint: containerEndpoint
   steps:
-  - ${{ if parameters.containerJob }}:
-    - script: |
-        apt-get install -y -qq --no-install-recommends \
-          apt-transport-https \
-          apt-utils \
-          ca-certificates \
-          curl \
-          git \
-          iputils-ping \
-          jq \
-          lsb-release \
-          software-properties-common \
-          wget
-        curl -sL https://aka.ms/InstallAzureCLIDeb | bash
-      displayName: 'Install Azure CLI'
   - task: AzureCLI@2
     displayName: 'AzureCLI $(serviceConnection)'
     inputs:
