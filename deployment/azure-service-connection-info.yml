@@ -26,8 +26,8 @@ jobs:
 - job: azureCLI
   displayName: 'AzureCLI'
   pool:
-    name: 'Azure Pipelines'
-    vmImage: ubuntu-latest
+    name: 'Default'
+    # vmImage: ubuntu-latest
   steps:
   - task: AzureCLI@2
     displayName: 'AzureCLI $(serviceConnection)'
@@ -111,8 +111,8 @@ jobs:
 - job: azurePowerShell
   displayName: 'AzurePowerShell'
   pool:
-    name: 'Azure Pipelines'
-    vmImage: ubuntu-latest
+    name: 'Default'
+    # vmImage: ubuntu-latest
   steps:
   - task: AzurePowerShell@5
     displayName: 'AzurePowerShell $(serviceConnection)'
