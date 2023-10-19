@@ -31,12 +31,12 @@ jobs:
 # - job: azureCLI
 - deployment: azureCLI
   displayName: 'AzureCLI'
-  environment: 
-    name: scratch
-    resourceType: virtualMachine
-  # pool:
-  #   name: 'Azure Pipelines'
-  #   vmImage: ubuntu-latest
+  # environment: 
+  #   name: scratch
+  #   resourceType: virtualMachine
+  pool:
+    name: 'Azure Pipelines'
+    vmImage: ubuntu-latest
   ${{ if parameters.containerJob }}:
     container:
       image: $(containerRegistryFQDN)/$(containerImage)
