@@ -1,5 +1,3 @@
-name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
-
 parameters:
 - name: serviceConnection
   displayName: Override Service Connection
@@ -22,6 +20,8 @@ parameters:
   - containerJob
   - deploymentJob
   - environmentVM
+
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.jobType }}-$(Build.BuildId)
 
 schedules:
 - cron: '0 1 * * *'
