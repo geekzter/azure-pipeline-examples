@@ -41,7 +41,6 @@ jobs:
   - deployment: azureCLI
 - ${{ else }}:
   - job: azureCLI
-
     displayName: 'AzureCLI'
   # ${{ if eq(parameters.jobType,'environmentVM') }}:
   #   environment: 
