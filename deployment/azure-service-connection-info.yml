@@ -63,7 +63,7 @@ jobs:
   #     deploy:  
   #       steps:
 
-  steps:
+    steps:
         - task: AzureCLI@2
           displayName: 'AzureCLI $(serviceConnection)'
           inputs:
