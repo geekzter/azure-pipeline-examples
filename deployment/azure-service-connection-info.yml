@@ -33,7 +33,7 @@ jobs:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
   ${{ if parameters.containerJob }}:
-    container: aztfmod/rover
+    container: aztfmod/rover:1.3.10-2310.0211
     # container:
     #   image: ericvanimages.azurecr.io/pipelineagent/ubuntu:latest
     #   endpoint: containerEndpoint
