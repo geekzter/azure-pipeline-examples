@@ -39,21 +39,21 @@ variables:
 jobs:
 - ${{ if or(eq(parameters.jobType,'deploymentJob'),eq(parameters.jobType,'environmentVM')) }}:
   - deployment: azureCLI
+    displayName: 'AzureCLI deployment job'
+    environment: 
+      name: scratch
+      ${{ if eq(parameters.jobType,'environmentVM') }}:
+        resourceType: virtualMachine
 - ${{ else }}:
   - job: azureCLI
     displayName: 'AzureCLI'
-  # ${{ if eq(parameters.jobType,'environmentVM') }}:
-  #   environment: 
-  #     name: scratch
-  #     resourceType: virtualMachine
-  # ${{ else }}:
-  #   pool:
-  #     name: 'Azure Pipelines'
-  #     vmImage: ubuntu-latest
-    
     pool:
       name: 'Azure Pipelines'
       vmImage: ubuntu-latest
+    
+    # pool:
+    #   name: 'Azure Pipelines'
+    #   vmImage: ubuntu-latest
 
   # ${{ if eq(parameters.jobType,'containerJob') }}:
   #   container:
