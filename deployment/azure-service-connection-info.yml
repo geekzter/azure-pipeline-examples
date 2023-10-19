@@ -3,14 +3,6 @@ parameters:
   displayName: Override Service Connection
   type: string
   default: '<from subscriptionConnection variable>'
-- name: poolName
-  displayName: Agent Pool
-  type: string
-  default: 'Azure Pipelines'
-- name: vmImage
-  displayName: Agent Pool
-  type: string
-  default: 'ubuntu-latest'
 - name: jobType
   displayName: Job type
   type: string
@@ -20,6 +12,18 @@ parameters:
   - containerJob
   - deploymentJob
   - environmentVM
+- name: poolName
+  displayName: Agent Pool
+  type: string
+  default: 'Azure Pipelines'
+- name: vmImage
+  displayName: Agent Pool
+  type: string
+  default: 'ubuntu-latest'
+- name: environmentName
+  displayName: Environment
+  type: string
+  default: 'scratch'
 
 name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-${{ parameters.jobType }}-$(SourceBranchName)-$(Build.BuildId)
 
@@ -46,11 +50,11 @@ jobs:
     ${{ if eq(parameters.jobType,'deploymentJob') }}:
       displayName: 'AzureCLI deployment job'
       environment: 
-        name: scratch
+        name: ${{ parameters.environmentName }}
     ${{ else }}:
       displayName: 'AzureCLI environment VM'
       environment: 
-        name: scratch
+        name: ${{ parameters.environmentName }}
         resourceType: virtualMachine
 - ${{ else }}:
   - job: azureCLI
@@ -150,11 +154,11 @@ jobs:
     ${{ if eq(parameters.jobType,'deploymentJob') }}:
       displayName: 'AzurePowerShell deployment job'
       environment: 
-        name: scratch
+        name: ${{ parameters.environmentName }}
     ${{ else }}:
       displayName: 'AzurePowerShell environment VM'
       environment: 
-        name: scratch
+        name: ${{ parameters.environmentName }}
         resourceType: virtualMachine
 - ${{ else }}:
   - job: AzurePowerShell
