@@ -21,7 +21,7 @@ parameters:
   - deploymentJob
   - environmentVM
 
-name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.jobType }}-$(Build.BuildId)
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-${{ parameters.jobType }}-$(SourceBranchName)-$(Build.BuildId)
 
 schedules:
 - cron: '0 1 * * *'
