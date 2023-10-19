@@ -9,6 +9,15 @@ parameters:
   displayName: Use container job
   type: boolean
   default: false
+- name: jobType
+  displayName: Job type
+  type: string
+  default: agentJob
+  values:
+  - agentJob
+  - containerJob
+  - deploymentJob
+  - environmentVM
 
 schedules:
 - cron: '0 1 * * *'
@@ -28,19 +37,28 @@ variables:
     value: '${{ parameters.serviceConnection }}'
 
 jobs:
-- job: azureCLI
-# - deployment: azureCLI
-  displayName: 'AzureCLI'
-  # environment: 
-  #   name: scratch
-  #   resourceType: virtualMachine
-  pool:
-    name: 'Azure Pipelines'
-    vmImage: ubuntu-latest
-  ${{ if parameters.containerJob }}:
-    container:
-      image: $(containerRegistryFQDN)/$(containerImage)
-      endpoint: containerEndpoint
+- ${{ if or(eq(parameters.jobType,'deploymentJob'),eq(parameters.jobType,'environmentVM')) }}:
+  - deployment: azureCLI
+- ${{ else }}:
+  - job: azureCLI
+
+    displayName: 'AzureCLI'
+  # ${{ if eq(parameters.jobType,'environmentVM') }}:
+  #   environment: 
+  #     name: scratch
+  #     resourceType: virtualMachine
+  # ${{ else }}:
+  #   pool:
+  #     name: 'Azure Pipelines'
+  #     vmImage: ubuntu-latest
+    pool:
+      name: 'Azure Pipelines'
+      vmImage: ubuntu-latest
+
+  # ${{ if eq(parameters.jobType,'containerJob') }}:
+  #   container:
+  #     image: $(containerRegistryFQDN)/$(containerImage)
+  #     endpoint: containerEndpoint
   # strategy:
   #   runOnce:
   #     deploy:  
