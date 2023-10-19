@@ -5,10 +5,14 @@ parameters:
   displayName: Override Service Connection
   type: string
   default: '<from subscriptionConnection variable>'
-- name: containerJob
-  displayName: Use container job
-  type: boolean
-  default: false
+- name: poolName
+  displayName: Agent Pool
+  type: string
+  default: 'Azure Pipelines'
+- name: vmImage
+  displayName: Agent Pool
+  type: string
+  default: 'ubuntu-latest'
 - name: jobType
   displayName: Job type
   type: string
@@ -39,22 +43,28 @@ variables:
 jobs:
 - ${{ if or(eq(parameters.jobType,'deploymentJob'),eq(parameters.jobType,'environmentVM')) }}:
   - deployment: azureCLI
-    displayName: 'AzureCLI deployment job'
-    environment: 
-      name: scratch
-      ${{ if eq(parameters.jobType,'environmentVM') }}:
+    ${{ if eq(parameters.jobType,'environmentVM') }}:
+      displayName: 'AzureCLI deployment job'
+      environment: 
+        name: scratch
+    ${{ else }}:
+      displayName: 'AzureCLI environment VM'
+      environment: 
+        name: scratch
         resourceType: virtualMachine
 - ${{ else }}:
   - job: azureCLI
-    displayName: 'AzureCLI'
-    pool:
-      name: 'Azure Pipelines'
-      vmImage: ubuntu-latest
     ${{ if eq(parameters.jobType,'containerJob') }}:
       container:
         image: $(containerRegistryFQDN)/$(containerImage)
         endpoint: containerEndpoint
-
+      displayName: 'AzureCLI container job'
+    ${{ else }}:
+      displayName: 'AzureCLI'
+      pool:
+        name: ${{ parameters.poolName }}}
+        vmImage: ${{ parameters.vmImage }}
+  
     steps:
     - task: AzureCLI@2
       displayName: 'AzureCLI $(serviceConnection)'
@@ -135,23 +145,38 @@ jobs:
       displayName: 'Publish json files'
       artifact: indentityInfo-$(System.PlanId)-$(System.JobId)
 
-- job: azurePowerShell
-  displayName: 'AzurePowerShell'
-  pool:
-    name: 'Azure Pipelines'
-    vmImage: ubuntu-latest
-  ${{ if parameters.containerJob }}:
-    container: mcr.microsoft.com/azure-powershell:latest
-  steps:
-  - task: AzurePowerShell@5
-    displayName: 'AzurePowerShell $(serviceConnection)'
-    inputs:
-      azureSubscription: '$(serviceConnection)'
-      scriptType: inlineScript
-      inline: |
-        Get-AzContext Format-List
-        Get-AzContext | Select-Object -ExpandProperty Subscription | Format-List
+- ${{ if or(eq(parameters.jobType,'deploymentJob'),eq(parameters.jobType,'environmentVM')) }}:
+  - deployment: AzurePowerShell
+    ${{ if eq(parameters.jobType,'environmentVM') }}:
+      displayName: 'AzurePowerShell deployment job'
+      environment: 
+        name: scratch
+    ${{ else }}:
+      displayName: 'AzurePowerShell environment VM'
+      environment: 
+        name: scratch
+        resourceType: virtualMachine
+- ${{ else }}:
+  - job: AzurePowerShell
+    ${{ if eq(parameters.jobType,'containerJob') }}:
+      container: mcr.microsoft.com/azure-powershell:latest
+      displayName: 'AzurePowerShell container job'
+    ${{ else }}:
+      displayName: 'AzurePowerShell'
+      pool:
+        name: ${{ parameters.poolName }}}
+        vmImage: ${{ parameters.vmImage }}
 
-      azurePowerShellVersion: 'latestVersion'
-      pwsh: true
-      failOnStandardError: true
+    steps:
+    - task: AzurePowerShell@5
+      displayName: 'AzurePowerShell $(serviceConnection)'
+      inputs:
+        azureSubscription: '$(serviceConnection)'
+        scriptType: inlineScript
+        inline: |
+          Get-AzContext Format-List
+          Get-AzContext | Select-Object -ExpandProperty Subscription | Format-List
+
+        azurePowerShellVersion: 'latestVersion'
+        pwsh: true
+        failOnStandardError: true
