@@ -28,8 +28,8 @@ variables:
     value: '${{ parameters.serviceConnection }}'
 
 jobs:
-# - job: azureCLI
-- deployment: azureCLI
+- job: azureCLI
+# - deployment: azureCLI
   displayName: 'AzureCLI'
   # environment: 
   #   name: scratch
