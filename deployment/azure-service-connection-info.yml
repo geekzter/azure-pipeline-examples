@@ -20,6 +20,7 @@ schedules:
 trigger: none
 
 variables:
+- group: 'container-images'
 - name: serviceConnection
   ${{ if eq(parameters.serviceConnection, '<from subscriptionConnection variable>') }}:
     value: $[ variables['subscriptionConnection'] ]
@@ -33,10 +34,9 @@ jobs:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
   ${{ if parameters.containerJob }}:
-    container: aztfmod/rover:1.3.10-2310.0211
-    # container:
-    #   image: ericvanimages.azurecr.io/pipelineagent/ubuntu:latest
-    #   endpoint: containerEndpoint
+    container:
+      image: $(containerRegistryFQDN)/$(containerImage)
+      endpoint: containerEndpoint
   steps:
   - task: AzureCLI@2
     displayName: 'AzureCLI $(serviceConnection)'
