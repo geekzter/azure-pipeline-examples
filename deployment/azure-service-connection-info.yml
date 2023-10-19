@@ -62,7 +62,7 @@ jobs:
     ${{ else }}:
       displayName: 'AzureCLI'
       pool:
-        name: ${{ parameters.poolName }}}
+        name: ${{ parameters.poolName }}
         vmImage: ${{ parameters.vmImage }}
   
     steps:
@@ -164,7 +164,7 @@ jobs:
     ${{ else }}:
       displayName: 'AzurePowerShell'
       pool:
-        name: ${{ parameters.poolName }}}
+        name: ${{ parameters.poolName }}
         vmImage: ${{ parameters.vmImage }}
 
     steps:
