@@ -50,99 +50,90 @@ jobs:
     pool:
       name: 'Azure Pipelines'
       vmImage: ubuntu-latest
-    
-    # pool:
-    #   name: 'Azure Pipelines'
-    #   vmImage: ubuntu-latest
-
-  # ${{ if eq(parameters.jobType,'containerJob') }}:
-  #   container:
-  #     image: $(containerRegistryFQDN)/$(containerImage)
-  #     endpoint: containerEndpoint
-  # strategy:
-  #   runOnce:
-  #     deploy:  
-  #       steps:
+    ${{ if eq(parameters.jobType,'containerJob') }}:
+      container:
+        image: $(containerRegistryFQDN)/$(containerImage)
+        endpoint: containerEndpoint
 
     steps:
-        - task: AzureCLI@2
-          displayName: 'AzureCLI $(serviceConnection)'
-          inputs:
-            addSpnToEnvironment: true
-            azureSubscription: '$(serviceConnection)' # Task property referencing Service Connection -------------------------------------------------------
-            scriptType: pscore
-            scriptLocation: inlineScript
-            inlineScript: |
-              Write-Host "`n$($PSStyle.Bold)Service Connection name: '$(serviceConnection)'$($PSStyle.Reset) -----------------------------------------------"
+    - task: AzureCLI@2
+      displayName: 'AzureCLI $(serviceConnection)'
+      inputs:
+        addSpnToEnvironment: true
+        azureSubscription: '$(serviceConnection)' # Task property referencing Service Connection -------------------------------------------------------
+        scriptType: pscore
+        scriptLocation: inlineScript
+        inlineScript: |
+          Write-Host "`n$($PSStyle.Bold)Service Connection name: '$(serviceConnection)'$($PSStyle.Reset) -----------------------------------------------"
 
-              Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
-                                                                        | Select-Object -First 1 -ExpandProperty Name `
-                                                                        | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
-                                                                        | Set-Variable serviceConnectionId
-              Write-Host "Service Connection ID: ${serviceConnectionId}"
+          Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
+                                                                    | Select-Object -First 1 -ExpandProperty Name `
+                                                                    | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
+                                                                    | Set-Variable serviceConnectionId
+          Write-Host "Service Connection ID: ${serviceConnectionId}"
 
-              Write-Host "`nVariables added by 'addSpnToEnvironment':" -NoNewline
-              Get-ChildItem -Path Env: -Recurse -Include idToken, `
-                                                        servicePrincipalId, `
-                                                        servicePrincipalKey,`
-                                                        tenantId `
-                            | Sort-Object -Property Name `
-                            | Select-Object -Property Name `
-                            | Format-Table -HideTableHeaders
-              if ($env:servicePrincipalKey) {
-                Write-Host "Using Service Principal secret for authentication"
-              } elseif ($env:idToken) {
-                Write-Host "Using Workload Identity federation (OIDC) for authentication"
-              }
+          Write-Host "`nVariables added by 'addSpnToEnvironment':" -NoNewline
+          Get-ChildItem -Path Env: -Recurse -Include idToken, `
+                                                    servicePrincipalId, `
+                                                    servicePrincipalKey,`
+                                                    tenantId `
+                        | Sort-Object -Property Name `
+                        | Select-Object -Property Name `
+                        | Format-Table -HideTableHeaders
+          if ($env:servicePrincipalKey) {
+            Write-Host "Using Service Principal secret for authentication"
+          } elseif ($env:idToken) {
+            Write-Host "Using Workload Identity federation (OIDC) for authentication"
+          }
 
-              Write-Host "`n$($PSStyle.Formatting.FormatAccent)az account show$($PSStyle.Reset)"
-              az account show -o json `
-                              | Tee-Object -FilePath subscription.json `
-                              | ConvertFrom-Json `
-                              | Set-Variable subscription
-              Get-Content subscription.json
-              $appId = $subscription.user.name
+          Write-Host "`n$($PSStyle.Formatting.FormatAccent)az account show$($PSStyle.Reset)"
+          az account show -o json `
+                          | Tee-Object -FilePath subscription.json `
+                          | ConvertFrom-Json `
+                          | Set-Variable subscription
+          Get-Content subscription.json
+          $appId = $subscription.user.name
 
-              Write-Host "`n$($PSStyle.Bold)Service Connection role assignments:$($PSStyle.Reset) ---------------------------------------------------------------"
-              Write-Host "$($PSStyle.Formatting.FormatAccent)az role assignment list --assignee <appId>$($PSStyle.Reset)"
-              az role assignment list --all `
-                                      --assignee $appId `
-                                      -o json `
-                                      | Tee-Object -FilePath roleAssignments.json `
-                                      | ConvertFrom-Json `
-                                      | Select-Object -Property roleDefinitionName, scope `
-                                      | Sort-Object -Property roleDefinitionName
-                                      | Format-Table -AutoSize -Wrap
+          Write-Host "`n$($PSStyle.Bold)Service Connection role assignments:$($PSStyle.Reset) ---------------------------------------------------------------"
+          Write-Host "$($PSStyle.Formatting.FormatAccent)az role assignment list --assignee <appId>$($PSStyle.Reset)"
+          az role assignment list --all `
+                                  --assignee $appId `
+                                  -o json `
+                                  | Tee-Object -FilePath roleAssignments.json `
+                                  | ConvertFrom-Json `
+                                  | Select-Object -Property roleDefinitionName, scope `
+                                  | Sort-Object -Property roleDefinitionName
+                                  | Format-Table -AutoSize -Wrap
 
-              Write-Host "`n$($PSStyle.Bold)Service Connection Service Principal object:$($PSStyle.Reset) -------------------------------------------------------"
-              Write-Host "$($PSStyle.Formatting.FormatAccent)az ad sp show --id <appId>$($PSStyle.Reset)"
-              az ad sp show --id $appId `
-                            -o json `
-                            | Tee-Object -FilePath servicePrincipal.json `
-                            | ConvertFrom-Json `
-                            | Set-Variable servicePrincipal
-              Get-Content servicePrincipal.json
-              if ($servicePrincipal.servicePrincipalType -eq 'ManagedIdentity') {
-                "https://portal.azure.com/#@{0}/resource{1}" -f $subscription.tenantId, $servicePrincipal.alternativeNames[1] | Set-Variable azurePortalLink
-              } else {
-                "https://portal.azure.com/{0}/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/{1}/isMSAApp/" -f $subscription.tenantId, $appId | Set-Variable azurePortalLink
-              }
-              Write-Host "`nAzure Portal link for Service Principal of type '$($servicePrincipal.servicePrincipalType)':`n$($azurePortalLink)"
+          Write-Host "`n$($PSStyle.Bold)Service Connection Service Principal object:$($PSStyle.Reset) -------------------------------------------------------"
+          Write-Host "$($PSStyle.Formatting.FormatAccent)az ad sp show --id <appId>$($PSStyle.Reset)"
+          az ad sp show --id $appId `
+                        -o json `
+                        | Tee-Object -FilePath servicePrincipal.json `
+                        | ConvertFrom-Json `
+                        | Set-Variable servicePrincipal
+          Get-Content servicePrincipal.json
+          if ($servicePrincipal.servicePrincipalType -eq 'ManagedIdentity') {
+            "https://portal.azure.com/#@{0}/resource{1}" -f $subscription.tenantId, $servicePrincipal.alternativeNames[1] | Set-Variable azurePortalLink
+          } else {
+            "https://portal.azure.com/{0}/#blade/Microsoft_AAD_RegisteredApps/ApplicationMenuBlade/Overview/appId/{1}/isMSAApp/" -f $subscription.tenantId, $appId | Set-Variable azurePortalLink
+          }
+          Write-Host "`nAzure Portal link for Service Principal of type '$($servicePrincipal.servicePrincipalType)':`n$($azurePortalLink)"
 
-              Write-Host "`n$($PSStyle.Bold)Subscriptions the Service Connection has access to:$($PSStyle.Reset) ------------------------------------------------"
-              Write-Host "$($PSStyle.Formatting.FormatAccent)az account list$($PSStyle.Reset)"
-              az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" `
-                              -o table
-              
-              Write-Host "`n$($PSStyle.Bold)Resource groups that the Service Connection has access to in subscription '$(az account show --query name -o tsv)':$($PSStyle.Reset) -------------"
-              Write-Host "$($PSStyle.Formatting.FormatAccent)az group list$($PSStyle.Reset)"
-              az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" `
-                            -o table
-            workingDirectory: '$(Build.ArtifactStagingDirectory)'
+          Write-Host "`n$($PSStyle.Bold)Subscriptions the Service Connection has access to:$($PSStyle.Reset) ------------------------------------------------"
+          Write-Host "$($PSStyle.Formatting.FormatAccent)az account list$($PSStyle.Reset)"
+          az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" `
+                          -o table
+          
+          Write-Host "`n$($PSStyle.Bold)Resource groups that the Service Connection has access to in subscription '$(az account show --query name -o tsv)':$($PSStyle.Reset) -------------"
+          Write-Host "$($PSStyle.Formatting.FormatAccent)az group list$($PSStyle.Reset)"
+          az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" `
+                        -o table
+        workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
-        - publish: $(Build.ArtifactStagingDirectory)
-          displayName: 'Publish json files'
-          artifact: indentityInfo-$(System.PlanId)-$(System.JobId)
+    - publish: $(Build.ArtifactStagingDirectory)
+      displayName: 'Publish json files'
+      artifact: indentityInfo-$(System.PlanId)-$(System.JobId)
 
 - job: azurePowerShell
   displayName: 'AzurePowerShell'
