@@ -43,7 +43,7 @@ variables:
 jobs:
 - ${{ if or(eq(parameters.jobType,'deploymentJob'),eq(parameters.jobType,'environmentVM')) }}:
   - deployment: azureCLI
-    ${{ if eq(parameters.jobType,'environmentVM') }}:
+    ${{ if eq(parameters.jobType,'deploymentJob') }}:
       displayName: 'AzureCLI deployment job'
       environment: 
         name: scratch
@@ -147,7 +147,7 @@ jobs:
 
 - ${{ if or(eq(parameters.jobType,'deploymentJob'),eq(parameters.jobType,'environmentVM')) }}:
   - deployment: AzurePowerShell
-    ${{ if eq(parameters.jobType,'environmentVM') }}:
+    ${{ if eq(parameters.jobType,'deploymentJob') }}:
       displayName: 'AzurePowerShell deployment job'
       environment: 
         name: scratch
