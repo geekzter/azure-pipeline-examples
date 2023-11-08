@@ -14,8 +14,8 @@ jobs:
     name: 'Hosted'
   steps:
   - pwsh: |
-      echo "##[warning]This text will be rendered as an warning"
-    displayName: '##[error]'
+      echo "##[warning]This text will be rendered as a warning"
+    displayName: '##[warning]'
     
 - job: 'logWarning'
   displayName: 'Warning message 2'
@@ -23,7 +23,7 @@ jobs:
     name: 'Hosted'
   steps:
   - pwsh: |
-      echo "##vso[task.logissue type=warning]This text will be rendered as an warning, and will be shown on the pipeline run summary"
+      echo "##vso[task.logissue type=warning]This text will be rendered as a warning, and will be shown on the pipeline run summary"
     displayName: '##vso[task.logissue type=warning]'
 
 - job: 'error'
