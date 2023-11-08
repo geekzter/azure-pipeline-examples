@@ -7,7 +7,25 @@ schedules:
     include:
     - main
 
-jobs:
+jobs:  
+- job: 'warning'
+  displayName: 'Warning message 1'
+  pool:
+    name: 'Hosted'
+  steps:
+  - pwsh: |
+      echo "##[warning]This text will be rendered as an warning"
+    displayName: '##[error]'
+    
+- job: 'logWarning'
+  displayName: 'Warning message 2'
+  pool:
+    name: 'Hosted'
+  steps:
+  - pwsh: |
+      echo "##vso[task.logissue type=warning]This text will be rendered as an warning, and will be shown on the pipeline run summary"
+    displayName: '##vso[task.logissue type=warning]'
+
 - job: 'error'
   displayName: 'Error message 1'
   pool:
@@ -17,7 +35,7 @@ jobs:
       echo "##[error]This text will be rendered as an error"
     displayName: '##[error]'
     
-- job: 'logissue'
+- job: 'logError'
   displayName: 'Error message 2'
   pool:
     name: 'Hosted'
