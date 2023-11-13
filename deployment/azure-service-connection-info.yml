@@ -46,13 +46,13 @@ variables:
 
 jobs:
 - ${{ if or(eq(parameters.jobType,'deploymentJob'),eq(parameters.jobType,'environmentVM')) }}:
-  - deployment: azureCLI
+  - deployment: useServiceConnection
     ${{ if eq(parameters.jobType,'deploymentJob') }}:
-      displayName: 'AzureCLI deployment job'
+      displayName: 'Deployment job'
       environment: 
         name: ${{ parameters.environmentName }}
     ${{ else }}:
-      displayName: 'AzureCLI environment VM'
+      displayName: 'Environment VM'
       environment: 
         name: ${{ parameters.environmentName }}
         resourceType: virtualMachine
@@ -63,14 +63,14 @@ jobs:
           - template: azure-service-connection-info-tasks.yml
 
 - ${{ else }}:
-  - job: azureCLI
+  - job: useServiceConnection
     ${{ if eq(parameters.jobType,'containerJob') }}:
       container:
         image: $(containerRegistryFQDN)/$(containerImage)
         endpoint: containerEndpoint
-      displayName: 'AzureCLI container job'
+      displayName: 'Container job'
     ${{ else }}:
-      displayName: 'AzureCLI'
+      displayName: 'Agent job'
       pool:
         name: ${{ parameters.poolName }}
         vmImage: ${{ parameters.vmImage }}
