@@ -135,6 +135,19 @@ jobs:
                               -o table
               workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
+          - task: AzurePowerShell@5
+            displayName: 'AzurePowerShell $(serviceConnection)'
+            inputs:
+              azureSubscription: '$(serviceConnection)'
+              scriptType: inlineScript
+              inline: |
+                Get-AzContext Format-List
+                Get-AzContext | Select-Object -ExpandProperty Subscription | Format-List
+
+              azurePowerShellVersion: 'latestVersion'
+              pwsh: true
+              failOnStandardError: true
+
 - ${{ else }}:
   - job: azureCLI
     ${{ if eq(parameters.jobType,'containerJob') }}:
@@ -223,59 +236,19 @@ jobs:
                               -o table
               workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
+          - task: AzurePowerShell@5
+            displayName: 'AzurePowerShell $(serviceConnection)'
+            inputs:
+              azureSubscription: '$(serviceConnection)'
+              scriptType: inlineScript
+              inline: |
+                Get-AzContext Format-List
+                Get-AzContext | Select-Object -ExpandProperty Subscription | Format-List
+
+              azurePowerShellVersion: 'latestVersion'
+              pwsh: true
+              failOnStandardError: true
+
           - publish: $(Build.ArtifactStagingDirectory)
             displayName: 'Publish json files'
             artifact: indentityInfo-$(System.PlanId)-$(System.JobId)
-
-- ${{ if or(eq(parameters.jobType,'deploymentJob'),eq(parameters.jobType,'environmentVM')) }}:
-  - deployment: AzurePowerShell
-    ${{ if eq(parameters.jobType,'deploymentJob') }}:
-      displayName: 'AzurePowerShell deployment job'
-      environment: 
-        name: ${{ parameters.environmentName }}
-    ${{ else }}:
-      displayName: 'AzurePowerShell environment VM'
-      environment: 
-        name: ${{ parameters.environmentName }}
-        resourceType: virtualMachine
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: AzurePowerShell@5
-            displayName: 'AzurePowerShell $(serviceConnection)'
-            inputs:
-              azureSubscription: '$(serviceConnection)'
-              scriptType: inlineScript
-              inline: |
-                Get-AzContext Format-List
-                Get-AzContext | Select-Object -ExpandProperty Subscription | Format-List
-
-              azurePowerShellVersion: 'latestVersion'
-              pwsh: true
-              failOnStandardError: true
-
-- ${{ else }}:
-  - job: AzurePowerShell
-    ${{ if eq(parameters.jobType,'containerJob') }}:
-      container: mcr.microsoft.com/azure-powershell:latest
-      displayName: 'AzurePowerShell container job'
-    ${{ else }}:
-      displayName: 'AzurePowerShell'
-      pool:
-        name: ${{ parameters.poolName }}
-        vmImage: ${{ parameters.vmImage }}
-
-    steps:
-          - task: AzurePowerShell@5
-            displayName: 'AzurePowerShell $(serviceConnection)'
-            inputs:
-              azureSubscription: '$(serviceConnection)'
-              scriptType: inlineScript
-              inline: |
-                Get-AzContext Format-List
-                Get-AzContext | Select-Object -ExpandProperty Subscription | Format-List
-
-              azurePowerShellVersion: 'latestVersion'
-              pwsh: true
-              failOnStandardError: true
