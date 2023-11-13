@@ -60,6 +60,7 @@ jobs:
       runOnce:
         deploy:
           steps:
+          - checkout: self
 
 - ${{ else }}:
   - job: azureCLI
@@ -74,6 +75,7 @@ jobs:
         name: ${{ parameters.poolName }}
         vmImage: ${{ parameters.vmImage }}
       steps:
+          - checkout: self
 
           - task: AzureCLI@2
             displayName: 'AzureCLI $(serviceConnection)'
