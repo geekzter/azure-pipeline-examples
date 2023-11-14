@@ -1,3 +1,5 @@
+# Pipeline to test Service Connections
+
 parameters:
 - name: serviceConnection
   displayName: Override Service Connection
@@ -24,6 +26,10 @@ parameters:
   displayName: Environment
   type: string
   default: 'scratch'
+- name: additionalVariableGroup
+  displayName: Variable Group (Key Vault test)
+  type: string
+  default: ''
 
 name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-${{ parameters.jobType }}-$(SourceBranchName)-$(Build.BuildId)
 
@@ -38,7 +44,8 @@ trigger: none
 
 variables:
 - group: 'container-images'
-- group: 'ericvanvault'
+- ${{ if ne(parameters.additionalVariableGroup,'') }}:
+  - group: '${{ parameters.additionalVariableGroup }}'
 - name: serviceConnection
   ${{ if eq(parameters.serviceConnection, '<from subscriptionConnection variable>') }}:
     value: $[ variables['subscriptionConnection'] ]
