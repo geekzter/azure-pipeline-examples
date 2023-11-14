@@ -29,7 +29,7 @@ parameters:
 - name: additionalVariableGroup
   displayName: Variable Group (Key Vault test)
   type: string
-  default: ''
+  default: false
 
 name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-${{ parameters.jobType }}-$(SourceBranchName)-$(Build.BuildId)
 
@@ -44,7 +44,7 @@ trigger: none
 
 variables:
 - group: 'container-images'
-- ${{ if ne(parameters.additionalVariableGroup,'') }}:
+- ${{ if gt(len(parameters.additionalVariableGroup),0) }}:
   - group: '${{ parameters.additionalVariableGroup }}'
 - name: serviceConnection
   ${{ if eq(parameters.serviceConnection, '<from subscriptionConnection variable>') }}:
