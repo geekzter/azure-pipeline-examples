@@ -38,6 +38,7 @@ trigger: none
 
 variables:
 - group: 'container-images'
+- group: 'ericvanvault'
 - name: serviceConnection
   ${{ if eq(parameters.serviceConnection, '<from subscriptionConnection variable>') }}:
     value: $[ variables['subscriptionConnection'] ]
