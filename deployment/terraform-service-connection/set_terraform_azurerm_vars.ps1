@@ -71,10 +71,10 @@ function New-OidcToken()
 # Propagate Azure context to Terraform
 az account show 2>$null | ConvertFrom-Json | Set-Variable account
 if (!$account) {
-    throw "Not logged into Azure CLI, no context to propagate as ARM_* environment variables"
+    Write-Warning "Not logged into Azure CLI, no context to propagate as ARM_* environment variables"
 }
 if (![guid]::TryParse($account.user.name, [ref][guid]::Empty)) {
-    throw "Azure CLI logged in with a User Principal instead of a Service Principal"
+    Write-Warning "Azure CLI logged in with a User Principal instead of a Service Principal"
 }
 
 if ($RequestNewToken) {
