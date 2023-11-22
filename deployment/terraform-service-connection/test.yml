@@ -50,12 +50,12 @@ jobs:
             Write-Host "`nLogged out from Azure CLI"
           }
 
-          terraform test -verbose -filter=./test.tftest.hcl   
+          terraform test -verbose -filter='test.tftest.hcl'  
 
 
           ./set_terraform_azurerm_vars.ps1 -RequestNewToken -SystemAccessToken $(System.AccessToken)
 
-          terraform test -verbose -filter=./test2.tftest.hcl  
+          terraform test -verbose -filter='test2.tftest.hcl'
         useGlobalConfig: true
         addSpnToEnvironment: true
         failOnStandardError: true
