@@ -39,19 +39,22 @@ jobs:
         scriptLocation: inlineScript
         inlineScript: |
 
+
+          # Run Terraform within task
+          terraform init
+
+          ./set_terraform_azurerm_vars.ps1
           # Logging out from Azure CLI
           if ($${{ parameters.azLogout }}) {
             az logout
             Write-Host "`nLogged out from Azure CLI"
           }
 
-          # Run Terraform within task
-          terraform init
-
-          ./set_terraform_azurerm_vars.ps1
           terraform test -verbose -filter=./test.tftest.hcl   
 
+
           ./set_terraform_azurerm_vars.ps1 -RequestNewToken -SystemAccessToken $(System.AccessToken)
+
           terraform test -verbose -filter=./test2.tftest.hcl  
         useGlobalConfig: true
         addSpnToEnvironment: true
