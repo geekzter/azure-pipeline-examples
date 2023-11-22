@@ -51,22 +51,22 @@ jobs:
             Write-Host "`nLogged out from Azure CLI"
           }
 
-          terraform test -verbose -filter='test.tftest.hcl'  
+          # terraform test -verbose -filter='test.tftest.hcl'  
 
-          $oldToken = $env:ARM_OIDC_TOKEN
-          ./set_terraform_azurerm_vars.ps1 -RequestNewToken -SystemAccessToken $(System.AccessToken)
-          if ($env:ARM_OIDC_TOKEN -eq $oldToken) {
-            throw "No new token acquired"
+          # $oldToken = $env:ARM_OIDC_TOKEN
+          # ./set_terraform_azurerm_vars.ps1 -RequestNewToken -SystemAccessToken $(System.AccessToken)
+          # if ($env:ARM_OIDC_TOKEN -eq $oldToken) {
+          #   throw "No new token acquired"
+          # }
+
+          # terraform test -verbose -filter='test2.tftest.hcl'
+
+          Get-ChildItem *.tftest.hcl | ForEach-Object { 
+            ./set_terraform_azurerm_vars.ps1 -RequestNewToken -SystemAccessToken $(System.AccessToken)
+            Write-Host "Processing $($_.name)..."
+            terraform test -verbose -filter='$($_.name)'
           }
-
-          terraform test -verbose -filter='test2.tftest.hcl'
-
-        #   Get-ChildItem *.tftest.hcl | ForEach-Object { 
-        #     ./set_terraform_azurerm_vars.ps1 -RequestNewToken -SystemAccessToken $(System.AccessToken)
-        #     Write-Host "Processing $($_.name)..."
-        #     terraform test -verbose -filter='$($_.name)'
-        #   }
-        # useGlobalConfig: true
+        useGlobalConfig: true
         addSpnToEnvironment: true
         failOnStandardError: true
         workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
