@@ -21,7 +21,7 @@ run wait {
     source                     = "./modules/timer"
   }
   variables {
-    create_wait_minutes        = 1
+    create_wait_minutes        = 15
   }
 }
 
