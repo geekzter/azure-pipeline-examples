@@ -64,8 +64,8 @@ jobs:
           Get-ChildItem *.tftest.hcl | ForEach-Object { 
             ./set_terraform_azurerm_vars.ps1 -RequestNewToken -SystemAccessToken $(System.AccessToken)
             Write-Host "Processing $($_.name)..."
-            Write-Host "terraform test -verbose -filter='$($_.name)'"
-            terraform test -verbose -filter='$($_.name)'
+            Write-Host "terraform test -verbose -filter=`"$($_.name)`""
+            terraform test -verbose -filter="$($_.name)"
           }
         useGlobalConfig: true
         addSpnToEnvironment: true
