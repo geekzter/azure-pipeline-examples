@@ -48,10 +48,10 @@ jobs:
           # Run Terraform within task
           terraform init
 
-          ./set_terraform_azurerm_vars.ps1 -SystemAccessToken $(System.AccessToken)
+          ./set_terraform_azurerm_vars.ps1
           terraform test -verbose -filter=./test.tftest.hcl   
 
-          ./set_terraform_azurerm_vars.ps1 -SystemAccessToken $(System.AccessToken) -RequestNewToken
+          ./set_terraform_azurerm_vars.ps1 -RequestNewToken -SystemAccessToken $(System.AccessToken)
           terraform test -verbose -filter=./test2.tftest.hcl  
         useGlobalConfig: true
         addSpnToEnvironment: true
