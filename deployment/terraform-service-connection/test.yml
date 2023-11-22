@@ -38,7 +38,6 @@ jobs:
         scriptType: pscore
         scriptLocation: inlineScript
         inlineScript: |
-          ./set_terraform_azurerm_vars.ps1 -Token $(System.AccessToken)
 
           # Logging out from Azure CLI
           if ($${{ parameters.azLogout }}) {
@@ -48,7 +47,12 @@ jobs:
 
           # Run Terraform within task
           terraform init
-          terraform test -verbose         
+
+          ./set_terraform_azurerm_vars.ps1 -SystemAccessToken $(System.AccessToken)
+          terraform test -verbose -filter=./test.tftest.hcl   
+
+          ./set_terraform_azurerm_vars.ps1 -SystemAccessToken $(System.AccessToken) -RequestNewToken
+          terraform test -verbose -filter=./test2.tftest.hcl  
         useGlobalConfig: true
         addSpnToEnvironment: true
         failOnStandardError: true
