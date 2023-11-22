@@ -85,7 +85,7 @@ if ($RequestNewToken) {
 
 $env:ARM_CLIENT_ID       ??= $account.user.name
 $env:ARM_CLIENT_SECRET   ??= $env:servicePrincipalKey # requires addSpnToEnvironment: true
-$env:ARM_OIDC_TOKEN      ??= $idToken
+$env:ARM_OIDC_TOKEN        = $idToken
 $env:ARM_SUBSCRIPTION_ID ??= $account.id  
 $env:ARM_TENANT_ID       ??= $account.tenantId
 $env:ARM_USE_CLI         ??= (!($idToken -or $env:servicePrincipalKey)).ToString().ToLower()
