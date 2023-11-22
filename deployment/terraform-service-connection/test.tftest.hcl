@@ -2,6 +2,10 @@ provider azurerm {
   alias                        = "a"
   features {}
 }
+provider azurerm {
+  alias                        = "b"
+  features {}
+}
 
 run access_azurerm_subscription_1 {
   command                      = plan
@@ -29,7 +33,7 @@ run access_azurerm_subscription_2 {
   command                      = plan
 
   providers                    = {
-    azurerm                    = azurerm.a
+    azurerm                    = azurerm.b
   }
   
   assert {
