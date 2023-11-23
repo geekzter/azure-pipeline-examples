@@ -43,7 +43,7 @@ jobs:
           env | grep "^ARM_" # SPN values will be masked
 
           terraform init
-          # terraform test -verbose -filter='test.tftest.hcl'
+          terraform test -verbose -filter='test.tftest.hcl'
 
           if [ ! -z "$ARM_OIDC_TOKEN" ]; then
             # Renew idToken
