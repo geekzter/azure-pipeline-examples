@@ -68,5 +68,3 @@ jobs:
         addSpnToEnvironment: true
         failOnStandardError: true
         workingDirectory: $(terraformDirectory)
-      env:
-        TF_VAR_wait_time_minutes: 15
