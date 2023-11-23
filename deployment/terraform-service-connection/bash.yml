@@ -34,10 +34,13 @@ jobs:
         inlineScript: |
           # Inherit Azure CLI service connection
           export ARM_CLIENT_ID=$servicePrincipalId
-          export ARM_CLIENT_SECRET=$servicePrincipalKey
+          export ARM_CLIENT_SECRET=$servicePrincipalKey # requires addSpnToEnvironment: true
+          export ARM_OIDC_TOKEN=$idToken                # requires addSpnToEnvironment: true
           export ARM_TENANT_ID=$tenantId
           export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
-          env | grep "^ARM_" # SPN values will be masked
+          export ARM_USE_CLI=false
+          [ ! -z "$ARM_OIDC_TOKEN" ] && export ARM_USE_OIDC=true
+          env | grep "^ARM_" # Sensitive values will be masked
 
           terraform init
           terraform apply -auto-approve
@@ -66,17 +69,25 @@ jobs:
           # Inherit Azure CLI service connection
           echo "##vso[task.setvariable variable=ARM_CLIENT_ID;isoutput=true;issecret=true]$servicePrincipalId"
           echo "##vso[task.setvariable variable=ARM_CLIENT_SECRET;isoutput=true;issecret=true]$servicePrincipalKey"
+          echo "##vso[task.setvariable variable=ARM_OIDC_TOKEN;isoutput=true]$idToken"
           echo "##vso[task.setvariable variable=ARM_TENANT_ID;isoutput=true]$tenantId"
           echo "##vso[task.setvariable variable=ARM_SUBSCRIPTION_ID;isoutput=true]$(az account show --query id -o tsv)"
+          echo "##vso[task.setvariable variable=ARM_TENANT_ID;isoutput=true]$tenantId"
+          if [ ! -z "$idToken" ]; then
+            echo "##vso[task.setvariable variable=ARM_USE_OIDC;isoutput=true]true"
+          fi
         addSpnToEnvironment: true
         useGlobalConfig: true
         failOnStandardError: true
     - bash: |
         export ARM_CLIENT_ID=$(azureCLI.ARM_CLIENT_ID)
         export ARM_CLIENT_SECRET=$(azureCLI.ARM_CLIENT_SECRET)
+        export ARM_OIDC_TOKEN=$(azureCLI.ARM_OIDC_TOKEN)
         export ARM_TENANT_ID=$(azureCLI.ARM_TENANT_ID)
         export ARM_SUBSCRIPTION_ID=$(azureCLI.ARM_SUBSCRIPTION_ID)
-        env | grep "^ARM_" # SPN values will be masked
+        export ARM_USE_CLI=false
+        export ARM_USE_OIDC=$(azureCLI.ARM_USE_OIDC)
+        env | grep "^ARM_" # Sensitive values will be masked
 
         terraform init
         terraform apply -auto-approve
