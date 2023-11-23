@@ -7,10 +7,6 @@ parameters:
   displayName: Azure Service Connection Name
   type: string
   default: my-azure-subscription
-- name: azLogout
-  displayName: Logout from Azure CLI
-  type: boolean
-  default: true
 
 name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.serviceConnection }}-$(Build.BuildId)
 
@@ -44,24 +40,10 @@ jobs:
           # Run Terraform within task
           terraform init
 
-          ./set_terraform_azurerm_vars.ps1
-          # Logging out from Azure CLI
-          if ($${{ parameters.azLogout }}) {
-            az logout
-            Write-Host "`nLogged out from Azure CLI"
-          }
-
-          # terraform test -verbose -filter='test.tftest.hcl'  
-
-          # $oldToken = $env:ARM_OIDC_TOKEN
-          # ./set_terraform_azurerm_vars.ps1 -RequestNewToken -SystemAccessToken $(System.AccessToken)
-          # if ($env:ARM_OIDC_TOKEN -eq $oldToken) {
-          #   throw "No new token acquired"
-          # }
-
-          # terraform test -verbose -filter='test2.tftest.hcl'
-
+          # Process all test files
           Get-ChildItem *.tftest.hcl | ForEach-Object { 
+            # Request new token through REST API:
+            # https://learn.microsoft.com/rest/api/azure/devops/distributedtask/oidctoken/create
             ./set_terraform_azurerm_vars.ps1 -RequestNewToken -SystemAccessToken $(System.AccessToken)
             Write-Host "Processing $($_.name)..."
             Write-Host "terraform test -verbose -filter=`"$($_.name)`""
