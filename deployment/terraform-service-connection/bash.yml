@@ -72,10 +72,14 @@ jobs:
         useGlobalConfig: true
         failOnStandardError: true
     - bash: |
-        export ARM_CLIENT_ID=$(azureCLI.ARM_CLIENT_ID)
-        export ARM_CLIENT_SECRET=$(azureCLI.ARM_CLIENT_SECRET)
-        export ARM_TENANT_ID=$(azureCLI.ARM_TENANT_ID)
-        export ARM_SUBSCRIPTION_ID=$(azureCLI.ARM_SUBSCRIPTION_ID)
+        # Inherit Azure CLI service connection
+        export ARM_CLIENT_ID=$servicePrincipalId
+        export ARM_CLIENT_SECRET=$servicePrincipalKey # requires addSpnToEnvironment: true
+        export ARM_OIDC_TOKEN=$idToken                # requires addSpnToEnvironment: true
+        export ARM_TENANT_ID=$tenantId
+        export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+        export ARM_USE_CLI=false
+        [ ! -z "$ARM_OIDC_TOKEN" ] && export ARM_USE_OIDC=true
         env | grep "^ARM_" # SPN values will be masked
 
         terraform init
