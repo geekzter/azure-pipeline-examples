@@ -1,0 +1,52 @@
+parameters:
+- name: serviceConnection
+  displayName: Azure Service Connection Name
+  type: string
+  default: my-azure-subscription
+
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
+
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: terraformSingleStep
+  displayName: 'Same step Azure CLI & Terraform'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+    - task: TerraformInstaller@0
+      displayName: 'Install Terraform'
+      inputs:
+        terraformVersion: 'latest'
+    - task: AzureCLI@2
+      displayName: 'Terraform with Azure CLI task'
+      inputs:
+        azureSubscription: '${{ parameters.serviceConnection }}'
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          # Inherit Azure CLI service connection
+          export ARM_CLIENT_ID=$servicePrincipalId
+          export ARM_CLIENT_SECRET=$servicePrincipalKey # requires addSpnToEnvironment: true
+          export ARM_OIDC_TOKEN=$idToken                # requires addSpnToEnvironment: true
+          export ARM_TENANT_ID=$tenantId
+          export ARM_SUBSCRIPTION_ID=$(az account show --query id -o tsv)
+          export ARM_USE_CLI=false
+          [ ! -z "$ARM_OIDC_TOKEN" ] && export ARM_USE_OIDC=true
+          env | grep "^ARM_" # SPN values will be masked
+
+          terraform init
+          # terraform test -verbose -filter='test.tftest.hcl'
+
+          terraform test -verbose -filter='test2.tftest.hcl'
+        addSpnToEnvironment: true
+        useGlobalConfig: true
+        failOnStandardError: true
+        workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
