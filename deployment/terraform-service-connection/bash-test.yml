@@ -43,16 +43,29 @@ jobs:
           env | grep "^ARM_" # SPN values will be masked
 
           terraform init
-          terraform test -verbose -filter='test.tftest.hcl'
 
-          if [ ! -z "$ARM_OIDC_TOKEN" ]; then
-            # Renew idToken
-            SERVICE_CONNECTION_ID=$(env | grep ENDPOINT_DATA_ | head -n 1 | cut -b 15-50)
-            OIDC_REQUEST_URL="$(System.TeamFoundationCollectionUri)$(System.TeamProjectId)/_apis/distributedtask/hubs/build/plans/$(System.PlanId)/jobs/$(System.JobId)/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${SERVICE_CONNECTION_ID}"
-            ARM_OIDC_TOKEN=$(curl -s -H "Content-Length: 0" -H "Content-Type: application/json" -H "Authorization: Bearer $(System.AccessToken)" -X POST $OIDC_REQUEST_URL | jq -r '.oidcToken')
-          fi
+          # Processing test files
+          for f in ./*.tftest.hcl; do 
+            echo "Processing $f file..."
+            if [ ! -z "$ARM_OIDC_TOKEN" ]; then
+              # Renew idToken
+              SERVICE_CONNECTION_ID=$(env | grep ENDPOINT_DATA_ | head -n 1 | cut -b 15-50)
+              OIDC_REQUEST_URL="$(System.TeamFoundationCollectionUri)$(System.TeamProjectId)/_apis/distributedtask/hubs/build/plans/$(System.PlanId)/jobs/$(System.JobId)/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${SERVICE_CONNECTION_ID}"
+              ARM_OIDC_TOKEN=$(curl -s -H "Content-Length: 0" -H "Content-Type: application/json" -H "Authorization: Bearer $(System.AccessToken)" -X POST $OIDC_REQUEST_URL | jq -r '.oidcToken')
+            fi
+            terraform test -verbose -filter="$f"
+          done
+          
+          # terraform test -verbose -filter='test.tftest.hcl'
 
-          terraform test -verbose -filter='test2.tftest.hcl'
+          # if [ ! -z "$ARM_OIDC_TOKEN" ]; then
+          #   # Renew idToken
+          #   SERVICE_CONNECTION_ID=$(env | grep ENDPOINT_DATA_ | head -n 1 | cut -b 15-50)
+          #   OIDC_REQUEST_URL="$(System.TeamFoundationCollectionUri)$(System.TeamProjectId)/_apis/distributedtask/hubs/build/plans/$(System.PlanId)/jobs/$(System.JobId)/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${SERVICE_CONNECTION_ID}"
+          #   ARM_OIDC_TOKEN=$(curl -s -H "Content-Length: 0" -H "Content-Type: application/json" -H "Authorization: Bearer $(System.AccessToken)" -X POST $OIDC_REQUEST_URL | jq -r '.oidcToken')
+          # fi
+
+          # terraform test -verbose -filter='test2.tftest.hcl'
         addSpnToEnvironment: true
         useGlobalConfig: true
         failOnStandardError: true
