@@ -53,8 +53,7 @@ jobs:
               OIDC_REQUEST_URL="$(System.TeamFoundationCollectionUri)$(System.TeamProjectId)/_apis/distributedtask/hubs/build/plans/$(System.PlanId)/jobs/$(System.JobId)/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${SERVICE_CONNECTION_ID}"
               ARM_OIDC_TOKEN=$(curl -s -H "Content-Length: 0" -H "Content-Type: application/json" -H "Authorization: Bearer $(System.AccessToken)" -X POST $OIDC_REQUEST_URL | jq -r '.oidcToken')
             fi
-            echo terraform test -verbose -filter="$f"
-            terraform test -verbose -filter="$f"
+            terraform test -verbose -filter="$(basename $f)"
           done
 
           # terraform test -verbose -filter='test.tftest.hcl'
