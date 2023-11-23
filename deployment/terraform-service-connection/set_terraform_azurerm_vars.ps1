@@ -6,8 +6,8 @@
 .EXAMPLE
     ./set_terraform_azurerm_vars.ps1
 
-    .EXAMPLE
-    ./set_terraform_azurerm_vars.ps1 -RequestNewToken -SystemAccessToken $(System.AccessToken)
+.EXAMPLE
+./set_terraform_azurerm_vars.ps1 -RequestNewToken -SystemAccessToken $(System.AccessToken)
 #> 
 #Requires -Version 7.2
 [CmdletBinding(DefaultParameterSetName="None")]
@@ -80,7 +80,7 @@ if (![guid]::TryParse($account.user.name, [ref][guid]::Empty)) {
 if ($RequestNewToken) {
     $idToken = New-OidcToken    
 } else {
-    $idToken = $env:idToken
+    $idToken = $env:idToken # requires addSpnToEnvironment: true
 }
 
 $env:ARM_CLIENT_ID       ??= $account.user.name

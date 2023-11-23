@@ -23,6 +23,19 @@ schedules:
     include:
     - main
 
+resources:
+  repositories:
+  - repository: azure-identity-scripts
+    type: github
+    endpoint: github.com # Service Connection name
+    name: geekzter/azure-identity-scripts
+
+variables:
+  sampleRepository: $(Build.SourcesDirectory)/azure-pipeline-examples
+  identityRepository: $(Build.SourcesDirectory)/azure-identity-scripts
+  identityScriptDirectory: $(identityRepository)/scripts/azure-devops
+  terraformDirectory: $(sampleRepository)/deployment/terraform-service-connection
+
 jobs:
 - job: terraformSingleStep
   displayName: 'Same step Azure CLI & Terraform'
@@ -30,6 +43,8 @@ jobs:
     name: ${{ parameters.pool }}
     vmImage: 'ubuntu-latest'
   steps:
+    - checkout: self
+    - checkout: azure-identity-scripts
     - task: AzureCLI@2
       name: azureCLI
       displayName: 'Terraform with Azure CLI task'
@@ -38,7 +53,7 @@ jobs:
         scriptType: pscore
         scriptLocation: inlineScript
         inlineScript: |
-          ./set_terraform_azurerm_vars.ps1 -Token $(System.AccessToken)
+          $(identityScriptDirectory)/set_terraform_azurerm_vars.ps1 -Token $(System.AccessToken)
 
           # Logging out from Azure CLI
           if ($${{ parameters.azLogout }}) {
@@ -52,5 +67,4 @@ jobs:
         useGlobalConfig: true
         addSpnToEnvironment: true
         failOnStandardError: true
-        workingDirectory: '$(Build.SourcesDirectory)/deployment/terraform-service-connection'
-
+        workingDirectory: $(terraformDirectory)
