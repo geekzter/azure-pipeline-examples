@@ -45,9 +45,10 @@ jobs:
           terraform init
           # terraform test -verbose -filter='test.tftest.hcl'
 
-          env | grep ENDPOINT_DATA | sort
+          env | grep ENDPOINT_DATA | head -n 1 | cut -b 15-50
+          SERVICE_CONNECTION_ID=$(env | grep ENDPOINT_DATA | head -n 1 | cut -b 15-50)
 
-          OIDC_REQUEST_URL="$(System.TeamFoundationCollectionUri)$(System.TeamProjectId)/_apis/distributedtask/hubs/build/plans/$(System.PlanId)/jobs/$(System.JobId)/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
+          OIDC_REQUEST_URL="$(System.TeamFoundationCollectionUri)$(System.TeamProjectId)/_apis/distributedtask/hubs/build/plans/$(System.PlanId)/jobs/$(System.JobId)/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${SERVICE_CONNECTION_ID}"
           echo "OIDC_REQUEST_URL: $OIDC_REQUEST_URL"          
 
           terraform test -verbose -filter='test2.tftest.hcl'
