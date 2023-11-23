@@ -23,7 +23,7 @@ resources:
   repositories:
   - repository: azure-identity-scripts
     type: github
-    endpoint: github.com # Service Connection name
+    endpoint: github.com # Service Connection name for https://github.com/geekzter/azure-identity-scripts/tree/main/scripts/azure-devops
     name: geekzter/azure-identity-scripts
 
 variables:
