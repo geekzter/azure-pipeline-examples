@@ -1,0 +1,6 @@
+[submodule "scripts/identity"]
+	path = scripts/identity
+	url = https://github.com/geekzter/azure-identity-scripts
+[submodule "scripts/azure-devops"]
+	path = scripts/azure-devops
+	url = https://github.com/geekzter/azure-devops-scripts
