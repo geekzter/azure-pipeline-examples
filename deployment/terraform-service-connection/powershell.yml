@@ -23,17 +23,9 @@ schedules:
     include:
     - main
 
-resources:
-  repositories:
-  - repository: azure-identity-scripts
-    type: github
-    endpoint: github.com # Service Connection name for https://github.com/geekzter/azure-identity-scripts/tree/main/scripts/azure-devops
-    name: geekzter/azure-identity-scripts
-
 variables:
-  sampleRepository: $(Build.SourcesDirectory)/azure-pipeline-examples
-  identityRepository: $(Build.SourcesDirectory)/azure-identity-scripts
-  identityScriptDirectory: $(identityRepository)/scripts/azure-devops
+  sampleRepository: $(Build.SourcesDirectory)
+  identityScriptDirectory: $(sampleRepository)/scripts/identity/scripts/azure-devops
   terraformDirectory: $(sampleRepository)/deployment/terraform-service-connection
 
 jobs:
@@ -44,7 +36,7 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
     - checkout: self
-    - checkout: azure-identity-scripts
+      submodules: true
     - task: AzureCLI@2
       name: azureCLI
       displayName: 'Terraform with Azure CLI task'
