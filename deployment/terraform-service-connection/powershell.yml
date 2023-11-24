@@ -14,7 +14,11 @@ parameters:
 
 name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.serviceConnection }}-$(Build.BuildId)
 
-trigger: none
+pr:
+  branches:
+    include:
+    - '*'
+  drafts: false
 schedules:
 - cron: '0 1 * * *'
   displayName: 'Nightly build (UTC)'
@@ -22,7 +26,8 @@ schedules:
   branches:
     include:
     - main
-
+trigger: none
+    
 variables:
   sampleRepository: $(Build.SourcesDirectory)
   identityScriptDirectory: $(sampleRepository)/scripts/identity/scripts/azure-devops
