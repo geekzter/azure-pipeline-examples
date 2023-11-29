@@ -10,7 +10,7 @@ parameters:
 - name: azLogout
   displayName: Logout from Azure CLI
   type: boolean
-  default: true
+  default: false
 
 name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.serviceConnection }}-$(Build.BuildId)
 
@@ -44,7 +44,7 @@ jobs:
       submodules: true
 
     - task: AzureCLI@2
-      name: azureCLI
+      name: init
       displayName: 'Terraform init'
       inputs:
         azureSubscription: '${{ parameters.serviceConnection }}'
@@ -67,7 +67,7 @@ jobs:
         workingDirectory: $(terraformDirectory)
 
     - task: AzureCLI@2
-      name: azureCLI
+      name: apply
       displayName: 'Terraform with Azure CLI task'
       inputs:
         azureSubscription: '${{ parameters.serviceConnection }}'
