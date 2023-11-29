@@ -1,0 +1,82 @@
+parameters:
+- name: pool
+  displayName: Agent Pool
+  type: string
+  default: Azure Pipelines
+- name: serviceConnection
+  displayName: Azure Service Connection Name
+  type: string
+  default: my-azure-subscription
+- name: azLogout
+  displayName: Logout from Azure CLI
+  type: boolean
+  default: true
+
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.serviceConnection }}-$(Build.BuildId)
+
+pr:
+  branches:
+    include:
+    - '*'
+  drafts: false
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+trigger: none
+    
+variables:
+  sampleRepository: $(Build.SourcesDirectory)
+  identityScriptDirectory: $(sampleRepository)/scripts/identity/scripts/azure-devops
+  terraformDirectory: $(sampleRepository)/deployment/terraform-service-connection
+
+jobs:
+- job: terraformSingleStep
+  displayName: 'Same step Azure CLI & Terraform'
+  pool:
+    name: ${{ parameters.pool }}
+    vmImage: 'ubuntu-latest'
+  steps:
+    - checkout: self
+      submodules: true
+
+    - task: AzureCLI@2
+      name: azureCLI
+      displayName: 'Terraform init'
+      inputs:
+        azureSubscription: '${{ parameters.serviceConnection }}'
+        scriptType: pscore
+        scriptLocation: inlineScript
+        inlineScript: |
+          $(identityScriptDirectory)/set_terraform_azurerm_vars.ps1
+
+          # Logging out from Azure CLI
+          if ($${{ parameters.azLogout }}) {
+            az logout
+            Write-Host "`nLogged out from Azure CLI"
+          }
+
+          # Run Terraform within task
+          terraform init
+        useGlobalConfig: true
+        addSpnToEnvironment: true
+        failOnStandardError: true
+        workingDirectory: $(terraformDirectory)
+
+    - task: AzureCLI@2
+      name: azureCLI
+      displayName: 'Terraform with Azure CLI task'
+      inputs:
+        azureSubscription: '${{ parameters.serviceConnection }}'
+        scriptType: pscore
+        scriptLocation: inlineScript
+        inlineScript: |
+          # $(identityScriptDirectory)/set_terraform_azurerm_vars.ps1
+          terraform apply -auto-approve          
+        useGlobalConfig: true
+        addSpnToEnvironment: false
+        failOnStandardError: true
+        workingDirectory: $(terraformDirectory)
