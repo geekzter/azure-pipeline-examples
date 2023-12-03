@@ -1,16 +1,8 @@
 parameters:
-- name: pool
-  displayName: Agent Pool
-  type: string
-  default: Azure Pipelines
 - name: serviceConnection
   displayName: Azure Service Connection Name
   type: string
   default: my-azure-subscription
-- name: azLogout
-  displayName: Logout from Azure CLI
-  type: boolean
-  default: false
 
 name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.serviceConnection }}-$(Build.BuildId)
 
@@ -35,14 +27,11 @@ variables:
 
 jobs:
 - job: terraformSingleStep
-  displayName: 'Same step Azure CLI & Terraform'
+  displayName: 'Terraform azurerm with Azure CLI Authentication'
   pool:
-    name: ${{ parameters.pool }}
+    name: 'Azure Pipelines'
     vmImage: 'ubuntu-latest'
   steps:
-    - checkout: self
-      submodules: true
-
     - task: AzureCLI@2
       name: apply
       displayName: 'Terraform with Azure CLI task'
