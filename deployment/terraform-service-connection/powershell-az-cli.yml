@@ -44,29 +44,6 @@ jobs:
       submodules: true
 
     - task: AzureCLI@2
-      name: init
-      displayName: 'Terraform init'
-      inputs:
-        azureSubscription: '${{ parameters.serviceConnection }}'
-        scriptType: pscore
-        scriptLocation: inlineScript
-        inlineScript: |
-          $(identityScriptDirectory)/set_terraform_azurerm_vars.ps1
-
-          # Logging out from Azure CLI
-          if ($${{ parameters.azLogout }}) {
-            az logout
-            Write-Host "`nLogged out from Azure CLI"
-          }
-
-          # Run Terraform within task
-          terraform init
-        useGlobalConfig: true
-        addSpnToEnvironment: true
-        failOnStandardError: true
-        workingDirectory: $(terraformDirectory)
-
-    - task: AzureCLI@2
       name: apply
       displayName: 'Terraform with Azure CLI task'
       inputs:
@@ -74,9 +51,9 @@ jobs:
         scriptType: pscore
         scriptLocation: inlineScript
         inlineScript: |
-          # $(identityScriptDirectory)/set_terraform_azurerm_vars.ps1
+          terraform init
           terraform apply -auto-approve          
-        useGlobalConfig: true
-        addSpnToEnvironment: false
         failOnStandardError: true
         workingDirectory: $(terraformDirectory)
+      env:  
+        ARM_USE_CLI: true
