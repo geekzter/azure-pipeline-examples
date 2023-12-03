@@ -1,0 +1,48 @@
+parameters:
+- name: serviceConnection
+  displayName: Azure Service Connection Name
+  type: string
+  default: my-azure-subscription
+
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.serviceConnection }}-$(Build.BuildId)
+
+pr:
+  branches:
+    include:
+    - '*'
+  drafts: false
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+trigger: none
+    
+variables:
+  sampleRepository: $(Build.SourcesDirectory)
+  identityScriptDirectory: $(sampleRepository)/scripts/identity/scripts/azure-devops
+  terraformDirectory: $(sampleRepository)/deployment/terraform-service-connection
+
+jobs:
+- job: terraformSingleStep
+  displayName: 'Terraform azurerm with Azure CLI Authentication'
+  pool:
+    name: 'Azure Pipelines'
+    vmImage: 'ubuntu-latest'
+  steps:
+    - task: AzureCLI@2
+      name: apply
+      displayName: 'Terraform with Azure CLI task'
+      inputs:
+        azureSubscription: '${{ parameters.serviceConnection }}'
+        scriptType: pscore
+        scriptLocation: inlineScript
+        inlineScript: |
+          terraform init
+          terraform apply -auto-approve          
+        failOnStandardError: true
+        workingDirectory: $(terraformDirectory)
+      env:  
+        ARM_USE_CLI: true
