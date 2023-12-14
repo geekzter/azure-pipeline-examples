@@ -114,6 +114,9 @@ steps:
     pwsh: true
     failOnStandardError: true
 
+- pwsh: |
+    Get-AzContext
+
 - publish: $(Build.ArtifactStagingDirectory)
   displayName: 'Publish json files'
   artifact: indentityInfo-$(System.PlanId)-$(System.JobId)
