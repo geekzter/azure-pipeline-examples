@@ -115,6 +115,7 @@ steps:
     failOnStandardError: true
 
 - pwsh: |
+    Install-Module -Name Az -Repository PSGallery -Force
     Import-Module Az
     Get-AzContext
 
