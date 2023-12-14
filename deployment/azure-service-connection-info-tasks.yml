@@ -115,6 +115,7 @@ steps:
     failOnStandardError: true
 
 - pwsh: |
+    Import-Module Az
     Get-AzContext
 
 - publish: $(Build.ArtifactStagingDirectory)
