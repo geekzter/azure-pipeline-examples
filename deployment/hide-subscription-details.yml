@@ -25,7 +25,7 @@ jobs:
     displayName: 'AzureCLI $(serviceConnection)'
     inputs:
       addSpnToEnvironment: true
-      azureSubscription: '$(serviceConnection)' # Task property referencing Service Connection -------------------------------------------------------
+      azureSubscription: my-azure-subscription
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
