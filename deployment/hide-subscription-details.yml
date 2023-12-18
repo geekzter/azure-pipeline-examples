@@ -22,7 +22,7 @@ jobs:
 
   steps:
   - task: AzureCLI@2
-    displayName: 'AzureCLI $(serviceConnection)'
+    displayName: 'AzureCLI'
     inputs:
       addSpnToEnvironment: true
       azureSubscription: my-azure-subscription
@@ -32,6 +32,7 @@ jobs:
         az account show -o json | ConvertFrom-Json | Set-Variable account
         Write-Host "##vso[task.setsecret]$($account.id)"
         Write-Host "##vso[task.setsecret]$($account.name)"
+        Write-Host "##vso[task.setsecret]$($account.tenantId)"
 
       workingDirectory: '$(Build.ArtifactStagingDirectory)'
     env:
