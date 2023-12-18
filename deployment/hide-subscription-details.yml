@@ -1,0 +1,32 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-${{ parameters.jobType }}-$(SourceBranchName)-$(Build.BuildId)
+
+pr:
+  branches:
+    include:
+    - '*'
+  drafts: false
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+trigger: none
+
+steps:
+- task: AzureCLI@2
+  displayName: 'AzureCLI $(serviceConnection)'
+  inputs:
+    addSpnToEnvironment: true
+    azureSubscription: '$(serviceConnection)' # Task property referencing Service Connection -------------------------------------------------------
+    scriptType: pscore
+    scriptLocation: inlineScript
+    inlineScript: |
+      az account show -o json | ConvertFrom-Json | Set-Variable account
+      Write-Host "##vso[task.setsecret]$($account.id)"
+      Write-Host "##vso[task.setsecret]$($account.name)"
+
+    workingDirectory: '$(Build.ArtifactStagingDirectory)'
+  env:
+    AZURE_CORE_OUTPUT: 'none'
