@@ -101,7 +101,7 @@ steps:
                     -o table
     workingDirectory: '$(Build.ArtifactStagingDirectory)'
   env:
-    $env:AZURE_CORE_OUTPUT: 'none'
+    AZURE_CORE_OUTPUT: 'none'
 
 - task: AzurePowerShell@5
   displayName: 'AzurePowerShell $(serviceConnection)'
