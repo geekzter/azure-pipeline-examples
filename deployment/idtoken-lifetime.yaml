@@ -6,7 +6,7 @@ parameters:
 - name: maxMinutes
   displayName: Maximum time (minutes)
   type: number
-  default: 30
+  default: 12
 
 name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.intervalMinutes }}-${{ parameters.maxMinutes }}-$(Build.BuildId)
 trigger: none
@@ -69,7 +69,9 @@ jobs:
           exit 1
         }
 
-        Start-Sleep -Seconds 600 # Wait for idToken to expire
+        $sleepSeconds = (60 * ${{ parameters.maxMinutes }})
+        Write-Host "Waiting for ${sleepSeconds} seconds..."
+        Start-Sleep -Seconds $sleepSeconds
 
         Write-Host "`nRequesting access token ($([DateTime]::Now.ToString('yyyyddMM HH:mm:ss'))).."
         $aadToken = $null
