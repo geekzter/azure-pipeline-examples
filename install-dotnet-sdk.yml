@@ -27,10 +27,11 @@ jobs:
     name: 'Azure Pipelines'
     vmImage: '${{ parameters.vmImage }}'
   steps:
-  - pwsh: |
-      dotnet --list-sdks
+  - pwsh: dotnet --list-sdks
+    displayName: 'List SDKs'
   - task: UseDotNet@2
+    displayName: 'Use .NET SDK ${{ parameters.dotNetVersion }}'
     inputs:
       version: '${{ parameters.dotNetVersion }}'
-  - pwsh: |
-      dotnet --list-sdks
+  - pwsh: dotnet --list-sdks
+    displayName: 'List SDKs'
