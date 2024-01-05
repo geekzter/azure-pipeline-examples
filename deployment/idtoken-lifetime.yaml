@@ -73,10 +73,10 @@ jobs:
         Write-Host "Waiting for ${sleepSeconds} seconds..."
         Start-Sleep -Seconds $sleepSeconds
 
-        Write-Host "`nRequesting access token ($([DateTime]::Now.ToString('yyyyddMM HH:mm:ss'))).."
         $aadToken = $null
         # $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
         $resource = 'https://kusto.kusto.windows.net'
+        Write-Host "`nRequesting access token for '${resource}' ($([DateTime]::Now.ToString('yyyyddMM HH:mm:ss'))).."
         az account get-access-token --resource $resource `
                                     --query "expiresOn" `
                                     --output tsv `
