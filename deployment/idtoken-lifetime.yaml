@@ -75,7 +75,9 @@ jobs:
 
         Write-Host "`nRequesting access token ($([DateTime]::Now.ToString('yyyyddMM HH:mm:ss'))).."
         $aadToken = $null
-        az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 `
+        # $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
+        $resource = 'https://kusto.kusto.windows.net'
+        az account get-access-token --resource $resource `
                                     --query "expiresOn" `
                                     --output tsv `
                                     | Set-Variable expiresOn
