@@ -1,0 +1,16 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+steps:
+# - task: RetiredTask@1
+- task: DotNetCoreInstaller@1
+  inputs:
+    packageType: 'sdk'
+    version: '3.1.x'
