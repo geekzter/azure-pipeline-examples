@@ -19,8 +19,42 @@ jobs:
     vmImage: ubuntu-latest
   timeoutInMinutes: ${{ parameters.maxMinutes }}
   steps:
+  # - task: AzureCLI@2
+  #   displayName: 'az login with $(subscriptionConnection)'
+  #   inputs:
+  #     addSpnToEnvironment: true
+  #     azureSubscription: $(subscriptionConnection)
+  #     failOnStandardError: true
+  #     powerShellIgnoreLASTEXITCODE: false
+  #     powerShellErrorActionPreference: Stop
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       if (!$env:idToken) {
+  #         Write-Host "##vso[task.logissue type=error]idToken not available"
+  #         exit 1
+  #       }
+
+  #       az account show 2>$null | ConvertFrom-Json | Set-Variable serviceConnection
+
+  #       $stopwatch = [system.diagnostics.stopwatch]::StartNew()
+  #       do {
+  #         Write-Host "`nLogging out.."
+  #         az logout 
+
+  #         Write-Host "`nLog back in with federated token.."
+  #         az login --service-principal -u $serviceConnection.user.name --tenant $serviceConnection.tenantId --allow-no-subscriptions --federated-token $env:idToken
+  #         if (!(az account show 2>$null)) {
+  #           Write-Host "##vso[task.logissue type=error]Token expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
+  #           exit 1
+  #         }
+
+  #         Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
+  #         Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
+  #       } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+
   - task: AzureCLI@2
-    displayName: '$(subscriptionConnection)'
+    displayName: 'az account get-access-token with $(subscriptionConnection)'
     inputs:
       addSpnToEnvironment: true
       azureSubscription: $(subscriptionConnection)
@@ -39,17 +73,17 @@ jobs:
 
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
         do {
-          Write-Host "`nLogging out.."
-          az logout 
-
-          Write-Host "`nLog back in with federated token.."
-          az login --service-principal -u $serviceConnection.user.name --tenant $serviceConnection.tenantId --allow-no-subscriptions --federated-token $env:idToken
-          if (!(az account show 2>$null)) {
-            Write-Host "##vso[task.logissue type=error]Token expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
+          Write-Host "`nRequesting access token.."
+          $aadToken = $null
+          az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 `
+                                      --query "accessToken" `
+                                      --output tsv `
+                                      | Set-Variable aadToken
+          if (!$aadToken) {
+            Write-Host "##vso[task.logissue type=error]Could not get access token"
             exit 1
           }
 
           Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
-
