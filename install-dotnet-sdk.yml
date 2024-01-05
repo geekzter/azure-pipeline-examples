@@ -20,6 +20,8 @@ schedules:
     include:
     - main
 
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-${{ parameters.vmImage }}-dotnet-${{ parameters.dotNetVersion }}-$(SourceBranchName)-$(Build.BuildId)
+
 jobs:
 - job: 'usedotnet'
   displayName: 'Use .NET SDK ${{ parameters.dotNetVersion }}'
