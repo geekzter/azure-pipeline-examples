@@ -17,7 +17,7 @@ jobs:
   pool:
     name: Azure Pipelines
     vmImage: ubuntu-latest
-  timeoutInMinutes: ${{ parameters.maxMinutes }}
+  # timeoutInMinutes: ${{ parameters.maxMinutes }}
   steps:
   # - task: AzureCLI@2
   #   displayName: 'az login with $(subscriptionConnection)'
