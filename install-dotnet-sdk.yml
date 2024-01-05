@@ -2,7 +2,7 @@ parameters:
 - name: dotNetVersion
   displayName: .NET Version (e.g. 3.1.x, 6.x, 8.x)
   type: string
-  default: '3.1.x'
+  default: '8.x'
 - name: vmImage
   displayName: Agent image
   type: string
