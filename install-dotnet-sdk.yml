@@ -22,16 +22,16 @@ schedules:
 
 jobs:
 - job: 'usedotnet'
-  displayName: 'Use .NET SDK'
+  displayName: 'Use .NET SDK ${{ parameters.dotNetVersion }}'
   pool:
     name: 'Azure Pipelines'
     vmImage: '${{ parameters.vmImage }}'
   steps:
   - pwsh: dotnet --list-sdks
-    displayName: 'List SDKs'
+    displayName: 'List .NET SDKs'
   - task: UseDotNet@2
     displayName: 'Use .NET SDK ${{ parameters.dotNetVersion }}'
     inputs:
       version: '${{ parameters.dotNetVersion }}'
   - pwsh: dotnet --list-sdks
-    displayName: 'List SDKs'
+    displayName: 'List .NET SDKs'
