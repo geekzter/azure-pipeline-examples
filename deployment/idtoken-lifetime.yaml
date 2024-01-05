@@ -69,23 +69,17 @@ jobs:
           exit 1
         }
 
-        az account show 2>$null | ConvertFrom-Json | Set-Variable serviceConnection
+        Start-Sleep -Seconds 600 # Wait for idToken to expire
 
-        $stopwatch = [system.diagnostics.stopwatch]::StartNew()
-        do {
-          Write-Host "`nRequesting access token ($([DateTime]::Now.ToString('yyyyddMM HH:mm:ss'))).."
-          $aadToken = $null
-          az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 `
-                                      --query "expiresOn" `
-                                      --output tsv `
-                                      | Set-Variable expiresOn
-          if ($expiresOn) {
-            Write-Host "Token expires on $([DateTime]::Parse($expiresOn).ToString('yyyyddMM HH:mm:ss'))"
-          } else {
-            Write-Host "##vso[task.logissue type=error]Could not get access token"
-            exit 1
-          }
-
-          Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
-          Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
-        } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+        Write-Host "`nRequesting access token ($([DateTime]::Now.ToString('yyyyddMM HH:mm:ss'))).."
+        $aadToken = $null
+        az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 `
+                                    --query "expiresOn" `
+                                    --output tsv `
+                                    | Set-Variable expiresOn
+        if ($expiresOn) {
+          Write-Host "Token expires on $([DateTime]::Parse($expiresOn).ToString('yyyyddMM HH:mm:ss'))"
+        } else {
+          Write-Host "##vso[task.logissue type=error]Could not get access token"
+          exit 1
+        }
