@@ -73,13 +73,15 @@ jobs:
 
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
         do {
-          Write-Host "`nRequesting access token.."
+          Write-Host "`nRequesting access token ($([DateTime]::Now.ToString('yyyyddMM HH:mm:ss'))).."
           $aadToken = $null
           az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 `
-                                      --query "accessToken" `
+                                      --query "expiresOn" `
                                       --output tsv `
-                                      | Set-Variable aadToken
-          if (!$aadToken) {
+                                      | Set-Variable expiresOn
+          if ($expiresOn) {
+            Write-Host "Token expires on $([DateTime]::Parse($expiresOn).ToString('yyyyddMM HH:mm:ss'))"
+          } else {
             Write-Host "##vso[task.logissue type=error]Could not get access token"
             exit 1
           }
