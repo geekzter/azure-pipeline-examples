@@ -3,7 +3,14 @@ parameters:
   displayName: .NET Version
   type: string
   default: '3.1.x'
-
+- name: vmImage
+  displayName: Agent image
+  type: string
+  default: 'windows-latest'
+  values:
+  - macos-latest
+  - ubuntu-latest
+  - windows-latest
 trigger: none
 schedules:
 - cron: '0 1 * * *'
@@ -18,7 +25,7 @@ jobs:
   displayName: 'Use .NET SDK'
   pool:
     name: 'Azure Pipelines'
-    vmImage: 'windows-latest'
+    vmImage: '${{ parameters.vmImage }}'
   steps:
   - pwsh: |
       dotnet --list-sdks
