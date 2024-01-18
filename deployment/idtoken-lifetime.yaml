@@ -112,7 +112,7 @@ jobs:
           exit 1
         }
 
-        $sleepSeconds = (60 * (${{ parameters.maxMinutes }} - ${{ parameters.intervalMinutes }} - 1)))
+        $sleepSeconds = (60 * (${{ parameters.maxMinutes }} - ${{ parameters.intervalMinutes }} - 1))
         Write-Host "Waiting for ${sleepSeconds} seconds..."
         Start-Sleep -Seconds $sleepSeconds
 
