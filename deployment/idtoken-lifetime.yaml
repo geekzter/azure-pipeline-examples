@@ -100,11 +100,6 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        if (!$env:idToken) {
-          Write-Host "##vso[task.logissue type=error]idToken not available"
-          exit 1
-        }
-
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
         do {
           $expiresOn = $null
