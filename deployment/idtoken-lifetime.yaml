@@ -8,7 +8,7 @@ parameters:
   type: number
   default: 90
 
-name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.intervalMinutes }}-${{ parameters.maxMinutes }}-$(Build.BuildId)
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ variables.subscriptionConnection }}-${{ parameters.intervalMinutes }}-${{ parameters.maxMinutes }}-$(Build.BuildId)
 trigger: none
 
 jobs:
