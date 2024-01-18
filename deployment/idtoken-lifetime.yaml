@@ -22,7 +22,6 @@ jobs:
   - task: AzureCLI@2
     displayName: 'az account show with $(subscriptionConnection)'
     inputs:
-      addSpnToEnvironment: true
       azureSubscription: $(subscriptionConnection)
       failOnStandardError: true
       powerShellIgnoreLASTEXITCODE: false
@@ -30,11 +29,6 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        if (!$env:idToken) {
-          Write-Host "##vso[task.logissue type=error]idToken not available"
-          exit 1
-        }
-
         az account show 2>$null | ConvertFrom-Json | Set-Variable serviceConnection
 
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
@@ -67,8 +61,8 @@ jobs:
       scriptLocation: inlineScript
       inlineScript: |
         if (!$env:idToken) {
-          Write-Host "##vso[task.logissue type=error]idToken not available"
-          exit 1
+          Write-Host "##vso[task.logissue type=warning]idToken not available"
+          exit
         }
 
         az account show 2>$null | ConvertFrom-Json | Set-Variable serviceConnection
@@ -99,7 +93,6 @@ jobs:
   - task: AzureCLI@2
     displayName: 'az account get-access-token with $(subscriptionConnection)'
     inputs:
-      addSpnToEnvironment: true
       azureSubscription: $(subscriptionConnection)
       failOnStandardError: true
       powerShellIgnoreLASTEXITCODE: false
@@ -114,16 +107,16 @@ jobs:
 
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
         do {
-          $aadToken = $null
+          $expiresOn = $null
           # $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
           $resource = 'https://kusto.kusto.windows.net'
-          Write-Host "`nRequesting access token for '${resource}' ($([DateTime]::Now.ToString('yyyyddMM HH:mm:ss'))).."
+          Write-Host "`nRequesting access token for '${resource}'.."
           az account get-access-token --resource $resource `
                                       --query "expiresOn" `
                                       --output tsv `
                                       | Set-Variable expiresOn
           if ($expiresOn) {
-            Write-Host "Token expires on $([DateTime]::Parse($expiresOn).ToString('yyyyddMM HH:mm:ss'))"
+            Write-Host "Access token expires in $([math]::Round(([DateTime]::Parse($expiresOn) - [DateTime]::Now).TotalMinutes)) minutes"            
           } else {
             Write-Host "##vso[task.logissue type=error]Could not get access token"
             exit 1
@@ -132,4 +125,3 @@ jobs:
           Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
-
