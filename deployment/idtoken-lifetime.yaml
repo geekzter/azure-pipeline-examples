@@ -6,53 +6,96 @@ parameters:
 - name: maxMinutes
   displayName: Maximum time (minutes)
   type: number
-  default: 12
+  default: 90
 
 name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.intervalMinutes }}-${{ parameters.maxMinutes }}-$(Build.BuildId)
 trigger: none
 
 jobs:
-- job: agent
-  displayName: 'ID Token Lifetime test'
+- job: session
+  displayName: 'az account show'
   pool:
     name: Azure Pipelines
     vmImage: ubuntu-latest
-  # timeoutInMinutes: ${{ parameters.maxMinutes }}
+  timeoutInMinutes: ${{ parameters.maxMinutes }}
   steps:
-  # - task: AzureCLI@2
-  #   displayName: 'az login with $(subscriptionConnection)'
-  #   inputs:
-  #     addSpnToEnvironment: true
-  #     azureSubscription: $(subscriptionConnection)
-  #     failOnStandardError: true
-  #     powerShellIgnoreLASTEXITCODE: false
-  #     powerShellErrorActionPreference: Stop
-  #     scriptType: pscore
-  #     scriptLocation: inlineScript
-  #     inlineScript: |
-  #       if (!$env:idToken) {
-  #         Write-Host "##vso[task.logissue type=error]idToken not available"
-  #         exit 1
-  #       }
+  - task: AzureCLI@2
+    displayName: 'az account show with $(subscriptionConnection)'
+    inputs:
+      addSpnToEnvironment: true
+      azureSubscription: $(subscriptionConnection)
+      failOnStandardError: true
+      powerShellIgnoreLASTEXITCODE: false
+      powerShellErrorActionPreference: Stop
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        if (!$env:idToken) {
+          Write-Host "##vso[task.logissue type=error]idToken not available"
+          exit 1
+        }
 
-  #       az account show 2>$null | ConvertFrom-Json | Set-Variable serviceConnection
+        az account show 2>$null | ConvertFrom-Json | Set-Variable serviceConnection
 
-  #       $stopwatch = [system.diagnostics.stopwatch]::StartNew()
-  #       do {
-  #         Write-Host "`nLogging out.."
-  #         az logout 
+        $stopwatch = [system.diagnostics.stopwatch]::StartNew()
+        do {
+          if (!(az account show 2>$null)) {
+            Write-Host "##vso[task.logissue type=error]Token expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
+            exit 1
+          }
 
-  #         Write-Host "`nLog back in with federated token.."
-  #         az login --service-principal -u $serviceConnection.user.name --tenant $serviceConnection.tenantId --allow-no-subscriptions --federated-token $env:idToken
-  #         if (!(az account show 2>$null)) {
-  #           Write-Host "##vso[task.logissue type=error]Token expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
-  #           exit 1
-  #         }
+          Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
+          Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
+        } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
 
-  #         Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
-  #         Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
-  #       } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+- job: login
+  displayName: 'az login'
+  pool:
+    name: Azure Pipelines
+    vmImage: ubuntu-latest
+  timeoutInMinutes: ${{ parameters.maxMinutes }}
+  steps:
+  - task: AzureCLI@2
+    displayName: 'az login with $(subscriptionConnection)'
+    inputs:
+      addSpnToEnvironment: true
+      azureSubscription: $(subscriptionConnection)
+      failOnStandardError: true
+      powerShellIgnoreLASTEXITCODE: false
+      powerShellErrorActionPreference: Stop
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        if (!$env:idToken) {
+          Write-Host "##vso[task.logissue type=error]idToken not available"
+          exit 1
+        }
 
+        az account show 2>$null | ConvertFrom-Json | Set-Variable serviceConnection
+
+        $stopwatch = [system.diagnostics.stopwatch]::StartNew()
+        do {
+          Write-Host "`nLogging out.."
+          az logout 
+
+          Write-Host "`nLog back in with federated token.."
+          az login --service-principal -u $serviceConnection.user.name --tenant $serviceConnection.tenantId --allow-no-subscriptions --federated-token $env:idToken
+          if (!(az account show 2>$null)) {
+            Write-Host "##vso[task.logissue type=error]Token expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
+            exit 1
+          }
+
+          Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
+          Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
+        } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+
+- job: accessToken
+  displayName: 'az account get-access-token'
+  pool:
+    name: Azure Pipelines
+    vmImage: ubuntu-latest
+  timeoutInMinutes: ${{ parameters.maxMinutes }}
+  steps:
   - task: AzureCLI@2
     displayName: 'az account get-access-token with $(subscriptionConnection)'
     inputs:
@@ -69,7 +112,7 @@ jobs:
           exit 1
         }
 
-        $sleepSeconds = (60 * ${{ parameters.maxMinutes }})
+        $sleepSeconds = (60 * (${{ parameters.maxMinutes }} - ${{ parameters.intervalMinutes }} - 1)))
         Write-Host "Waiting for ${sleepSeconds} seconds..."
         Start-Sleep -Seconds $sleepSeconds
 
