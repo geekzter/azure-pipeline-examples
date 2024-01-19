@@ -1,0 +1,26 @@
+pr: none
+trigger: none
+
+resources:
+  containers:
+  - container: tools
+    type: ACR
+    azureSubscription: my-azure-subscription
+    resourceGroup: ericvan-common
+    registry: ericvan-common
+    repository: pipelineagent/ubuntu-agent-tools
+
+jobs:
+  job: test
+  pool:
+    name: Azure Pipelines
+    vmImage: ubuntu-latest
+  steps:
+  - script: echo |
+      echo $(resources.container.tools.type)
+      echo $(resources.container.tools.registry)
+      echo $(resources.container.tools.repository)
+      echo $(resources.container.tools.tag)
+      echo $(resources.container.tools.digest)
+      echo $(resources.container.tools.URI)
+      echo $(resources.container.tools.location)
