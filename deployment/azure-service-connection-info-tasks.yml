@@ -122,7 +122,7 @@ steps:
     Get-AzContext
 
     Write-Host "Clear-AzContext"
-    Clear-AzContext -Force
+    Clear-AzContext -Force -Scope Process
 
     Write-Host "Get-AzContext"
     Get-AzContext
