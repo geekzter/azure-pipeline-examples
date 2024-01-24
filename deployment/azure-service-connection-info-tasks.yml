@@ -115,9 +115,18 @@ steps:
     failOnStandardError: true
 
 - pwsh: |
-    Install-Module -Name Az -Repository PSGallery -Force
+    Install-Module -AllowClobber -Name Az -Repository PSGallery -Force
     Import-Module Az
+
+    Write-Host "Get-AzContext"
     Get-AzContext
+
+    Write-Host "Clear-AzContext"
+    Clear-AzContext -Force
+
+    Write-Host "Get-AzContext"
+    Get-AzContext
+  displayName: 'AzContext'
 
 - publish: $(Build.ArtifactStagingDirectory)
   displayName: 'Publish json files'
