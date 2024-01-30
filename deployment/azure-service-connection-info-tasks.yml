@@ -120,13 +120,29 @@ steps:
 
     Write-Host "Get-AzContext"
     Get-AzContext
+  displayName: 'Get-AzContext'
+
+- pwsh: |
+    Install-Module -AllowClobber -Name Az -Repository PSGallery -Force
+    Import-Module Az
+
+    Write-Host "Get-AzContext"
+    Get-AzContext
 
     Write-Host "Clear-AzContext"
     Clear-AzContext -Force -Scope Process
 
     Write-Host "Get-AzContext"
     Get-AzContext
-  displayName: 'AzContext'
+  displayName: 'Clear-AzContext'
+
+- pwsh: |
+    Install-Module -AllowClobber -Name Az -Repository PSGallery -Force
+    Import-Module Az
+
+    Write-Host "Get-AzContext"
+    Get-AzContext
+  displayName: 'Get-AzContext'
 
 - publish: $(Build.ArtifactStagingDirectory)
   displayName: 'Publish json files'
