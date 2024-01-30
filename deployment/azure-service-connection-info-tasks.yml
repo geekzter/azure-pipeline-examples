@@ -131,7 +131,9 @@ steps:
 
     Write-Host "Clear-AzContext"
     Clear-AzContext -Force
+    Write-Host "Clear-AzContext -Scope CurrentUser"
     Clear-AzContext -Force -Scope CurrentUser
+    Write-Host "Clear-AzContext -Scope Process"
     Clear-AzContext -Force -Scope Process
 
     Write-Host "Get-AzContext"
