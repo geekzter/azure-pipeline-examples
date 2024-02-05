@@ -122,19 +122,37 @@ steps:
     Get-AzContext
   displayName: 'Get-AzContext'
 
-- pwsh: |
-    Install-Module -AllowClobber -Name Az -Repository PSGallery -Force
-    Import-Module Az
+# - pwsh: |
+#     Install-Module -AllowClobber -Name Az -Repository PSGallery -Force
+#     Import-Module Az
 
-    Write-Host "Get-AzContext"
-    Get-AzContext
+#     Write-Host "Get-AzContext"
+#     Get-AzContext
 
-    Write-Host "Clear-AzContext -Scope CurrentUser"
-    Clear-AzContext -Force -Scope CurrentUser
+#     Write-Host "Clear-AzContext -Scope CurrentUser"
+#     Clear-AzContext -Force -Scope CurrentUser
 
-    Write-Host "Get-AzContext"
-    Get-AzContext
+#     Write-Host "Get-AzContext"
+#     Get-AzContext
+#   displayName: 'Clear-AzContext -Scope CurrentUser'
+
+- task: AzurePowerShell@5
   displayName: 'Clear-AzContext -Scope CurrentUser'
+  inputs:
+    azureSubscription: '$(serviceConnection)'
+    scriptType: inlineScript
+    inline: |
+      Write-Host "Get-AzContext"
+      Get-AzContext
+
+      Write-Host "Clear-AzContext -Scope CurrentUser"
+      Clear-AzContext -Force -Scope CurrentUser
+
+      Write-Host "Get-AzContext"
+      Get-AzContext
+    azurePowerShellVersion: 'latestVersion'
+    pwsh: true
+    failOnStandardError: true
 
 - pwsh: |
     Install-Module -AllowClobber -Name Az -Repository PSGallery -Force
@@ -144,19 +162,37 @@ steps:
     Get-AzContext
   displayName: 'Get-AzContext'
 
-- pwsh: |
-    Install-Module -AllowClobber -Name Az -Repository PSGallery -Force
-    Import-Module Az
-
-    Write-Host "Get-AzContext"
-    Get-AzContext
-
-    Write-Host "Clear-AzContext"
-    Clear-AzContext -Force
-
-    Write-Host "Get-AzContext"
-    Get-AzContext
+- task: AzurePowerShell@5
   displayName: 'Clear-AzContext'
+  inputs:
+    azureSubscription: '$(serviceConnection)'
+    scriptType: inlineScript
+    inline: |
+      Write-Host "Get-AzContext"
+      Get-AzContext
+
+      Write-Host "Clear-AzContext"
+      Clear-AzContext -Force
+
+      Write-Host "Get-AzContext"
+      Get-AzContext
+    azurePowerShellVersion: 'latestVersion'
+    pwsh: true
+    failOnStandardError: true
+
+# - pwsh: |
+#     Install-Module -AllowClobber -Name Az -Repository PSGallery -Force
+#     Import-Module Az
+
+#     Write-Host "Get-AzContext"
+#     Get-AzContext
+
+#     Write-Host "Clear-AzContext"
+#     Clear-AzContext -Force
+
+#     Write-Host "Get-AzContext"
+#     Get-AzContext
+#   displayName: 'Clear-AzContext'
 
 - pwsh: |
     Install-Module -AllowClobber -Name Az -Repository PSGallery -Force
@@ -166,19 +202,37 @@ steps:
     Get-AzContext
   displayName: 'Get-AzContext'
 
-- pwsh: |
-    Install-Module -AllowClobber -Name Az -Repository PSGallery -Force
-    Import-Module Az
-
-    Write-Host "Get-AzContext"
-    Get-AzContext
-
-    Write-Host "Clear-AzContext -Scope Process"
-    Clear-AzContext -Force -Scope Process
-
-    Write-Host "Get-AzContext"
-    Get-AzContext
+- task: AzurePowerShell@5
   displayName: 'Clear-AzContext -Scope Process'
+  inputs:
+    azureSubscription: '$(serviceConnection)'
+    scriptType: inlineScript
+    inline: |
+      Write-Host "Get-AzContext"
+      Get-AzContext
+
+      Write-Host "Clear-AzContext -Scope Process"
+      Clear-AzContext -Force -Scope Process
+
+      Write-Host "Get-AzContext"
+      Get-AzContext
+    azurePowerShellVersion: 'latestVersion'
+    pwsh: true
+    failOnStandardError: true
+
+# - pwsh: |
+#     Install-Module -AllowClobber -Name Az -Repository PSGallery -Force
+#     Import-Module Az
+
+#     Write-Host "Get-AzContext"
+#     Get-AzContext
+
+#     Write-Host "Clear-AzContext -Scope Process"
+#     Clear-AzContext -Force -Scope Process
+
+#     Write-Host "Get-AzContext"
+#     Get-AzContext
+#   displayName: 'Clear-AzContext -Scope Process'
 
 - pwsh: |
     Install-Module -AllowClobber -Name Az -Repository PSGallery -Force
