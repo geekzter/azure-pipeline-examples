@@ -129,12 +129,12 @@ steps:
     Write-Host "Get-AzContext"
     Get-AzContext
 
-    Write-Host "Clear-AzContext"
-    Clear-AzContext -Force
+    Write-Host "Clear-AzContext -Scope CurrentUser"
+    Clear-AzContext -Force -Scope CurrentUser
 
     Write-Host "Get-AzContext"
     Get-AzContext
-  displayName: 'Clear-AzContext'
+  displayName: 'Clear-AzContext -Scope CurrentUser'
 
 - pwsh: |
     Install-Module -AllowClobber -Name Az -Repository PSGallery -Force
@@ -151,12 +151,12 @@ steps:
     Write-Host "Get-AzContext"
     Get-AzContext
 
-    Write-Host "Clear-AzContext -Scope CurrentUser"
-    Clear-AzContext -Force -Scope CurrentUser
+    Write-Host "Clear-AzContext"
+    Clear-AzContext -Force
 
     Write-Host "Get-AzContext"
     Get-AzContext
-  displayName: 'Clear-AzContext -Scope CurrentUser'
+  displayName: 'Clear-AzContext'
 
 - pwsh: |
     Install-Module -AllowClobber -Name Az -Repository PSGallery -Force
