@@ -8,6 +8,9 @@ schedules:
     include:
     - main
 
+pool:
+  name: Linux scale set agents
+
 steps:
 # - task: RetiredTask@1
 - task: DotNetCoreInstaller@1
