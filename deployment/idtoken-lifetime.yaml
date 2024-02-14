@@ -131,7 +131,7 @@ jobs:
     displayName: 'Build image'
     condition: and(succeeded(), ne(coalesce(variables['githubRelease.newImageVersion'],'false'),'false'))
     inputs:
-      azureSubscription: '$(packerSubscriptionConnection)'
+      azureSubscription: '$(subscriptionConnection)'
       scriptType: inlineScript
       inline: |
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
@@ -164,7 +164,7 @@ jobs:
     displayName: 'Build image'
     condition: and(succeeded(), ne(coalesce(variables['githubRelease.newImageVersion'],'false'),'false'))
     inputs:
-      azureSubscription: '$(packerSubscriptionConnection)'
+      azureSubscription: '$(subscriptionConnection)'
       scriptType: inlineScript
       inline: |
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
@@ -195,7 +195,7 @@ jobs:
     displayName: 'Build image'
     condition: and(succeeded(), ne(coalesce(variables['githubRelease.newImageVersion'],'false'),'false'))
     inputs:
-      azureSubscription: '$(packerSubscriptionConnection)'
+      azureSubscription: '$(subscriptionConnection)'
       scriptType: inlineScript
       inline: |
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
