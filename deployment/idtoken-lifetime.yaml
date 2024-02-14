@@ -212,7 +212,7 @@ jobs:
                             | Tee-Object -Variable token `
                             | Format-List
           if ($token) {
-            Write-Host "Access token expires in $($token.ExpiresOn - [DateTime]::Now).TotalMinutes)) minutes"            
+            Write-Host "Access token expires in $(($token.ExpiresOn - [DateTime]::Now).TotalMinutes) minutes"            
           } else {
             Write-Host "##vso[task.logissue type=error]Could not get access token"
             exit 1
