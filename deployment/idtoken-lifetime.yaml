@@ -128,8 +128,7 @@ jobs:
   steps:
   - task: AzurePowerShell@5
     name: imageBuild
-    displayName: 'Build image'
-    condition: and(succeeded(), ne(coalesce(variables['githubRelease.newImageVersion'],'false'),'false'))
+    displayName: 'Get-AzContext'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: inlineScript
@@ -161,8 +160,7 @@ jobs:
   steps:
   - task: AzurePowerShell@5
     name: imageBuild
-    displayName: 'Build image'
-    condition: and(succeeded(), ne(coalesce(variables['githubRelease.newImageVersion'],'false'),'false'))
+    displayName: 'Get-AzAccessToken'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: inlineScript
@@ -192,8 +190,7 @@ jobs:
   steps:
   - task: AzurePowerShell@5
     name: imageBuild
-    displayName: 'Build image'
-    condition: and(succeeded(), ne(coalesce(variables['githubRelease.newImageVersion'],'false'),'false'))
+    displayName: 'Get-AzAccessToken -ResourceUrl'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: inlineScript
