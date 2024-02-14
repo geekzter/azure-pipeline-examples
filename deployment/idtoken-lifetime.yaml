@@ -36,7 +36,7 @@ jobs:
                                                                    | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
                                                                    | Set-Variable serviceConnectionId
         Write-Host "Service Connection id: ${serviceConnectionId}"
-        "Service Connection url: {0}/{1}/_settings/adminservices?resourceId={2}" -f $env:SYSTEM_COLLECTIONURI, $env:SYSTEM_TEAMPROJECTID, $serviceEndpoint.id | Write-Host
+        "Service Connection url: {0}{1}/_settings/adminservices?resourceId={2}" -f $env:SYSTEM_COLLECTIONURI, $env:SYSTEM_TEAMPROJECTID, $serviceEndpointid | Write-Host
 
 #   - task: AzureCLI@2
 #     displayName: 'az account show with $(subscriptionConnection)'
