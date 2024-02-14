@@ -100,43 +100,43 @@ jobs:
 #           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
 #         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
 
-# - job: azAccessToken
-#   displayName: 'az account get-access-token'
-#   pool:
-#     name: Azure Pipelines
-#     vmImage: ubuntu-latest
-#   timeoutInMinutes: ${{ parameters.maxMinutes }}
-#   steps:
-#   - task: AzureCLI@2
-#     displayName: 'az account get-access-token with $(subscriptionConnection)'
-#     inputs:
-#       azureSubscription: $(subscriptionConnection)
-#       failOnStandardError: true
-#       powerShellIgnoreLASTEXITCODE: false
-#       powerShellErrorActionPreference: Stop
-#       scriptType: pscore
-#       scriptLocation: inlineScript
-#       inlineScript: |
-#         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
-#         do {
-#           $expiresOn = $null
-#           # $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
-#           $resource = 'https://kusto.kusto.windows.net'
-#           Write-Host "`nRequesting access token for '${resource}'.."
-#           az account get-access-token --resource $resource `
-#                                       --query "expiresOn" `
-#                                       --output tsv `
-#                                       | Set-Variable expiresOn
-#           if ($expiresOn) {
-#             Write-Host "Access token expires in $([math]::Round(([DateTime]::Parse($expiresOn) - [DateTime]::Now).TotalMinutes)) minutes"            
-#           } else {
-#             Write-Host "##vso[task.logissue type=error]Could not get access token"
-#             exit 1
-#           }
+- job: azAccessToken
+  displayName: 'az account get-access-token'
+  pool:
+    name: Azure Pipelines
+    vmImage: ubuntu-latest
+  timeoutInMinutes: ${{ parameters.maxMinutes }}
+  steps:
+  - task: AzureCLI@2
+    displayName: 'az account get-access-token with $(subscriptionConnection)'
+    inputs:
+      azureSubscription: $(subscriptionConnection)
+      failOnStandardError: true
+      powerShellIgnoreLASTEXITCODE: false
+      powerShellErrorActionPreference: Stop
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        $stopwatch = [system.diagnostics.stopwatch]::StartNew()
+        do {
+          $expiresOn = $null
+          # $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
+          $resource = 'https://kusto.kusto.windows.net'
+          Write-Host "`nRequesting access token for '${resource}'.."
+          az account get-access-token --resource $resource `
+                                      --query "expiresOn" `
+                                      --output tsv `
+                                      | Set-Variable expiresOn
+          if ($expiresOn) {
+            Write-Host "Access token expires in $([math]::Round(([DateTime]::Parse($expiresOn) - [DateTime]::Now).TotalMinutes)) minutes"            
+          } else {
+            Write-Host "##vso[task.logissue type=error]Could not get access token"
+            exit 1
+          }
 
-#           Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
-#           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
-#         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+          Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
+          Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
+        } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
 
 # - job: pwshSession
 #   displayName: 'Get-AzContext'
@@ -204,44 +204,43 @@ jobs:
 #       pwsh: true
 #       failOnStandardError: true
 
-# - job: pwshAccessToken
-#   displayName: 'Get-AzAccessToken -ResourceUrl'
-#   pool:
-#     name: Azure Pipelines
-#     vmImage: windows-latest
-#   timeoutInMinutes: ${{ parameters.maxMinutes }}
-#   steps:
-#   - task: AzurePowerShell@5
-#     name: imageBuild
-#     displayName: 'Get-AzAccessToken -ResourceUrl'
-#     inputs:
-#       azureSubscription: '$(subscriptionConnection)'
-#       scriptType: inlineScript
-#       inline: |
-#         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
-#         do {
-#           $expiresOn = $null
-#           $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
-#           # $resource = 'https://kusto.kusto.windows.net'
-#           Write-Host "`nRequesting access token for '${resource}'.."
-#           $token = $null
-#           Get-AzAccessToken -ErrorAction SilentlyContinue `
-#                             -ResourceUrl $resource `
-#                             | Select-Object -ExcludeProperty Token `
-#                             | Tee-Object -Variable token `
-#                             | Format-List
-#           if ($token) {
-#             Write-Host "Access token expires in $(($token.ExpiresOn - [DateTime]::Now).TotalMinutes) minutes"            
-#           } else {
-#             Write-Host "##vso[task.logissue type=error]Could not get access token"
-#             exit 1
-#           }
+- job: pwshAccessToken
+  displayName: 'Get-AzAccessToken -ResourceUrl'
+  pool:
+    name: Azure Pipelines
+    vmImage: windows-latest
+  timeoutInMinutes: ${{ parameters.maxMinutes }}
+  steps:
+  - task: AzurePowerShell@5
+    name: imageBuild
+    displayName: 'Get-AzAccessToken -ResourceUrl'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: inlineScript
+      inline: |
+        $stopwatch = [system.diagnostics.stopwatch]::StartNew()
+        do {
+          $expiresOn = $null
+          $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
+          # $resource = 'https://kusto.kusto.windows.net'
+          Write-Host "`nRequesting access token for '${resource}'.."
+          $token = $null
+          Get-AzAccessToken -ErrorAction SilentlyContinue `
+                            -ResourceUrl $resource `
+                            | Select-Object -ExcludeProperty Token `
+                            | Tee-Object -Variable token `
+                            | Format-List
+          if ($token) {
+            Write-Host "Access token expires in $(($token.ExpiresOn - [DateTime]::Now).TotalMinutes) minutes"            
+          } else {
+            Write-Host "##vso[task.logissue type=error]Could not get access token"
+            exit 1
+          }
 
-#           Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
-#           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
-#         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+          Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
+          Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
+        } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
 
-#       azurePowerShellVersion: 'latestVersion'
-#       pwsh: true
-#       failOnStandardError: true
-
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: true
+      failOnStandardError: true
