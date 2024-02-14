@@ -167,8 +167,12 @@ jobs:
       inline: |
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
         do {
-          Get-AzAccessToken | Select-Object -ExcludeProperty Token | Format-List
-          if (!(Get-AzAccessToken -ErrorAction SilentlyContinue)) {
+          $token = $null
+          Get-AzAccessToken -ErrorAction SilentlyContinue `
+                            | Select-Object -ExcludeProperty Token `
+                            | Tee-Object -Variable token `
+                            | Format-List
+          if (!($token)) {
             Write-Host "##vso[task.logissue type=error]Session expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
             exit 1
           }
@@ -198,13 +202,16 @@ jobs:
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
         do {
           $expiresOn = $null
-          $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
-          # $resource = 'https://kusto.kusto.windows.net'
+          # $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
+          $resource = 'https://kusto.kusto.windows.net'
           Write-Host "`nRequesting access token for '${resource}'.."
-          # $token = Get-AzAccessToken -ResourceUrl $resource
-          Get-AzAccessToken | Select-Object -ExcludeProperty Token | Format-List
-          $token = Get-AzAccessToken
-          if ($expiresOn) {
+          $token = $null
+          Get-AzAccessToken -ErrorAction SilentlyContinue `
+                            -ResourceUrl $resource `
+                            | Select-Object -ExcludeProperty Token `
+                            | Tee-Object -Variable token `
+                            | Format-List
+          if ($token) {
             Write-Host "Access token expires in $($token.ExpiresOn - [DateTime]::Now).TotalMinutes)) minutes"            
           } else {
             Write-Host "##vso[task.logissue type=error]Could not get access token"
