@@ -12,7 +12,7 @@ name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$
 trigger: none
 
 jobs:
-- job: session
+- job: azSession
   displayName: 'az account show'
   pool:
     name: Azure Pipelines
@@ -29,12 +29,10 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        az account show 2>$null | ConvertFrom-Json | Set-Variable serviceConnection
-
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
         do {
           if (!(az account show 2>$null)) {
-            Write-Host "##vso[task.logissue type=error]Token expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
+            Write-Host "##vso[task.logissue type=error]Session expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
             exit 1
           }
 
@@ -42,7 +40,7 @@ jobs:
           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
 
-- job: login
+- job: azLogin
   displayName: 'az login'
   pool:
     name: Azure Pipelines
@@ -83,7 +81,7 @@ jobs:
           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
 
-- job: accessToken
+- job: azAccessToken
   displayName: 'az account get-access-token'
   pool:
     name: Azure Pipelines
@@ -120,3 +118,105 @@ jobs:
           Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+
+- job: pwshSession
+  displayName: 'Test with Get-AzContext'
+  pool:
+    name: Azure Pipelines
+    vmImage: windows-latest
+  timeoutInMinutes: ${{ parameters.maxMinutes }}
+  steps:
+  - task: AzurePowerShell@5
+    name: imageBuild
+    displayName: 'Build image'
+    condition: and(succeeded(), ne(coalesce(variables['githubRelease.newImageVersion'],'false'),'false'))
+    inputs:
+      azureSubscription: '$(packerSubscriptionConnection)'
+      scriptType: inlineScript
+      inline: |
+        $stopwatch = [system.diagnostics.stopwatch]::StartNew()
+        do {
+          if (!(Get-AzContext -ErrorAction SilentlyContinue)) {
+            Write-Host "##vso[task.logissue type=error]Session expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
+            Get-AzContext
+            exit 1
+          } else {
+            Get-AzContext
+          }
+
+          Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
+          Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
+        } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: true
+      failOnStandardError: true
+
+- job: pwshSessionToken
+  displayName: 'Test with Get-AzAccessToken'
+  pool:
+    name: Azure Pipelines
+    vmImage: windows-latest
+  timeoutInMinutes: ${{ parameters.maxMinutes }}
+  steps:
+  - task: AzurePowerShell@5
+    name: imageBuild
+    displayName: 'Build image'
+    condition: and(succeeded(), ne(coalesce(variables['githubRelease.newImageVersion'],'false'),'false'))
+    inputs:
+      azureSubscription: '$(packerSubscriptionConnection)'
+      scriptType: inlineScript
+      inline: |
+        $stopwatch = [system.diagnostics.stopwatch]::StartNew()
+        do {
+          if (!(Get-AzAccessToken -ErrorAction SilentlyContinue)) {
+            Write-Host "##vso[task.logissue type=error]Session expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
+            exit 1
+          } else {
+          }
+
+          Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
+          Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
+        } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: true
+      failOnStandardError: true
+
+- job: pwshAccessToken
+  displayName: 'Get-AzAccessToken'
+  pool:
+    name: Azure Pipelines
+    vmImage: windows-latest
+  timeoutInMinutes: ${{ parameters.maxMinutes }}
+  steps:
+  - task: AzurePowerShell@5
+    name: imageBuild
+    displayName: 'Build image'
+    condition: and(succeeded(), ne(coalesce(variables['githubRelease.newImageVersion'],'false'),'false'))
+    inputs:
+      azureSubscription: '$(packerSubscriptionConnection)'
+      scriptType: inlineScript
+      inline: |
+        $stopwatch = [system.diagnostics.stopwatch]::StartNew()
+        do {
+          $expiresOn = $null
+          # $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
+          $resource = 'https://kusto.kusto.windows.net'
+          Write-Host "`nRequesting access token for '${resource}'.."
+          $token = Get-AzAccessToken -ResourceUrl $resource
+          if ($expiresOn) {
+            Write-Host "Access token expires in $($token.ExpiresOn - [DateTime]::Now).TotalMinutes)) minutes"            
+          } else {
+            Write-Host "##vso[task.logissue type=error]Could not get access token"
+            exit 1
+          }
+
+          Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
+          Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
+        } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: true
+      failOnStandardError: true
+
