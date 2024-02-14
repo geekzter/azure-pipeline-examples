@@ -20,7 +20,7 @@ jobs:
   timeoutInMinutes: ${{ parameters.maxMinutes }}
   steps:
   - task: AzureCLI@2
-    displayName: 'Service Connection info'
+    displayName: '$(subscriptionConnection) info'
     inputs:
       azureSubscription: $(subscriptionConnection)
       failOnStandardError: true
