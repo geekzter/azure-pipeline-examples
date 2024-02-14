@@ -151,35 +151,35 @@ jobs:
 #       pwsh: true
 #       failOnStandardError: true
 
-# - job: pwshSessionToken
-#   displayName: 'Get-AzAccessToken'
-#   pool:
-#     name: Azure Pipelines
-#     vmImage: windows-latest
-#   timeoutInMinutes: ${{ parameters.maxMinutes }}
-#   steps:
-#   - task: AzurePowerShell@5
-#     name: imageBuild
-#     displayName: 'Get-AzAccessToken'
-#     inputs:
-#       azureSubscription: '$(subscriptionConnection)'
-#       scriptType: inlineScript
-#       inline: |
-#         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
-#         do {
-#           if (!(Get-AzAccessToken -ErrorAction SilentlyContinue)) {
-#             Write-Host "##vso[task.logissue type=error]Session expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
-#             exit 1
-#           } else {
-#           }
+- job: pwshSessionToken
+  displayName: 'Get-AzAccessToken'
+  pool:
+    name: Azure Pipelines
+    vmImage: windows-latest
+  timeoutInMinutes: ${{ parameters.maxMinutes }}
+  steps:
+  - task: AzurePowerShell@5
+    name: imageBuild
+    displayName: 'Get-AzAccessToken'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: inlineScript
+      inline: |
+        $stopwatch = [system.diagnostics.stopwatch]::StartNew()
+        do {
+          Get-AzAccessToken | Select-Object -ExcludeProperty Token | Format-List
+          if (!(Get-AzAccessToken -ErrorAction SilentlyContinue)) {
+            Write-Host "##vso[task.logissue type=error]Session expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
+            exit 1
+          }
 
-#           Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
-#           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
-#         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+          Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
+          Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
+        } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
 
-#       azurePowerShellVersion: 'latestVersion'
-#       pwsh: true
-#       failOnStandardError: true
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: true
+      failOnStandardError: true
 
 - job: pwshAccessToken
   displayName: 'Get-AzAccessToken -ResourceUrl'
@@ -202,6 +202,7 @@ jobs:
           # $resource = 'https://kusto.kusto.windows.net'
           Write-Host "`nRequesting access token for '${resource}'.."
           # $token = Get-AzAccessToken -ResourceUrl $resource
+          Get-AzAccessToken | Select-Object -ExcludeProperty Token | Format-List
           $token = Get-AzAccessToken
           if ($expiresOn) {
             Write-Host "Access token expires in $($token.ExpiresOn - [DateTime]::Now).TotalMinutes)) minutes"            
