@@ -120,7 +120,7 @@ jobs:
 #         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
 
 # - job: pwshSession
-#   displayName: 'Test with Get-AzContext'
+#   displayName: 'Get-AzContext'
 #   pool:
 #     name: Azure Pipelines
 #     vmImage: windows-latest
@@ -152,7 +152,7 @@ jobs:
 #       failOnStandardError: true
 
 # - job: pwshSessionToken
-#   displayName: 'Test with Get-AzAccessToken'
+#   displayName: 'Get-AzAccessToken'
 #   pool:
 #     name: Azure Pipelines
 #     vmImage: windows-latest
@@ -182,7 +182,7 @@ jobs:
 #       failOnStandardError: true
 
 - job: pwshAccessToken
-  displayName: 'Get-AzAccessToken'
+  displayName: 'Get-AzAccessToken -ResourceUrl'
   pool:
     name: Azure Pipelines
     vmImage: windows-latest
@@ -201,7 +201,8 @@ jobs:
           $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
           # $resource = 'https://kusto.kusto.windows.net'
           Write-Host "`nRequesting access token for '${resource}'.."
-          $token = Get-AzAccessToken -ResourceUrl $resource
+          # $token = Get-AzAccessToken -ResourceUrl $resource
+          $token = Get-AzAccessToken
           if ($expiresOn) {
             Write-Host "Access token expires in $($token.ExpiresOn - [DateTime]::Now).TotalMinutes)) minutes"            
           } else {
