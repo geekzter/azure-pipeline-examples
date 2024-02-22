@@ -12,31 +12,32 @@ name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$
 trigger: none
 
 jobs:
-- job: azSession
-  displayName: 'az account show'
-  pool:
-    name: Azure Pipelines
-    vmImage: ubuntu-latest
-  timeoutInMinutes: ${{ parameters.maxMinutes }}
-  steps:
-  - task: AzureCLI@2
-    displayName: '$(subscriptionConnection) info'
-    inputs:
-      azureSubscription: $(subscriptionConnection)
-      failOnStandardError: true
-      powerShellIgnoreLASTEXITCODE: false
-      powerShellErrorActionPreference: Stop
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        Write-Host "Service Connection Name: $(subscriptionConnection)"
+# - job: azSession
+#   displayName: 'az account show'
+#   pool:
+#     name: Azure Pipelines
+#     vmImage: ubuntu-latest
+#   timeoutInMinutes: ${{ parameters.maxMinutes }}
+#   steps:
 
-        Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
-                                                                   | Select-Object -First 1 -ExpandProperty Name `
-                                                                   | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
-                                                                   | Set-Variable serviceConnectionId
-        Write-Host "Service Connection id: ${serviceConnectionId}"
-        "Service Connection url: {0}{1}/_settings/adminservices?resourceId={2}" -f $env:SYSTEM_COLLECTIONURI, $env:SYSTEM_TEAMPROJECTID, $serviceConnectionId | Write-Host
+  # - task: AzureCLI@2
+  #   displayName: '$(subscriptionConnection) info'
+  #   inputs:
+  #     azureSubscription: $(subscriptionConnection)
+  #     failOnStandardError: true
+  #     powerShellIgnoreLASTEXITCODE: false
+  #     powerShellErrorActionPreference: Stop
+  #     scriptType: pscore
+  #     scriptLocation: inlineScript
+  #     inlineScript: |
+  #       Write-Host "Service Connection Name: $(subscriptionConnection)"
+
+  #       Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
+  #                                                                  | Select-Object -First 1 -ExpandProperty Name `
+  #                                                                  | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
+  #                                                                  | Set-Variable serviceConnectionId
+  #       Write-Host "Service Connection id: ${serviceConnectionId}"
+  #       "Service Connection url: {0}{1}/_settings/adminservices?resourceId={2}" -f $env:SYSTEM_COLLECTIONURI, $env:SYSTEM_TEAMPROJECTID, $serviceConnectionId | Write-Host
 
   # - task: AzureCLI@2
   #   displayName: 'az account show with $(subscriptionConnection)'
@@ -59,57 +60,17 @@ jobs:
   #         Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
   #       } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
 
-- job: azLogin
-  displayName: 'az login'
-  pool:
-    name: Azure Pipelines
-    vmImage: ubuntu-latest
-  timeoutInMinutes: ${{ parameters.maxMinutes }}
-  steps:
-  - task: AzureCLI@2
-    displayName: 'az login with $(subscriptionConnection)'
-    inputs:
-      addSpnToEnvironment: true
-      azureSubscription: $(subscriptionConnection)
-      failOnStandardError: true
-      powerShellIgnoreLASTEXITCODE: false
-      powerShellErrorActionPreference: Stop
-      scriptType: pscore
-      scriptLocation: inlineScript
-      inlineScript: |
-        if (!$env:idToken) {
-          Write-Host "##vso[task.logissue type=warning]idToken not available"
-          exit
-        }
-
-        az account show 2>$null | ConvertFrom-Json | Set-Variable serviceConnection
-
-        $stopwatch = [system.diagnostics.stopwatch]::StartNew()
-        do {
-          Write-Host "`nLogging out.."
-          az logout 
-
-          Write-Host "`nLog back in with federated token.."
-          az login --service-principal -u $serviceConnection.user.name --tenant $serviceConnection.tenantId --allow-no-subscriptions --federated-token $env:idToken
-          if (!(az account show 2>$null)) {
-            Write-Host "##vso[task.logissue type=error]Token expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
-            exit 1
-          }
-
-          Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
-          Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
-        } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
-
-# - job: azAccessToken
-#   displayName: 'az account get-access-token'
+# - job: azLogin
+#   displayName: 'az login'
 #   pool:
 #     name: Azure Pipelines
 #     vmImage: ubuntu-latest
 #   timeoutInMinutes: ${{ parameters.maxMinutes }}
 #   steps:
 #   - task: AzureCLI@2
-#     displayName: 'az account get-access-token with $(subscriptionConnection)'
+#     displayName: 'az login with $(subscriptionConnection)'
 #     inputs:
+#       addSpnToEnvironment: true
 #       azureSubscription: $(subscriptionConnection)
 #       failOnStandardError: true
 #       powerShellIgnoreLASTEXITCODE: false
@@ -117,26 +78,65 @@ jobs:
 #       scriptType: pscore
 #       scriptLocation: inlineScript
 #       inlineScript: |
+#         if (!$env:idToken) {
+#           Write-Host "##vso[task.logissue type=warning]idToken not available"
+#           exit
+#         }
+
+#         az account show 2>$null | ConvertFrom-Json | Set-Variable serviceConnection
+
 #         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
 #         do {
-#           $expiresOn = $null
-#           # $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
-#           $resource = 'https://kusto.kusto.windows.net'
-#           Write-Host "`nRequesting access token for '${resource}'.."
-#           az account get-access-token --resource $resource `
-#                                       --query "expiresOn" `
-#                                       --output tsv `
-#                                       | Set-Variable expiresOn
-#           if ($expiresOn) {
-#             Write-Host "Access token expires in $([math]::Round(([DateTime]::Parse($expiresOn) - [DateTime]::Now).TotalMinutes)) minutes"            
-#           } else {
-#             Write-Host "##vso[task.logissue type=error]Could not get access token"
+#           Write-Host "`nLogging out.."
+#           az logout 
+
+#           Write-Host "`nLog back in with federated token.."
+#           az login --service-principal -u $serviceConnection.user.name --tenant $serviceConnection.tenantId --allow-no-subscriptions --federated-token $env:idToken
+#           if (!(az account show 2>$null)) {
+#             Write-Host "##vso[task.logissue type=error]Token expired after $($stopwatch.Elapsed.TotalMinutes) minutes"
 #             exit 1
 #           }
 
 #           Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
 #           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
 #         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+- job: azAccessToken
+  displayName: 'az account get-access-token'
+  pool:
+    name: Azure Pipelines
+    vmImage: ubuntu-latest
+  timeoutInMinutes: ${{ parameters.maxMinutes }}
+  steps:
+  - task: AzureCLI@2
+    displayName: 'az account get-access-token with $(subscriptionConnection)'
+    inputs:
+      azureSubscription: $(subscriptionConnection)
+      failOnStandardError: true
+      powerShellIgnoreLASTEXITCODE: false
+      powerShellErrorActionPreference: Stop
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        $stopwatch = [system.diagnostics.stopwatch]::StartNew()
+        do {
+          $expiresOn = $null
+          # $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
+          $resource = 'https://kusto.kusto.windows.net'
+          Write-Host "`nRequesting access token for '${resource}'.."
+          az account get-access-token --resource $resource `
+                                      --query "expiresOn" `
+                                      --output tsv `
+                                      | Set-Variable expiresOn
+          if ($expiresOn) {
+            Write-Host "Access token expires in $([math]::Round(([DateTime]::Parse($expiresOn) - [DateTime]::Now).TotalMinutes)) minutes"            
+          } else {
+            Write-Host "##vso[task.logissue type=error]Could not get access token"
+            exit 1
+          }
+
+          Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
+          Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
+        } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
 
 # - job: pwshSession
 #   displayName: 'Get-AzContext'
@@ -204,43 +204,43 @@ jobs:
 #       pwsh: true
 #       failOnStandardError: true
 
-# - job: pwshAccessToken
-#   displayName: 'Get-AzAccessToken -ResourceUrl'
-#   pool:
-#     name: Azure Pipelines
-#     vmImage: windows-latest
-#   timeoutInMinutes: ${{ parameters.maxMinutes }}
-#   steps:
-#   - task: AzurePowerShell@5
-#     name: imageBuild
-#     displayName: 'Get-AzAccessToken -ResourceUrl'
-#     inputs:
-#       azureSubscription: '$(subscriptionConnection)'
-#       scriptType: inlineScript
-#       inline: |
-#         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
-#         do {
-#           $expiresOn = $null
-#           $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
-#           # $resource = 'https://kusto.kusto.windows.net'
-#           Write-Host "`nRequesting access token for '${resource}'.."
-#           $token = $null
-#           Get-AzAccessToken -ErrorAction SilentlyContinue `
-#                             -ResourceUrl $resource `
-#                             | Select-Object -ExcludeProperty Token `
-#                             | Tee-Object -Variable token `
-#                             | Format-List
-#           if ($token) {
-#             Write-Host "Access token expires in $(($token.ExpiresOn - [DateTime]::Now).TotalMinutes) minutes"            
-#           } else {
-#             Write-Host "##vso[task.logissue type=error]Could not get access token"
-#             exit 1
-#           }
+- job: pwshAccessToken
+  displayName: 'Get-AzAccessToken -ResourceUrl'
+  pool:
+    name: Azure Pipelines
+    vmImage: windows-latest
+  timeoutInMinutes: ${{ parameters.maxMinutes }}
+  steps:
+  - task: AzurePowerShell@5
+    name: imageBuild
+    displayName: 'Get-AzAccessToken -ResourceUrl'
+    inputs:
+      azureSubscription: '$(subscriptionConnection)'
+      scriptType: inlineScript
+      inline: |
+        $stopwatch = [system.diagnostics.stopwatch]::StartNew()
+        do {
+          $expiresOn = $null
+          $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
+          # $resource = 'https://kusto.kusto.windows.net'
+          Write-Host "`nRequesting access token for '${resource}'.."
+          $token = $null
+          Get-AzAccessToken -ErrorAction SilentlyContinue `
+                            -ResourceUrl $resource `
+                            | Select-Object -ExcludeProperty Token `
+                            | Tee-Object -Variable token `
+                            | Format-List
+          if ($token) {
+            Write-Host "Access token expires in $(($token.ExpiresOn - [DateTime]::Now).TotalMinutes) minutes"            
+          } else {
+            Write-Host "##vso[task.logissue type=error]Could not get access token"
+            exit 1
+          }
 
-#           Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
-#           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
-#         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+          Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
+          Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
+        } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
 
-#       azurePowerShellVersion: 'latestVersion'
-#       pwsh: true
-#       failOnStandardError: true
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: true
+      failOnStandardError: true
