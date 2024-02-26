@@ -9,7 +9,8 @@ schedules:
     - main
 
 pool:
-  name: Linux scale set agents
+  # name: Linux scale set agents
+  name: Azure Pipelines
 
 steps:
 # - task: RetiredTask@1
