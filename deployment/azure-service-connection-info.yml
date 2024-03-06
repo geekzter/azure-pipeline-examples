@@ -90,7 +90,7 @@ jobs:
       pool:
         name: ${{ parameters.poolName }}
         vmImage: ${{ parameters.vmImage }}
-      steps:
-      - template: azure-service-connection-info-tasks.yml
-        parameters:
-          additionalVariableGroup: ${{ parameters.additionalVariableGroup }}
+    steps:
+    - template: azure-service-connection-info-tasks.yml
+      parameters:
+        additionalVariableGroup: ${{ parameters.additionalVariableGroup }}
