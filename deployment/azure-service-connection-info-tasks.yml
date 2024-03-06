@@ -35,14 +35,14 @@ steps:
     displayName: 'AzureKeyVault: Access Key Vault (runAsPreJob)'
     inputs:
       azureSubscription: '$(serviceConnection)'
-      keyVaultName: $${{ parameters.additionalVariableGroup }}
+      keyVaultName: ${{ parameters.additionalVariableGroup }}
       secretsFilter: '*'
       runAsPreJob: true
   - task: AzureKeyVault@2
     displayName: 'AzureKeyVault: Access Key Vault'
     inputs:
       azureSubscription: '$(serviceConnection)'
-      keyVaultName: $${{ parameters.additionalVariableGroup }}
+      keyVaultName: ${{ parameters.additionalVariableGroup }}
       secretsFilter: '*'
       runAsPreJob: false
 
