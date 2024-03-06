@@ -75,6 +75,8 @@ jobs:
         deploy:
           steps:
           - template: azure-service-connection-info-tasks.yml
+            parameters:
+              additionalVariableGroup: ${{ parameters.additionalVariableGroup }}
 
 - ${{ else }}:
   - job: useServiceConnection
@@ -88,5 +90,7 @@ jobs:
       pool:
         name: ${{ parameters.poolName }}
         vmImage: ${{ parameters.vmImage }}
-      steps:
-      - template: azure-service-connection-info-tasks.yml
+    steps:
+    - template: azure-service-connection-info-tasks.yml
+      parameters:
+        additionalVariableGroup: ${{ parameters.additionalVariableGroup }}
