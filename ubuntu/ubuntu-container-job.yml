@@ -13,4 +13,5 @@ pool:
 container: ubuntu:20.04
 
 steps:
-- script: printenv
+- script: |
+    stress-ng --vm-bytes $(awk '/MemAvailable/{printf "%d\n", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1
