@@ -357,27 +357,27 @@ jobs:
           #                   -SubscriptionId (Get-AzContext).Subscription.Id `
           #                   -FederatedToken $oidcToken
           
-          # $expiresOn = $null
-          # $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
-          # # $resource = 'https://kusto.kusto.windows.net'
-          # Write-Host "`nRequesting access token for '${resource}'.."
-          # $token = $null
-          # Get-AzAccessToken -ErrorAction SilentlyContinue `
-          #                   -ResourceUrl $resource `
-          #                   | Select-Object -ExcludeProperty Token `
-          #                   | Tee-Object -Variable token `
-          #                   | Format-List
-          # if ($token) {
-          #   $remainingMinutes = ($token.ExpiresOn - [DateTime]::Now).TotalMinutes
-          #   if ($remainingMinutes -lt 5) {
-          #     Write-Host "##vso[task.logissue type=warning]Access token expires in only $remainingMinutes minutes" 
-          #     exit 1
-          #   }
-          #   Write-Host "Access token expires in $remainingMinutes minutes"            
-          # } else {
-          #   Write-Host "##vso[task.logissue type=error]Could not get access token"
-          #   exit 1
-          # }
+          $expiresOn = $null
+          $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
+          # $resource = 'https://kusto.kusto.windows.net'
+          Write-Host "`nRequesting access token for '${resource}'.."
+          $token = $null
+          Get-AzAccessToken -ErrorAction SilentlyContinue `
+                            -ResourceUrl $resource `
+                            | Select-Object -ExcludeProperty Token `
+                            | Tee-Object -Variable token `
+                            | Format-List
+          if ($token) {
+            $remainingMinutes = ($token.ExpiresOn - [DateTime]::Now).TotalMinutes
+            if ($remainingMinutes -lt 5) {
+              Write-Host "##vso[task.logissue type=warning]Access token expires in only $remainingMinutes minutes" 
+              exit 1
+            }
+            Write-Host "Access token expires in $remainingMinutes minutes"            
+          } else {
+            Write-Host "##vso[task.logissue type=error]Could not get access token"
+            exit 1
+          }
 
           Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
