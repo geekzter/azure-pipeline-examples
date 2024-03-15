@@ -330,6 +330,13 @@ jobs:
 
         Start-Job -Name 'RefreshOidcToken' `
                   -ScriptBlock {
+          if ($env:SYSTEM_DEBUG -eq "true") {
+            Set-PSDebug -Trace 2
+
+            $InformationPreference = "Continue"
+            $VerbosePreference = "Continue"
+            $DebugPreference = "Continue"
+          }
           do {
             # Write-Host "Sleeping for 50 minutes..."
             # Start-Sleep -Duration (New-TimeSpan -Minutes 50) 
