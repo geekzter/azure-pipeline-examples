@@ -331,8 +331,9 @@ jobs:
 
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
         do {
-          Write-Debug "RefreshOidcToken job status:"
+          Write-Debug "RefreshOidcToken job status ----------"
           Receive-Job RefreshOidcToken
+          Write-Debug "--------------------------------------"
           # # Request fresh idToken
           # Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Select-Object -First 1 -ExpandProperty Name `
           #                                                            | ForEach-Object { $_.Split("_")[2] }
