@@ -327,12 +327,13 @@ jobs:
             Write-Host "Sleeping for 55 minutes..."
             Start-Sleep -Duration (New-TimeSpan -Minutes 55) 
           } while ($true)
-        } | Select-Object -ExcludeProperty Command
+        } | Tee-Object -Variable refreshOidcTokenJob `
+          | Select-Object -ExcludeProperty Command
 
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
         do {
           Write-Debug "RefreshOidcToken job status ----------"
-          Receive-Job RefreshOidcToken
+          $refreshOidcTokenJob | Receive-Job -Keep
           Write-Debug "--------------------------------------"
           # # Request fresh idToken
           # Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Select-Object -First 1 -ExpandProperty Name `
