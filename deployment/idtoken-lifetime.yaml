@@ -277,31 +277,82 @@ jobs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: inlineScript
       inline: |
-        Set-PSDebug -Trace 1
+        if ($env:SYSTEM_DEBUG -eq "true") {
+            Set-PSDebug -Trace 2
+
+            $InformationPreference = "Continue"
+            $VerbosePreference = "Continue"
+            $DebugPreference = "Continue"
+        }
+
+        Start-Job -Name 'RefreshOidcToken' `
+                  -ScriptBlock {
+          do {
+            # Write-Host "Sleeping for 55 minutes..."
+            # Start-Sleep -Duration (New-TimeSpan -Minutes 55) 
+
+            # Request fresh idToken
+            Write-Debug "Determining service connection id..."
+            Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Select-Object -First 1 -ExpandProperty Name `
+                                                                       | ForEach-Object { $_.Split("_")[2] }
+                                                                       | Set-Variable serviceConnectionId
+            Write-Debug "Service connection id: ${serviceConnectionId}"
+
+            Write-Debug "Building OIDC endpoint url..."
+            $oidcRequestUrl = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECTID}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
+            Write-Debug "OIDC endpoint url: ${oidcRequestUrl}"
+            Write-Debug "Requesting new OIDC token..."
+            Invoke-RestMethod -Headers @{
+                                Authorization  = "Bearer $(System.AccessToken)"
+                                'Content-Type' = 'application/json'
+                              } `
+                              -Uri "${oidcRequestUrl}" `
+                              -Method Post | Set-Variable oidcTokenResponse
+            Write-Debug "OIDC token:"
+            $oidcTokenResponse | Select-Object -ExcludeProperty oidcToken | Format-List | Out-String | Write-Debug
+
+            $oidcToken = $oidcTokenResponse.oidcToken
+            if (!$oidcToken) {
+                throw "Could not get OIDC token"
+            }
+
+            Write-Debug "Current Azure context:"
+            Get-AzContext | Format-List | Out-String | Write-Debug
+            Write-Debug "Running Connect-AzAccount with freshly acquired OIDC token..."
+            Connect-AzAccount -ApplicationId (Get-AzContext).Account.Id `
+                              -TenantId (Get-AzContext).Tenant.Id `
+                              -SubscriptionId (Get-AzContext).Subscription.Id `
+                              -FederatedToken $oidcToken
+
+            Write-Host "Sleeping for 55 minutes..."
+            Start-Sleep -Duration (New-TimeSpan -Minutes 55) 
+          } while ($true)
+        }
 
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
         do {
-          # Request fresh idToken
-          Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Select-Object -First 1 -ExpandProperty Name `
-                                                                     | ForEach-Object { $_.Split("_")[2] }
-                                                                     | Set-Variable serviceConnectionId
-          $oidcRequestUrl = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECTID}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
-          Invoke-RestMethod -Headers @{
-                              Authorization  = "Bearer $(System.AccessToken)"
-                              'Content-Type' = 'application/json'
-                            } `
-                            -Uri "${oidcRequestUrl}" `
-                            -Method Post | Set-Variable oidcTokenResponse
-          $oidcTokenResponse | Select-Object -ExcludeProperty oidcToken | Format-List
-          $oidcToken = $oidcTokenResponse.oidcToken
-          if (!$oidcToken) {
-              throw "Could not get OIDC token"
-          }
-          Get-AzContext | Format-List
-          Connect-AzAccount -ApplicationId (Get-AzContext).Account.Id `
-                            -TenantId (Get-AzContext).Tenant.Id `
-                            -SubscriptionId (Get-AzContext).Subscription.Id `
-                            -FederatedToken $oidcToken
+          Receive-Job RefreshOidcToken
+          # # Request fresh idToken
+          # Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Select-Object -First 1 -ExpandProperty Name `
+          #                                                            | ForEach-Object { $_.Split("_")[2] }
+          #                                                            | Set-Variable serviceConnectionId
+          # $oidcRequestUrl = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECTID}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
+          # Invoke-RestMethod -Headers @{
+          #                     Authorization  = "Bearer $(System.AccessToken)"
+          #                     'Content-Type' = 'application/json'
+          #                   } `
+          #                   -Uri "${oidcRequestUrl}" `
+          #                   -Method Post | Set-Variable oidcTokenResponse
+          # $oidcTokenResponse | Select-Object -ExcludeProperty oidcToken | Format-List
+          # $oidcToken = $oidcTokenResponse.oidcToken
+          # if (!$oidcToken) {
+          #     throw "Could not get OIDC token"
+          # }
+          # Get-AzContext | Format-List
+          # Connect-AzAccount -ApplicationId (Get-AzContext).Account.Id `
+          #                   -TenantId (Get-AzContext).Tenant.Id `
+          #                   -SubscriptionId (Get-AzContext).Subscription.Id `
+          #                   -FederatedToken $oidcToken
           
           $expiresOn = $null
           $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
