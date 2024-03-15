@@ -374,8 +374,8 @@ jobs:
                               -SubscriptionId (Get-AzContext).Subscription.Id `
                               -FederatedToken $oidcToken
 
-            Write-Host "Sleeping for 50 minutes..."
-            Start-Sleep -Duration (New-TimeSpan -Minutes 50) 
+            Write-Host "Sleeping for 8 minutes..."
+            Start-Sleep -Duration (New-TimeSpan -Minutes 8) 
           } while ($true)
         } | Tee-Object -Variable refreshOidcTokenJob `
           | Select-Object -ExcludeProperty Command `
