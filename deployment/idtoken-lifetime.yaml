@@ -277,6 +277,8 @@ jobs:
       azureSubscription: '$(subscriptionConnection)'
       scriptType: inlineScript
       inline: |
+        Set-PSDebug -Trace 1
+
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
         do {
           # Request fresh idToken
