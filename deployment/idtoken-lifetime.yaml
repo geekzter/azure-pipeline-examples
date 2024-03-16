@@ -345,8 +345,8 @@ jobs:
 
         $refreshOidcTokenJob | Wait-Job          
 
-        # Write-Debug "Current Azure context after disconnect outside job:"
-        # Get-AzContext -ErrorAction Continue
+        Write-Debug "Current Azure context after disconnect outside job:"
+        Get-AzContext -ErrorAction Continue
 
         # $stopwatch = [system.diagnostics.stopwatch]::StartNew()
         # # do {
