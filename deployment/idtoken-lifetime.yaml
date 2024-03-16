@@ -328,11 +328,11 @@ jobs:
             $azContext | Format-List | Out-String | Write-Debug
             Write-Debug "Disconnecting from Azure..."
             Disconnect-AzAccount
-            Write-Debug "Running Connect-AzAccount with freshly acquired OIDC token..."
-            Connect-AzAccount -ApplicationId $azContext.Account.Id `
-                              -TenantId $azContext.Tenant.Id `
-                              -SubscriptionId $azContext.Subscription.Id `
-                              -FederatedToken $oidcToken
+            # Write-Debug "Running Connect-AzAccount with freshly acquired OIDC token..."
+            # Connect-AzAccount -ApplicationId $azContext.Account.Id `
+            #                   -TenantId $azContext.Tenant.Id `
+            #                   -SubscriptionId $azContext.Subscription.Id `
+            #                   -FederatedToken $oidcToken
 
           #   Write-Host "Sleeping for 4 minutes..."
           #   Start-Sleep -Duration (New-TimeSpan -Minutes 4) 
