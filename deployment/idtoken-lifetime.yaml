@@ -376,7 +376,8 @@ jobs:
         $oidcToken = $oidcTokenResponse.oidcToken
         if (!$oidcToken) {
             throw "Could not get OIDC token"
-        }        $azContext = Get-AzContext
+        }        
+        $azContext = Get-AzContext
         Connect-AzAccount -ApplicationId $azContext.Account.Id `
                           -AuthScope Storage `
                           -TenantId $azContext.Tenant.Id `
