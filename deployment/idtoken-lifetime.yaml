@@ -178,7 +178,7 @@ jobs:
             $VerbosePreference = "Continue"
             $DebugPreference = "Continue"
           }
-          # do {
+          do {
             # Write-Host "Sleeping for 50 minutes..."
             # Start-Sleep -Duration (New-TimeSpan -Minutes 50) 
 
@@ -210,46 +210,50 @@ jobs:
             Write-Debug "Current Azure context:"
             az account show -o json | ConvertFrom-Json | Set-Variable account  
             $account | Format-List | Out-String | Write-Debug
-            Write-Debug "Disconnecting from Azure..."
-            az logout
+            # Write-Debug "Disconnecting from Azure..."
+            # az logout
             Write-Debug "Current Azure context after disconnect in job:"
             az account show 2>&1
-            # Write-Debug "Running az login with freshly acquired OIDC token..."
-            # az login --service-principal -u $account.user.name --tenant $account.tenantId --allow-no-subscriptions --federated-token $oidcToken
+            Write-Debug "Running az login with freshly acquired OIDC token..."
+            az login --service-principal -u $account.user.name --tenant $account.tenantId --allow-no-subscriptions --federated-token $oidcToken
 
-          #   Write-Host "Sleeping for 8 minutes..."
-          #   Start-Sleep -Duration (New-TimeSpan -Minutes 8) 
-          # } while ($true)
+            Write-Host "Sleeping for 8 minutes..."
+            Start-Sleep -Duration (New-TimeSpan -Minutes 8) 
+          } while ($true)
         } | Tee-Object -Variable refreshOidcTokenJob `
           | Select-Object -ExcludeProperty Command `
           | Write-Host -ForegroundColor DarkMagenta
 
-        $refreshOidcTokenJob | Wait-Job          
-        $refreshOidcTokenJob | Receive-Job -Keep        
+        # $refreshOidcTokenJob | Wait-Job          
+        # $refreshOidcTokenJob | Receive-Job -Keep
 
-        Start-Sleep -Seconds 30
-        Write-Debug "Current Azure context after disconnect outside job:"
-        az account show 2>&1
+        # Start-Sleep -Seconds 30
+        # Write-Debug "Current Azure context after disconnect outside job:"
+        # az account show 2>&1
 
-        # do {
-        #   $expiresOn = $null
-        #   # $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
-        #   $resource = 'https://kusto.kusto.windows.net'
-        #   Write-Host "`nRequesting access token for '${resource}'.."
-        #   az account get-access-token --resource $resource `
-        #                               --query "expiresOn" `
-        #                               --output tsv `
-        #                               | Set-Variable expiresOn
-        #   if ($expiresOn) {
-        #     Write-Host "Access token expires in $([math]::Round(([DateTime]::Parse($expiresOn) - [DateTime]::Now).TotalMinutes)) minutes"            
-        #   } else {
-        #     Write-Host "##vso[task.logissue type=error]Could not get access token"
-        #     exit 1
-        #   }
+        do {
+          Write-Debug "RefreshOidcToken job status -----------------------------------------"
+          $refreshOidcTokenJob | Receive-Job -Keep | Write-Host -ForegroundColor DarkMagenta
+          Write-Debug "---------------------------------------------------------------------"
 
-        #   Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
-        #   Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
-        # } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+          $expiresOn = $null
+          # $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
+          $resource = 'https://kusto.kusto.windows.net'
+          Write-Host "`nRequesting access token for '${resource}'.."
+          az account get-access-token --resource $resource `
+                                      --query "expiresOn" `
+                                      --output tsv `
+                                      | Set-Variable expiresOn
+          if ($expiresOn) {
+            Write-Host "Access token expires in $([math]::Round(([DateTime]::Parse($expiresOn) - [DateTime]::Now).TotalMinutes)) minutes"            
+          } else {
+            Write-Host "##vso[task.logissue type=error]Could not get access token"
+            exit 1
+          }
+
+          Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
+          Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
+        } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
 
 # - job: pwshSession
 #   displayName: 'Get-AzContext'
