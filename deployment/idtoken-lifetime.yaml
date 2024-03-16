@@ -285,15 +285,15 @@ jobs:
           $DebugPreference = "Continue"
         }
 
-        # Start-Job -Name 'RefreshOidcToken' `
-        #           -ScriptBlock {
-        #   if ($env:SYSTEM_DEBUG -eq "true") {
-        #     Set-PSDebug -Trace 2
+        Start-Job -Name 'RefreshOidcToken' `
+                  -ScriptBlock {
+          if ($env:SYSTEM_DEBUG -eq "true") {
+            Set-PSDebug -Trace 2
 
-        #     $InformationPreference = "Continue"
-        #     $VerbosePreference = "Continue"
-        #     $DebugPreference = "Continue"
-        #   }
+            $InformationPreference = "Continue"
+            $VerbosePreference = "Continue"
+            $DebugPreference = "Continue"
+          }
           # do {
             # Write-Host "Sleeping for 50 minutes..."
             # Start-Sleep -Duration (New-TimeSpan -Minutes 50) 
@@ -339,11 +339,11 @@ jobs:
           #   Write-Host "Sleeping for 4 minutes..."
           #   Start-Sleep -Duration (New-TimeSpan -Minutes 4) 
           # } while ($true)
-        # } | Tee-Object -Variable refreshOidcTokenJob `
-        #   | Select-Object -ExcludeProperty Command `
-        #   | Write-Host -ForegroundColor DarkMagenta
+        } | Tee-Object -Variable refreshOidcTokenJob `
+          | Select-Object -ExcludeProperty Command `
+          | Write-Host -ForegroundColor DarkMagenta
 
-        # $refreshOidcTokenJob | Wait-Job          
+        $refreshOidcTokenJob | Wait-Job          
 
         # Write-Debug "Current Azure context after disconnect outside job:"
         # Get-AzContext -ErrorAction Continue
