@@ -353,7 +353,30 @@ jobs:
         # $resource = 'https://kusto.kusto.windows.net'
         $resource = 'https://storage.azure.com/'
 
-        $azContext = Get-AzContext
+        # Request fresh idToken
+        Write-Debug "Determining service connection id..."
+        Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Select-Object -First 1 -ExpandProperty Name `
+                                                                    | ForEach-Object { $_.Split("_")[2] }
+                                                                    | Set-Variable serviceConnectionId
+        Write-Debug "Service connection id: ${serviceConnectionId}"
+
+        Write-Debug "Building OIDC endpoint url..."
+        $oidcRequestUrl = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECTID}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
+        Write-Debug "OIDC endpoint url: ${oidcRequestUrl}"
+        Write-Debug "Requesting new OIDC token..."
+        Invoke-RestMethod -Headers @{
+                            Authorization  = "Bearer $(System.AccessToken)"
+                            'Content-Type' = 'application/json'
+                          } `
+                          -Uri "${oidcRequestUrl}" `
+                          -Method Post | Set-Variable oidcTokenResponse
+        Write-Debug "OIDC token:"
+        $oidcTokenResponse | Select-Object -ExcludeProperty oidcToken | Format-List | Out-String | Write-Debug
+
+        $oidcToken = $oidcTokenResponse.oidcToken
+        if (!$oidcToken) {
+            throw "Could not get OIDC token"
+        }        $azContext = Get-AzContext
         Connect-AzAccount -ApplicationId $azContext.Account.Id `
                           -AuthScope Storage `
                           -TenantId $azContext.Tenant.Id `
