@@ -343,6 +343,7 @@ jobs:
           | Select-Object -ExcludeProperty Command `
           | Write-Host -ForegroundColor DarkMagenta
 
+        $refreshOidcTokenJob | Receive-Job -Keep
         $refreshOidcTokenJob | Wait-Job          
 
         Write-Debug "Current Azure context after disconnect outside job:"
