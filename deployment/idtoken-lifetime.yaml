@@ -328,6 +328,8 @@ jobs:
             $azContext | Format-List | Out-String | Write-Debug
             Write-Debug "Disconnecting from Azure..."
             Disconnect-AzAccount
+            Write-Debug "Current Azure context after disconnect in job:"
+            Get-AzContext -ErrorAction Continue
             # Write-Debug "Running Connect-AzAccount with freshly acquired OIDC token..."
             # Connect-AzAccount -ApplicationId $azContext.Account.Id `
             #                   -TenantId $azContext.Tenant.Id `
@@ -342,6 +344,9 @@ jobs:
           | Write-Host -ForegroundColor DarkMagenta
 
         $refreshOidcTokenJob | Wait-Job          
+
+        Write-Debug "Current Azure context after disconnect outside job:"
+        Get-AzContext -ErrorAction Continue
 
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
         # do {
