@@ -330,6 +330,15 @@ jobs:
             Clear-AzContext -Force -ErrorAction Continue
             Clear-AzContext -Scope CurrentUser -Force -ErrorAction Continue
             Clear-AzContext -Scope Process -Force -ErrorAction Continue
+            Disconnect-AzAccount -Force -ErrorAction Continue
+            Disconnect-AzAccount -Scope CurrentUser -Force -ErrorAction Continue
+            Disconnect-AzAccount -Scope Process -Force -ErrorAction Continue
+            Disconnect-AzAccount -ApplicationId $azContext.Account.Id -TenantId $azContext.Tenant.Id -Force -ErrorAction Continue
+            Disconnect-AzAccount -ApplicationId $azContext.Account.Id -TenantId $azContext.Tenant.Id -Scope CurrentUser -Force -ErrorAction Continue
+            Disconnect-AzAccount -ApplicationId $azContext.Account.Id -TenantId $azContext.Tenant.Id -Scope Process -Force -ErrorAction Continue
+            Clear-AzContext -Force -ErrorAction Continue
+            Clear-AzContext -Scope CurrentUser -Force -ErrorAction Continue
+            Clear-AzContext -Scope Process -Force -ErrorAction Continue
             Write-Debug "Current Azure context after disconnect in job:"
             Get-AzContext -ErrorAction Continue
             # Write-Debug "Running Connect-AzAccount with freshly acquired OIDC token..."
