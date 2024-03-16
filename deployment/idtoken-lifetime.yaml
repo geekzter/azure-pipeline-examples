@@ -327,18 +327,18 @@ jobs:
             $azContext = Get-AzContext
             $azContext | Format-List | Out-String | Write-Debug
             Write-Debug "Disconnecting from Azure..."
-            Clear-AzContext -Force -ErrorAction Continue
-            Clear-AzContext -Scope CurrentUser -Force -ErrorAction Continue
-            Clear-AzContext -Scope Process -Force -ErrorAction Continue
-            Disconnect-AzAccount -ErrorAction Continue
-            Disconnect-AzAccount -Scope CurrentUser -ErrorAction Continue
-            Disconnect-AzAccount -Scope Process -ErrorAction Continue
-            Disconnect-AzAccount -ApplicationId $azContext.Account.Id -TenantId $azContext.Tenant.Id -ErrorAction Continue
-            Disconnect-AzAccount -ApplicationId $azContext.Account.Id -TenantId $azContext.Tenant.Id -Scope CurrentUser -ErrorAction Continue
-            Disconnect-AzAccount -ApplicationId $azContext.Account.Id -TenantId $azContext.Tenant.Id -Scope Process -ErrorAction Continue
-            Clear-AzContext -Force -ErrorAction Continue
-            Clear-AzContext -Scope CurrentUser -Force -ErrorAction Continue
-            Clear-AzContext -Scope Process -Force -ErrorAction Continue
+            Clear-AzContext -Force -ErrorAction SilentlyContinue
+            Clear-AzContext -Scope CurrentUser -Force -ErrorAction SilentlyContinue
+            Clear-AzContext -Scope Process -Force -ErrorAction SilentlyContinue
+            Disconnect-AzAccount -ErrorAction SilentlyContinue
+            Disconnect-AzAccount -Scope CurrentUser -ErrorAction SilentlyContinue
+            Disconnect-AzAccount -Scope Process -ErrorAction SilentlyContinue
+            Disconnect-AzAccount -ApplicationId $azContext.Account.Id -TenantId $azContext.Tenant.Id -ErrorAction SilentlyContinue
+            Disconnect-AzAccount -ApplicationId $azContext.Account.Id -TenantId $azContext.Tenant.Id -Scope CurrentUser -ErrorAction SilentlyContinue
+            Disconnect-AzAccount -ApplicationId $azContext.Account.Id -TenantId $azContext.Tenant.Id -Scope Process -ErrorAction SilentlyContinue
+            Clear-AzContext -Force -ErrorAction SilentlyContinue
+            Clear-AzContext -Scope CurrentUser -Force -ErrorAction SilentlyContinue
+            Clear-AzContext -Scope Process -Force -ErrorAction SilentlyContinue
             Write-Debug "Current Azure context after disconnect in job:"
             Get-AzContext -ErrorAction Continue
             # Write-Debug "Running Connect-AzAccount with freshly acquired OIDC token..."
