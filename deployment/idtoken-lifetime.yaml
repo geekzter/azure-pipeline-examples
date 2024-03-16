@@ -206,7 +206,7 @@ jobs:
             Write-Debug "Disconnecting from Azure..."
             az logout
             Write-Debug "Current Azure context after disconnect in job:"
-            az account show
+            az account show 2>&1
             Write-Debug "Running az login with freshly acquired OIDC token..."
             az login --service-principal -u $account.user.name --tenant $account.tenantId --allow-no-subscriptions --federated-token $oidcToken
 
@@ -221,7 +221,7 @@ jobs:
         $refreshOidcTokenJob | Receive-Job -Keep        
 
         Write-Debug "Current Azure context after disconnect outside job:"
-        az account show
+        az account show 2>&1
 
 
         # do {
