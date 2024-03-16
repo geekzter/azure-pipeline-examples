@@ -282,7 +282,7 @@ jobs:
 
           $InformationPreference = "Continue"
           $VerbosePreference = "Continue"
-          # $DebugPreference = "Continue"
+          $DebugPreference = "Continue"
         }
 
         Start-Job -Name 'RefreshOidcToken' `
@@ -327,7 +327,7 @@ jobs:
             $azContext = Get-AzContext
             $azContext | Format-List | Out-String | Write-Debug
             Write-Debug "Disconnecting from Azure..."
-            Disconnect-AzAccount
+            Clear-AzContext -Scope CurrentUser -ErrorAction Continue
             Write-Debug "Current Azure context after disconnect in job:"
             Get-AzContext -ErrorAction Continue
             # Write-Debug "Running Connect-AzAccount with freshly acquired OIDC token..."
