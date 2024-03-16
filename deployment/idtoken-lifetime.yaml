@@ -154,7 +154,7 @@ jobs:
     displayName: 'az account get-access-token with $(subscriptionConnection) and idToken refresh'
     inputs:
       azureSubscription: $(subscriptionConnection)
-      failOnStandardError: true
+      failOnStandardError: false
       powerShellIgnoreLASTEXITCODE: false
       powerShellErrorActionPreference: Stop
       scriptType: pscore
