@@ -264,7 +264,6 @@ jobs:
 #   timeoutInMinutes: ${{ parameters.maxMinutes }}
 #   steps:
 #   - task: AzurePowerShell@5
-#     name: imageBuild
 #     displayName: 'Get-AzContext'
 #     inputs:
 #       azureSubscription: '$(subscriptionConnection)'
@@ -296,7 +295,6 @@ jobs:
 #   timeoutInMinutes: ${{ parameters.maxMinutes }}
 #   steps:
 #   - task: AzurePowerShell@5
-#     name: imageBuild
 #     displayName: 'Get-AzAccessToken'
 #     inputs:
 #       azureSubscription: '$(subscriptionConnection)'
@@ -342,7 +340,6 @@ jobs:
 #   timeoutInMinutes: ${{ parameters.maxMinutes }}
 #   steps:
 #   - task: AzurePowerShell@5
-#     name: imageBuild
 #     displayName: 'Get-AzAccessToken (with scope)'
 #     inputs:
 #       azureSubscription: '$(subscriptionConnection)'
@@ -422,7 +419,6 @@ jobs:
   timeoutInMinutes: ${{ parameters.maxMinutes }}
   steps:
   - task: AzurePowerShell@5
-    name: imageBuild
     displayName: 'Get-AzAccessToken (with idToken refresh)'
     inputs:
       azureSubscription: '$(subscriptionConnection)'
@@ -497,7 +493,8 @@ jobs:
                               -ContextName $azContext.Name `
                               -FederatedToken $oidcToken `
                               -Force `
-                              -Scope CurrentUser `
+                              -Scope Process `
+                              -ServicePrincipal `
                               -SubscriptionId $azContext.Subscription.Id `
                               -TenantId $azContext.Tenant.Id
 
