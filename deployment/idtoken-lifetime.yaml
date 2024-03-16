@@ -160,6 +160,13 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
+        if ($env:SYSTEM_DEBUG -eq "true") {
+          Set-PSDebug -Trace 2
+
+          $InformationPreference = "Continue"
+          $VerbosePreference = "Continue"
+          $DebugPreference = "Continue"
+        }
         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
 
         Start-Job -Name 'RefreshOidcToken' `
