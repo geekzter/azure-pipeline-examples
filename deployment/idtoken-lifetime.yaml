@@ -436,9 +436,6 @@ jobs:
           $DebugPreference = "Continue"
         }
 
-        $azContext = Get-AzContext
-        $azContext | Format-List | Out-String | Write-Debug
-
         Start-Job -Name 'RefreshOidcToken' `
                   -ScriptBlock {
           if ($env:SYSTEM_DEBUG -eq "true") {
@@ -478,6 +475,8 @@ jobs:
             }
 
             Write-Debug "Current Azure context:"
+            $azContext = Get-AzContext
+            $azContext | Format-List | Out-String | Write-Debug
             # Write-Debug "Disconnecting from Azure..."
             # Clear-AzContext -Force -ErrorAction SilentlyContinue
             # Clear-AzContext -Scope CurrentUser -Force -ErrorAction SilentlyContinue
