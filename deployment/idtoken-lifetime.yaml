@@ -344,6 +344,7 @@ jobs:
           | Write-Host -ForegroundColor DarkMagenta
 
         $refreshOidcTokenJob | Wait-Job          
+        $refreshOidcTokenJob | Receive-Job -Keep        
 
         Write-Debug "Current Azure context after disconnect outside job:"
         Get-AzContext -ErrorAction Continue
