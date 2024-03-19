@@ -10,11 +10,13 @@ schedules:
 pool:
   vmImage: 'ubuntu-latest'
 
-# container: ubuntu:20.04
+container: ubuntu:20.04
 
 steps:
 - script: |
     sudo apt-get install -y stress-ng
     # stress-ng --vm-bytes $(awk '/MemAvailable/{printf "%d\n", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1
-    stress-ng --aggressive --maximize
+    # stress-ng --vm-bytes $(awk '/MemAvailable/{printf "%d\n", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1 --aggressive --maximize
+    stress-ng --brk 2 --stack 2 --bigheap 2 # CPU
+    # stress-ng --matrix 0 --matrix-size 64 --tz  -t 60 # Memory
     
