@@ -22,9 +22,11 @@ jobs:
   - script: |
       # stress-ng --vm-bytes $(awk '/MemAvailable/{printf "%d\n", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1
       # stress-ng --vm-bytes $(awk '/MemAvailable/{printf "%d\n", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1 --aggressive --maximize
-      stress-ng --matrix 0 --matrix-size 64 --tz  -t 60 # Memory
+      stress-ng --matrix 0 --matrix-size 64 --tz  -t 60
+      stress-ng --vm 2 --vm-bytes 2G --mmap 2 --mmap-bytes 2G --page-in
     displayName: 'Memory Test'
   - script: |
-      stress-ng --brk 2 --stack 2 --bigheap 2 --aggressive --maximize # CPU
+      stress-ng -c 0 -l 96
+      # stress-ng --brk 2 --stack 2 --bigheap 2 --aggressive --maximize
     displayName: 'CPU Test'
     
