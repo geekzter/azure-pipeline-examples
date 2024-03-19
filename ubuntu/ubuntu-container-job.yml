@@ -12,21 +12,19 @@ schedules:
 
 jobs:
 - job: stressTest
+  displayName: 'stress-ng'
   pool:
     vmImage: 'ubuntu-latest'
   steps:
   - script: |
       sudo apt-get install -y stress-ng
+    displayName: 'Install stress-ng'
+  - script: |
       # stress-ng --vm-bytes $(awk '/MemAvailable/{printf "%d\n", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1
       # stress-ng --vm-bytes $(awk '/MemAvailable/{printf "%d\n", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1 --aggressive --maximize
-      # stress-ng --brk 2 --stack 2 --bigheap 2 # CPU
       stress-ng --matrix 0 --matrix-size 64 --tz  -t 60 # Memory
     displayName: 'Memory Test'
   - script: |
-      sudo apt-get install -y stress-ng
-      # stress-ng --vm-bytes $(awk '/MemAvailable/{printf "%d\n", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1
-      # stress-ng --vm-bytes $(awk '/MemAvailable/{printf "%d\n", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1 --aggressive --maximize
-      stress-ng --brk 2 --stack 2 --bigheap --aggressive --maximize 2 # CPU
-      # stress-ng --matrix 0 --matrix-size 64 --tz  -t 60 # Memory
+      stress-ng --brk 2 --stack 2 --bigheap 2 --aggressive --maximize # CPU
     displayName: 'CPU Test'
     
