@@ -27,6 +27,7 @@ jobs:
     displayName: 'Memory Test'
   - script: |
       stress-ng -c 0 -l 96 
+      # stress-ng --cpu 8 --timeout 20
       # stress-ng --brk 2 --stack 2 --bigheap 2 --aggressive --maximize
     displayName: 'CPU Test'
     
