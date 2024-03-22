@@ -30,17 +30,17 @@ trigger: none
 variables:
 - name: serviceConnection
   ${{ if eq(parameters.serviceConnection, '<from serviceConnection variable>') }}:
-    value: $[ variables['serviceConnection'] ]
+    value: $[ variables['serviceConnectionDefault'] ]
   ${{ else }}:
     value: '${{ parameters.serviceConnection }}'
 - name: storageAccountName
   ${{ if eq(parameters.storageAccountName, '<from storageAccountName variable>') }}:
-    value: $[ variables['storageAccountName'] ]
+    value: $[ variables['storageAccountNameDefault'] ]
   ${{ else }}:
     value: '${{ parameters.storageAccountName }}'
 - name: storageContainerName
   ${{ if eq(parameters.storageContainerName, '<from storageContainerName variable>') }}:
-    value: $[ variables['storageContainerName'] ]
+    value: $[ variables['storageContainerNameDefault'] ]
   ${{ else }}:
     value: '${{ parameters.storageContainerName }}'
 
