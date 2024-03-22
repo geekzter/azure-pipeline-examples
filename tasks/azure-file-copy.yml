@@ -43,7 +43,7 @@ jobs:
     name: 'Azure Pipelines'
     vmImage: windows-latest
   steps:
-  - pwsh: New-TemporaryFile | Move-Item -Destination $(Build.ArtifactStagingDirectory)
+  - pwsh: New-TemporaryFile | Move-Item -Destination '$(Build.ArtifactStagingDirectory)'
     displayName: 'Generate artifact'
 
   # AzureFileCopy@6 uses Azure RBAC and supports Workload identity federation
