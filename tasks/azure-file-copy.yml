@@ -1,0 +1,63 @@
+# Pipeline to test Service Connections
+
+parameters:
+- name: serviceConnection
+  displayName: Override Service Connection
+  type: string
+  default: 'my-azure-subscription'
+- name: poolName
+  displayName: Agent Pool
+  type: string
+  default: 'Azure Pipelines'
+- name: vmImage
+  displayName: Agent Pool
+  type: string
+  default: 'ubuntu-latest'
+- name: storageAccountName
+  displayName: Storage Account
+  type: string
+  default: '<from storageAccountName variable>'
+- name: storageAccountContainer
+  displayName: Storage Account Container
+  type: string
+  default: '<from storageContainerName variable>'
+
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-${{ parameters.jobType }}-$(SourceBranchName)-$(Build.BuildId)
+
+pr: none
+schedules: none
+trigger: none
+
+variables:
+- name: serviceConnection
+  ${{ if eq(parameters.serviceConnection, '<from serviceConnection variable>') }}:
+    value: $[ variables['serviceConnection'] ]
+  ${{ else }}:
+    value: '${{ parameters.serviceConnection }}'
+- name: storageAccountName
+  ${{ if eq(parameters.storageAccountName, '<from storageAccountName variable>') }}:
+    value: $[ variables['storageAccountName'] ]
+  ${{ else }}:
+    value: '${{ parameters.storageAccountName }}'
+- name: storageContainerName
+  ${{ if eq(parameters.storageContainerName, '<from storageContainerName variable>') }}:
+    value: $[ variables['storageContainerName'] ]
+  ${{ else }}:
+    value: '${{ parameters.storageContainerName }}'
+
+jobs:
+- job: azCopy
+  displayName: 'Agent File Copy - $(serviceConnection)'
+  pool:
+    name: ${{ parameters.poolName }}
+    vmImage: ${{ parameters.vmImage }}
+  steps:
+  - task: AzureFileCopy@6
+    displayName: "Copy artifacts to $(storageAccountName)"
+    inputs:
+      azureSubscription: $(serviceConnection) 
+      blobPrefix: $(Build.BuildId)
+      containerName: $(storageContainerName)
+      destination: 'AzureBlob'
+      sourcePath: $(Build.ArtifactStagingDirectory) 
+      storage: $(storageAccountName)
