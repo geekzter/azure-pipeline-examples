@@ -52,6 +52,10 @@ jobs:
     name: ${{ parameters.poolName }}
     vmImage: ${{ parameters.vmImage }}
   steps:
+  - pwsh: New-TemporaryFile | Copy-Item -Destination $(Build.ArtifactStagingDirectory)
+    displayName: 'Generate artifact'
+
+  # AzureFileCopy@6 uses Azure RBAC and supports Workload identity federation
   - task: AzureFileCopy@6
     displayName: "Copy artifacts to $(storageAccountName)"
     inputs:
