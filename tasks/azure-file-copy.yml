@@ -5,14 +5,6 @@ parameters:
   displayName: Override Service Connection
   type: string
   default: 'my-azure-subscription'
-- name: poolName
-  displayName: Agent Pool
-  type: string
-  default: 'Azure Pipelines'
-- name: vmImage
-  displayName: Agent Pool
-  type: string
-  default: 'ubuntu-latest'
 - name: storageAccountName
   displayName: Storage Account
   type: string
@@ -48,8 +40,8 @@ jobs:
 - job: azCopy
   displayName: 'Agent File Copy - $(serviceConnection)'
   pool:
-    name: ${{ parameters.poolName }}
-    vmImage: ${{ parameters.vmImage }}
+    name: 'Azure Pipelines'
+    vmImage: windows-latest
   steps:
   - pwsh: New-TemporaryFile | Copy-Item -Destination $(Build.ArtifactStagingDirectory)
     displayName: 'Generate artifact'
