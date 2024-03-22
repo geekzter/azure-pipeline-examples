@@ -25,7 +25,6 @@ parameters:
 name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-${{ parameters.jobType }}-$(SourceBranchName)-$(Build.BuildId)
 
 pr: none
-schedules: none
 trigger: none
 
 variables:
