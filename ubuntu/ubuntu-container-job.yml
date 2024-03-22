@@ -19,13 +19,14 @@ jobs:
   - script: |
       sudo apt-get install -y stress-ng
     displayName: 'Install stress-ng'
+  # - script: |
+  #     # stress-ng --vm-bytes $(awk '/MemAvailable/{printf "%d\n", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1
+  #     # stress-ng --vm-bytes $(awk '/MemAvailable/{printf "%d\n", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1 --aggressive --maximize
+  #     # stress-ng --matrix 0 --matrix-size 64 --tz  -t 60
+  #     stress-ng --vm 2 --vm-bytes 2G --mmap 2 --mmap-bytes 2G --page-in
+  #   displayName: 'Memory Test'
   - script: |
-      # stress-ng --vm-bytes $(awk '/MemAvailable/{printf "%d\n", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1
-      # stress-ng --vm-bytes $(awk '/MemAvailable/{printf "%d\n", $2 * 0.9;}' < /proc/meminfo)k --vm-keep -m 1 --aggressive --maximize
-      # stress-ng --matrix 0 --matrix-size 64 --tz  -t 60
-      stress-ng --vm 2 --vm-bytes 2G --mmap 2 --mmap-bytes 2G --page-in
-    displayName: 'Memory Test'
-  - script: |
+      lscpu -p
       # stress-ng -c 0 -l 96 
       # stress-ng --cpu 8 --timeout 20
       stress-ng --cpu 4 -v --timeout 300s
