@@ -57,6 +57,8 @@ variables:
     value: $[ variables['subscriptionConnection'] ]
   ${{ else }}:
     value: '${{ parameters.serviceConnection }}'
+- name: AZURE_CORE_OUTPUT
+  value: none
 
 jobs:
 - ${{ if or(eq(parameters.jobType,'deploymentJob'),eq(parameters.jobType,'environmentVM')) }}:

@@ -120,6 +120,8 @@ steps:
       az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" `
                     -o table
     workingDirectory: '$(Build.ArtifactStagingDirectory)'
+    env:
+      AZURE_CORE_OUTPUT: none
 
 - task: AzurePowerShell@5
   displayName: 'AzurePowerShell: $(serviceConnection)'
