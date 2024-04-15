@@ -112,7 +112,8 @@ steps:
       Write-Host "`nAzure Portal link for Service Principal of type '$($servicePrincipal.servicePrincipalType)':`n$($azurePortalLink)"
 
 
-      Write-Host "`n$($PSStyle.Bold)'az account get-access-token' lifetime: $($PSStyle.Reset) -------------------------------------------------------"
+      Write-Host "`nAccess token lifetime: $($PSStyle.Reset) --------------------------------------------------------------------------------------------"
+      Write-Host "$($PSStyle.Formatting.FormatAccent)az account get-access-token$($PSStyle.Reset)"
       az account get-access-token --resource '499b84ac-1321-427f-aa17-267ca6975798' `
                                   --query "expiresOn" `
                                   --output tsv `
