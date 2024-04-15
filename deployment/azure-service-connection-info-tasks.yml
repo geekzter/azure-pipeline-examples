@@ -95,6 +95,7 @@ steps:
                               | Sort-Object -Property roleDefinitionName
                               | Format-Table -AutoSize -Wrap
 
+
       Write-Host "`n$($PSStyle.Bold)Service Connection Service Principal object:$($PSStyle.Reset) -------------------------------------------------------"
       Write-Host "$($PSStyle.Formatting.FormatAccent)az ad sp show --id <appId>$($PSStyle.Reset)"
       az ad sp show --id $appId `
@@ -110,11 +111,26 @@ steps:
       }
       Write-Host "`nAzure Portal link for Service Principal of type '$($servicePrincipal.servicePrincipalType)':`n$($azurePortalLink)"
 
+
+      Write-Host "`nAccess token lifetime: $($PSStyle.Reset) --------------------------------------------------------------------------------------------"
+      Write-Host "$($PSStyle.Formatting.FormatAccent)az account get-access-token$($PSStyle.Reset)"
+      az account get-access-token --resource '499b84ac-1321-427f-aa17-267ca6975798' `
+                                  --query "expiresOn" `
+                                  --output tsv `
+                                  | Set-Variable expiresOn
+      if ($expiresOn) {
+        Write-Host "Access tokens expire in $([math]::Round(([DateTime]::Parse($expiresOn) - [DateTime]::Now).TotalMinutes)) minutes"            
+      } else {
+        Write-Host "##vso[task.logissue type=error]Could not get access token"
+      }
+
+
       Write-Host "`n$($PSStyle.Bold)Subscriptions the Service Connection has access to:$($PSStyle.Reset) ------------------------------------------------"
       Write-Host "$($PSStyle.Formatting.FormatAccent)az account list$($PSStyle.Reset)"
       az account list --query "sort_by([].{Name:name, SubscriptionId:id}, &Name)" `
                       -o table
       
+
       Write-Host "`n$($PSStyle.Bold)Resource groups that the Service Connection has access to in subscription '$(az account show --query name -o tsv)':$($PSStyle.Reset) -------------"
       Write-Host "$($PSStyle.Formatting.FormatAccent)az group list$($PSStyle.Reset)"
       az group list --query "sort_by([].{Name:name, ResourceId:id}, &Name)" `
