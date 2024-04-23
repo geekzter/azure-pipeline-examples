@@ -69,7 +69,7 @@ steps:
                                                                      } 
                                                                      $_
                                                                    } `
-                                                                 | Format-Table -HideTableHeaders
+                                                                 | Format-Table -AutoSize -HideTableHeaders
 
       Write-Host "`nVariables added by 'addSpnToEnvironment':" -NoNewline
       Get-ChildItem -Path Env: -Recurse -Include idToken, `
