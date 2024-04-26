@@ -56,27 +56,32 @@ steps:
     inlineScript: |
       Write-Host "`n$($PSStyle.Bold)Service Connection name: '$(serviceConnection)'$($PSStyle.Reset) -----------------------------------------------"
 
-      Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
-                                                                 | Select-Object -First 1 -ExpandProperty Name `
-                                                                 | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
-                                                                 | Set-Variable serviceConnectionId
+      Get-ChildItem -Path Env: -Recurse `
+                               -Include ENDPOINT_DATA_* `
+                               | Sort-Object -Property Name `
+                               | Select-Object -First 1 -ExpandProperty Name `
+                               | ForEach-Object { $_ -replace 'ENDPOINT_DATA_','' } `
+                               | Set-Variable serviceConnectionId
       Write-Host "Service Connection ID: ${serviceConnectionId}"
       Write-Host "Service Connection endpoint data:"
-      Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Sort-Object -Property Name `
-                                                                 | ForEach-Object { 
-                                                                     if ($_.Name -match 'SECRET|TOKEN') {
-                                                                       $_.Value = '***'
-                                                                     } 
-                                                                     $_
-                                                                   } `
-                                                                 | Format-Table -HideTableHeaders -Property @{Expression='Name';Width=75}, @{Expression='Value';Width=175} -Wrap `
-                                                                 | Out-String -Width 256
+      Get-ChildItem -Path Env: -Recurse `
+                               -Include AZURESUBSCRIPTION_*, ENDPOINT_DATA_*, SYSTEM_OIDC* `
+                               | Sort-Object -Property Name `
+                               | ForEach-Object { 
+                                   if ($_.Name -match 'SECRET|TOKEN') {
+                                     $_.Value = '***'
+                                   } 
+                                   $_
+                                 } `
+                               | Format-Table -HideTableHeaders -Property @{Expression='Name';Width=75}, @{Expression='Value';Width=175} -Wrap `
+                               | Out-String -Width 256
 
       Write-Host "`nVariables added by 'addSpnToEnvironment':" -NoNewline
-      Get-ChildItem -Path Env: -Recurse -Include idToken, `
-                                                servicePrincipalId, `
-                                                servicePrincipalKey,`
-                                                tenantId `
+      Get-ChildItem -Path Env: `
+                    -Recurse -Include idToken, `
+                                      servicePrincipalId, `
+                                      servicePrincipalKey,`
+                                      tenantId `
                     | Sort-Object -Property Name `
                     | Select-Object -Property Name `
                     | Format-Table -HideTableHeaders
