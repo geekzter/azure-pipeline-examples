@@ -38,12 +38,22 @@ jobs:
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
+- job: macOS14
+  pool:
+    vmImage: 'macOS-14'
+  steps:
+  - bash: |
+      echo Hello from macOS Sonoma
+      sw_vers
+  - pwsh: |
+      Write-Host "`$PSVersionTable.OS"
+      $PSVersionTable.OS
 - job: macOSlatest
   pool:
     vmImage: 'macOS-latest'
   steps:
   - bash: |
-      echo Hello from the latest version of macOS available
+      echo Hello from the latest stable macOS image available
       sw_vers
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
