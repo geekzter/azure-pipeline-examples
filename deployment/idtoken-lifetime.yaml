@@ -107,43 +107,43 @@ jobs:
 #           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
 #         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
 
-# - job: azAccessToken
-#   displayName: 'az account get-access-token'
-#   pool:
-#     name: ${{ parameters.pool }}
-#     vmImage: ${{ parameters.vmImage }}
-#   timeoutInMinutes: ${{ parameters.maxMinutes }}
-#   steps:
-#   - task: AzureCLI@2
-#     displayName: 'az account get-access-token with $(subscriptionConnection)'
-#     inputs:
-#       azureSubscription: $(subscriptionConnection)
-#       failOnStandardError: true
-#       powerShellIgnoreLASTEXITCODE: false
-#       powerShellErrorActionPreference: Stop
-#       scriptType: pscore
-#       scriptLocation: inlineScript
-#       inlineScript: |
-#         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
-#         do {
-#           $expiresOn = $null
-#           # $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
-#           $resource = 'https://kusto.kusto.windows.net'
-#           Write-Host "`nRequesting access token for '${resource}'.."
-#           az account get-access-token --resource $resource `
-#                                       --query "expiresOn" `
-#                                       --output tsv `
-#                                       | Set-Variable expiresOn
-#           if ($expiresOn) {
-#             Write-Host "Access token expires in $([math]::Round(([DateTime]::Parse($expiresOn) - [DateTime]::Now).TotalMinutes)) minutes"            
-#           } else {
-#             Write-Host "##vso[task.logissue type=error]Could not get access token"
-#             exit 1
-#           }
+- job: azAccessToken
+  displayName: 'az account get-access-token'
+  pool:
+    name: ${{ parameters.pool }}
+    vmImage: ${{ parameters.vmImage }}
+  timeoutInMinutes: ${{ parameters.maxMinutes }}
+  steps:
+  - task: AzureCLI@2
+    displayName: 'az account get-access-token with $(subscriptionConnection)'
+    inputs:
+      azureSubscription: $(subscriptionConnection)
+      failOnStandardError: true
+      powerShellIgnoreLASTEXITCODE: false
+      powerShellErrorActionPreference: Stop
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        $stopwatch = [system.diagnostics.stopwatch]::StartNew()
+        do {
+          $expiresOn = $null
+          # $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
+          $resource = 'https://kusto.kusto.windows.net'
+          Write-Host "`nRequesting access token for '${resource}'.."
+          az account get-access-token --resource $resource `
+                                      --query "expiresOn" `
+                                      --output tsv `
+                                      | Set-Variable expiresOn
+          if ($expiresOn) {
+            Write-Host "Access token expires in $([math]::Round(([DateTime]::Parse($expiresOn) - [DateTime]::Now).TotalMinutes)) minutes"            
+          } else {
+            Write-Host "##vso[task.logissue type=error]Could not get access token"
+            exit 1
+          }
 
-#           Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
-#           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
-#         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+          Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
+          Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
+        } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
 
 - job: azAccessTokenWithScope
   displayName: 'az account get-access-token after az login --scope'
@@ -454,139 +454,139 @@ jobs:
 #       pwsh: true
 #       failOnStandardError: true
 
-- job: pwshAccessTokenWithRefresh
-  displayName: 'Get-AzAccessToken (with idToken refresh)'
-  pool:
-    name: ${{ parameters.pool }}
-    vmImage: ${{ parameters.vmImage }}
-  timeoutInMinutes: ${{ parameters.maxMinutes }}
-  steps:
-  - task: AzurePowerShell@5
-    displayName: 'Get-AzAccessToken (with idToken refresh)'
-    inputs:
-      azureSubscription: '$(subscriptionConnection)'
-      scriptType: inlineScript
-      inline: |
-        if ($env:SYSTEM_DEBUG -eq "true") {
-          Set-PSDebug -Trace 2
+# - job: pwshAccessTokenWithRefresh
+#   displayName: 'Get-AzAccessToken (with idToken refresh)'
+#   pool:
+#     name: ${{ parameters.pool }}
+#     vmImage: ${{ parameters.vmImage }}
+#   timeoutInMinutes: ${{ parameters.maxMinutes }}
+#   steps:
+#   - task: AzurePowerShell@5
+#     displayName: 'Get-AzAccessToken (with idToken refresh)'
+#     inputs:
+#       azureSubscription: '$(subscriptionConnection)'
+#       scriptType: inlineScript
+#       inline: |
+#         if ($env:SYSTEM_DEBUG -eq "true") {
+#           Set-PSDebug -Trace 2
 
-          $InformationPreference = "Continue"
-          $VerbosePreference = "Continue"
-          $DebugPreference = "Continue"
-        }
+#           $InformationPreference = "Continue"
+#           $VerbosePreference = "Continue"
+#           $DebugPreference = "Continue"
+#         }
 
-        Start-Job -Name 'RefreshOidcToken' `
-                  -ScriptBlock {
-          if ($env:SYSTEM_DEBUG -eq "true") {
-            Set-PSDebug -Trace 2
+#         Start-Job -Name 'RefreshOidcToken' `
+#                   -ScriptBlock {
+#           if ($env:SYSTEM_DEBUG -eq "true") {
+#             Set-PSDebug -Trace 2
 
-            $InformationPreference = "Continue"
-            $VerbosePreference = "Continue"
-            $DebugPreference = "Continue"
-          }
-          do {
-            # Write-Host "Sleeping for 50 minutes..."
-            # Start-Sleep -Duration (New-TimeSpan -Minutes 50) 
+#             $InformationPreference = "Continue"
+#             $VerbosePreference = "Continue"
+#             $DebugPreference = "Continue"
+#           }
+#           do {
+#             # Write-Host "Sleeping for 50 minutes..."
+#             # Start-Sleep -Duration (New-TimeSpan -Minutes 50) 
 
-            # Request fresh idToken
-            Write-Debug "Determining service connection id..."
-            Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Select-Object -First 1 -ExpandProperty Name `
-                                                                       | ForEach-Object { $_.Split("_")[2] }
-                                                                       | Set-Variable serviceConnectionId
-            Write-Debug "Service connection id: ${serviceConnectionId}"
+#             # Request fresh idToken
+#             Write-Debug "Determining service connection id..."
+#             Get-ChildItem -Path Env: -Recurse -Include ENDPOINT_DATA_* | Select-Object -First 1 -ExpandProperty Name `
+#                                                                        | ForEach-Object { $_.Split("_")[2] }
+#                                                                        | Set-Variable serviceConnectionId
+#             Write-Debug "Service connection id: ${serviceConnectionId}"
 
-            Write-Debug "Building OIDC endpoint url..."
-            $oidcRequestUrl = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECTID}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
-            Write-Debug "OIDC endpoint url: ${oidcRequestUrl}"
-            Write-Debug "Requesting new OIDC token..."
-            Invoke-RestMethod -Headers @{
-                                Authorization  = "Bearer $(System.AccessToken)"
-                                'Content-Type' = 'application/json'
-                              } `
-                              -Uri "${oidcRequestUrl}" `
-                              -Method Post | Set-Variable oidcTokenResponse
-            Write-Debug "OIDC token:"
-            $oidcTokenResponse | Select-Object -ExcludeProperty oidcToken | Format-List | Out-String | Write-Debug
+#             Write-Debug "Building OIDC endpoint url..."
+#             $oidcRequestUrl = "${env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI}${env:SYSTEM_TEAMPROJECTID}/_apis/distributedtask/hubs/build/plans/${env:SYSTEM_PLANID}/jobs/${env:SYSTEM_JOBID}/oidctoken?api-version=7.1-preview.1&serviceConnectionId=${serviceConnectionId}"
+#             Write-Debug "OIDC endpoint url: ${oidcRequestUrl}"
+#             Write-Debug "Requesting new OIDC token..."
+#             Invoke-RestMethod -Headers @{
+#                                 Authorization  = "Bearer $(System.AccessToken)"
+#                                 'Content-Type' = 'application/json'
+#                               } `
+#                               -Uri "${oidcRequestUrl}" `
+#                               -Method Post | Set-Variable oidcTokenResponse
+#             Write-Debug "OIDC token:"
+#             $oidcTokenResponse | Select-Object -ExcludeProperty oidcToken | Format-List | Out-String | Write-Debug
 
-            $oidcToken = $oidcTokenResponse.oidcToken
-            if (!$oidcToken) {
-                throw "Could not get OIDC token"
-            }
+#             $oidcToken = $oidcTokenResponse.oidcToken
+#             if (!$oidcToken) {
+#                 throw "Could not get OIDC token"
+#             }
 
-            Write-Debug "Current Azure context:"
-            $azContext = Get-AzContext
-            $azContext | Format-List | Out-String | Write-Debug
-            # Write-Debug "Disconnecting from Azure..."
-            # Clear-AzContext -Force -ErrorAction SilentlyContinue
-            # Clear-AzContext -Scope CurrentUser -Force -ErrorAction SilentlyContinue
-            # Clear-AzContext -Scope Process -Force -ErrorAction SilentlyContinue
-            # Disconnect-AzAccount -ErrorAction SilentlyContinue
-            # Disconnect-AzAccount -Scope CurrentUser -ErrorAction SilentlyContinue
-            # Disconnect-AzAccount -Scope Process -ErrorAction SilentlyContinue
-            # Disconnect-AzAccount -ApplicationId $azContext.Account.Id -TenantId $azContext.Tenant.Id -ErrorAction SilentlyContinue
-            # Disconnect-AzAccount -ApplicationId $azContext.Account.Id -TenantId $azContext.Tenant.Id -Scope CurrentUser -ErrorAction SilentlyContinue
-            # Disconnect-AzAccount -ApplicationId $azContext.Account.Id -TenantId $azContext.Tenant.Id -Scope Process -ErrorAction SilentlyContinue
-            # Clear-AzContext -Force -ErrorAction SilentlyContinue
-            # Clear-AzContext -Scope CurrentUser -Force -ErrorAction SilentlyContinue
-            # Clear-AzContext -Scope Process -Force -ErrorAction SilentlyContinue
-            # Write-Debug "Current Azure context after disconnect in job:"
-            # Get-AzContext -ErrorAction Continue
-            # Write-Debug "Running Connect-AzAccount with freshly acquired OIDC token..."
-            Connect-AzAccount -ApplicationId $azContext.Account.Id `
-                              -ContextName $azContext.Name `
-                              -FederatedToken $oidcToken `
-                              -Force `
-                              -Scope Process `
-                              -ServicePrincipal `
-                              -SubscriptionId $azContext.Subscription.Id `
-                              -TenantId $azContext.Tenant.Id
+#             Write-Debug "Current Azure context:"
+#             $azContext = Get-AzContext
+#             $azContext | Format-List | Out-String | Write-Debug
+#             # Write-Debug "Disconnecting from Azure..."
+#             # Clear-AzContext -Force -ErrorAction SilentlyContinue
+#             # Clear-AzContext -Scope CurrentUser -Force -ErrorAction SilentlyContinue
+#             # Clear-AzContext -Scope Process -Force -ErrorAction SilentlyContinue
+#             # Disconnect-AzAccount -ErrorAction SilentlyContinue
+#             # Disconnect-AzAccount -Scope CurrentUser -ErrorAction SilentlyContinue
+#             # Disconnect-AzAccount -Scope Process -ErrorAction SilentlyContinue
+#             # Disconnect-AzAccount -ApplicationId $azContext.Account.Id -TenantId $azContext.Tenant.Id -ErrorAction SilentlyContinue
+#             # Disconnect-AzAccount -ApplicationId $azContext.Account.Id -TenantId $azContext.Tenant.Id -Scope CurrentUser -ErrorAction SilentlyContinue
+#             # Disconnect-AzAccount -ApplicationId $azContext.Account.Id -TenantId $azContext.Tenant.Id -Scope Process -ErrorAction SilentlyContinue
+#             # Clear-AzContext -Force -ErrorAction SilentlyContinue
+#             # Clear-AzContext -Scope CurrentUser -Force -ErrorAction SilentlyContinue
+#             # Clear-AzContext -Scope Process -Force -ErrorAction SilentlyContinue
+#             # Write-Debug "Current Azure context after disconnect in job:"
+#             # Get-AzContext -ErrorAction Continue
+#             # Write-Debug "Running Connect-AzAccount with freshly acquired OIDC token..."
+#             Connect-AzAccount -ApplicationId $azContext.Account.Id `
+#                               -ContextName $azContext.Name `
+#                               -FederatedToken $oidcToken `
+#                               -Force `
+#                               -Scope Process `
+#                               -ServicePrincipal `
+#                               -SubscriptionId $azContext.Subscription.Id `
+#                               -TenantId $azContext.Tenant.Id
 
-            Write-Host "Sleeping for 8 minutes..."
-            Start-Sleep -Duration (New-TimeSpan -Minutes 8) 
-          } while ($true)
-        } | Tee-Object -Variable refreshOidcTokenJob `
-          | Select-Object -ExcludeProperty Command `
-          | Write-Host -ForegroundColor DarkMagenta
+#             Write-Host "Sleeping for 8 minutes..."
+#             Start-Sleep -Duration (New-TimeSpan -Minutes 8) 
+#           } while ($true)
+#         } | Tee-Object -Variable refreshOidcTokenJob `
+#           | Select-Object -ExcludeProperty Command `
+#           | Write-Host -ForegroundColor DarkMagenta
 
-        # $refreshOidcTokenJob | Wait-Job          
-        # $refreshOidcTokenJob | Receive-Job -Keep        
+#         # $refreshOidcTokenJob | Wait-Job          
+#         # $refreshOidcTokenJob | Receive-Job -Keep        
 
-        # Start-Sleep -Seconds 300
-        # Write-Debug "Current Azure context after disconnect outside job:"
-        # Get-AzContext -ErrorAction Continue
+#         # Start-Sleep -Seconds 300
+#         # Write-Debug "Current Azure context after disconnect outside job:"
+#         # Get-AzContext -ErrorAction Continue
 
-        $stopwatch = [system.diagnostics.stopwatch]::StartNew()
-        do {
-          Write-Debug "RefreshOidcToken job status ----------"
-          $refreshOidcTokenJob | Receive-Job -Keep | Write-Host -ForegroundColor DarkMagenta
-          Write-Debug "--------------------------------------"
+#         $stopwatch = [system.diagnostics.stopwatch]::StartNew()
+#         do {
+#           Write-Debug "RefreshOidcToken job status ----------"
+#           $refreshOidcTokenJob | Receive-Job -Keep | Write-Host -ForegroundColor DarkMagenta
+#           Write-Debug "--------------------------------------"
           
-          $expiresOn = $null
-          $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
-          # $resource = 'https://kusto.kusto.windows.net'
-          Write-Host "`nRequesting access token for '${resource}'.."
-          $token = $null
-          Get-AzAccessToken -ErrorAction SilentlyContinue `
-                            -ResourceUrl $resource `
-                            | Select-Object -ExcludeProperty Token `
-                            | Tee-Object -Variable token `
-                            | Format-List
-          if ($token) {
-            $remainingMinutes = ($token.ExpiresOn - [DateTime]::Now).TotalMinutes
-            if ($remainingMinutes -lt 5) {
-              Write-Host "##vso[task.logissue type=warning]Access token expires in only $remainingMinutes minutes" 
-              exit 1
-            }
-            Write-Host "Access token expires in $remainingMinutes minutes"            
-          } else {
-            Write-Host "##vso[task.logissue type=error]Could not get access token"
-            exit 1
-          }
+#           $expiresOn = $null
+#           $resource = '499b84ac-1321-427f-aa17-267ca6975798' # Azure DevOps
+#           # $resource = 'https://kusto.kusto.windows.net'
+#           Write-Host "`nRequesting access token for '${resource}'.."
+#           $token = $null
+#           Get-AzAccessToken -ErrorAction SilentlyContinue `
+#                             -ResourceUrl $resource `
+#                             | Select-Object -ExcludeProperty Token `
+#                             | Tee-Object -Variable token `
+#                             | Format-List
+#           if ($token) {
+#             $remainingMinutes = ($token.ExpiresOn - [DateTime]::Now).TotalMinutes
+#             if ($remainingMinutes -lt 5) {
+#               Write-Host "##vso[task.logissue type=warning]Access token expires in only $remainingMinutes minutes" 
+#               exit 1
+#             }
+#             Write-Host "Access token expires in $remainingMinutes minutes"            
+#           } else {
+#             Write-Host "##vso[task.logissue type=error]Could not get access token"
+#             exit 1
+#           }
 
-          Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
-          Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
-        } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+#           Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
+#           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
+#         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
 
-      azurePowerShellVersion: 'latestVersion'
-      pwsh: true
-      failOnStandardError: true
+#       azurePowerShellVersion: 'latestVersion'
+#       pwsh: true
+#       failOnStandardError: true
