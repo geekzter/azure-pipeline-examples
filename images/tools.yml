@@ -20,5 +20,5 @@ jobs:
     vmImage: $(vmImage)
   steps:
   - pwsh: |
-      echo $env:AGENT_TOOLSCACHE
-      dir $env:AGENT_TOOLSCACHE
+      echo $env:AGENT_TOOLSDIRECTORY
+      dir $env:AGENT_TOOLSDIRECTORY
