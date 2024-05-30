@@ -144,6 +144,49 @@ jobs:
 #           Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
 #           Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
 #         } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+
+- job: azAccessTokenWithScope
+  displayName: 'az account get-access-token after az login --scope'
+  pool:
+    name: ${{ parameters.pool }}
+    vmImage: ${{ parameters.vmImage }}
+  timeoutInMinutes: ${{ parameters.maxMinutes }}
+  steps:
+  - task: AzureCLI@2
+    displayName: 'az account get-access-token with $(subscriptionConnection) after az login --scope'
+    inputs:
+      addSpnToEnvironment: true
+      azureSubscription: $(subscriptionConnection)
+      failOnStandardError: true
+      powerShellIgnoreLASTEXITCODE: false
+      powerShellErrorActionPreference: Stop
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        $scope = "499b84ac-1321-427f-aa17-267ca6975798/.default" # Azure DevOps
+
+        az login --service-principal -u $env:servicePrincipalId --tenant $env:tenantId --allow-no-subscriptions --federated-token $env:idToken --scope $scope
+
+        $stopwatch = [system.diagnostics.stopwatch]::StartNew()
+        do {
+          $expiresOn = $null
+          Write-Host "`nRequesting access token for '${scope}'.."
+          az account get-access-token --scope $scope `
+                                      --query "expiresOn" `
+                                      --output tsv `
+                                      | Set-Variable expiresOn
+          if ($expiresOn) {
+            Write-Host "Access token expires in $([math]::Round(([DateTime]::Parse($expiresOn) - [DateTime]::Now).TotalMinutes)) minutes"            
+          } else {
+            Write-Host "##vso[task.logissue type=error]Could not get access token"
+            exit 1
+          }
+
+          Write-Host "Elapsed time: $($stopwatch.Elapsed.TotalMinutes) minutes, sleeping for ${{ parameters.intervalMinutes }} minutes..."
+          Start-Sleep -Seconds (60 * ${{ parameters.intervalMinutes }})
+        } while ($stopwatch.Elapsed.TotalMinutes -lt (${{ parameters.maxMinutes }}-${{ parameters.intervalMinutes }}-1))
+
+
 - job: azAccessTokenWithRefresh
   displayName: 'az account get-access-token (with idToken refresh)'
   pool:
