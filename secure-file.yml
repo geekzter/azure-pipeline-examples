@@ -10,10 +10,12 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- task: DownloadSecureFile@1
+  displayName: Download secret
+  name: secretFile
+  inputs:
+    secureFile: notasecret.txt
+- pwsh: |
+    Write-Host "secureFilePath: $(secretFile.secureFilePath)"
+    Write-Host "foo: $(secretFile.foo)"
+  displayName: Display secret file properties
