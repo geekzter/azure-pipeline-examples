@@ -45,18 +45,18 @@ jobs:
     errorActionPreference: Continue
     failOnStderr: true
 
-- job: image
-  pool:
-    name: Azure Pipelines
-  container: agentTools
-  steps:
-  - checkout: none
-  - bash: |
-      echo Hello from Ubuntu
-      lsb_release -d
-    displayName: 'bash: Ubuntu info'
-  - pwsh: |
-      Write-Host "`$PSVersionTable.OS"
-      $PSVersionTable.OS
-      Get-InstalledModule | Sort-Object -Property Name
-    displayName: 'pwsh: PowerShell info'
+# - job: image
+#   pool:
+#     name: Azure Pipelines
+#   container: agentTools
+#   steps:
+#   - checkout: none
+#   - bash: |
+#       echo Hello from Ubuntu
+#       lsb_release -d
+#     displayName: 'bash: Ubuntu info'
+#   - pwsh: |
+#       Write-Host "`$PSVersionTable.OS"
+#       $PSVersionTable.OS
+#       Get-InstalledModule | Sort-Object -Property Name
+#     displayName: 'pwsh: PowerShell info'
