@@ -6,15 +6,27 @@ parameters:
   displayName: Override Service Connection
   type: string
   default: 'my-azure-subscription'
+- name: acrName
+  displayName: Azure Container Registry
+  type: string
+  default: 'ericvanimages'
+- name: acrResourceGroup
+  displayName: Azure Container Registry Resource Group
+  type: string
+  default: 'ericvan-common'
+- name: repository
+  displayName: Repository
+  type: string
+  default: 'pipelineagent/ubuntu-agent-tools'
 
 resources:
   containers:
   - container: tools
     type: ACR
     azureSubscription: ${{ parameters.serviceConnection }}
-    resourceGroup: ericvan-common
-    registry: ericvan-common
-    repository: pipelineagent/ubuntu-agent-tools
+    resourceGroup: ${{ parameters.acrResourceGroup }}
+    registry: ${{ parameters.acrName }}
+    repository: ${{ parameters.repository }}
 
 jobs:
   job: test
