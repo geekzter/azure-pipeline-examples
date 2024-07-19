@@ -1,11 +1,17 @@
 pr: none
 trigger: none
 
+parameters:
+- name: serviceConnection
+  displayName: Override Service Connection
+  type: string
+  default: 'my-azure-subscription'
+
 resources:
   containers:
   - container: tools
     type: ACR
-    azureSubscription: my-azure-subscription
+    azureSubscription: ${{ parameters.serviceConnection }}
     resourceGroup: ericvan-common
     registry: ericvan-common
     repository: pipelineagent/ubuntu-agent-tools
