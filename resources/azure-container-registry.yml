@@ -17,11 +17,11 @@ parameters:
 - name: repository
   displayName: Repository
   type: string
-  default: 'pipelineagent/ubuntu-agent-tools'
+  default: 'pipelineagent/ubuntu-agent-tools:latest'
 
 resources:
   containers:
-  - container: tools
+  - container: agentTools
     type: ACR
     azureSubscription: ${{ parameters.serviceConnection }}
     resourceGroup: ${{ parameters.acrResourceGroup }}
@@ -29,16 +29,34 @@ resources:
     repository: ${{ parameters.repository }}
 
 jobs:
-  job: test
+- job: imageInfo
   pool:
-    name: Azure Pipelines
     vmImage: ubuntu-latest
   steps:
-  - script: echo |
-      echo $(resources.container.tools.type)
-      echo $(resources.container.tools.registry)
-      echo $(resources.container.tools.repository)
-      echo $(resources.container.tools.tag)
-      echo $(resources.container.tools.digest)
-      echo $(resources.container.tools.URI)
-      echo $(resources.container.tools.location)
+  - checkout: none
+  - pwsh: |
+      Write-Host "$(resources.container.agentTools.type)"
+      Write-Host "$(resources.container.agentTools.registry)"
+      Write-Host "$(resources.container.agentTools.repository)"
+      Write-Host "$(resources.container.agentTools.tag)"
+      Write-Host "$(resources.container.agentTools.digest)"
+      Write-Host "$(resources.container.agentTools.URI)"
+      Write-Host "$(resources.container.agentTools.location)"
+    errorActionPreference: Continue
+    failOnStderr: true
+
+- job: image
+  pool:
+    name: Azure Pipelines
+  container: agentTools
+  steps:
+  - checkout: none
+  - bash: |
+      echo Hello from Ubuntu
+      lsb_release -d
+    displayName: 'bash: Ubuntu info'
+  - pwsh: |
+      Write-Host "`$PSVersionTable.OS"
+      $PSVersionTable.OS
+      Get-InstalledModule | Sort-Object -Property Name
+    displayName: 'pwsh: PowerShell info'
