@@ -1,0 +1,85 @@
+# pr: none
+trigger: none
+
+parameters:
+- name: serviceConnection
+  displayName: Override Service Connection
+  type: string
+  default: 'my-azure-subscription'
+- name: serviceConnectionType
+  displayName: Service Connection Type
+  type: string
+  default: arm
+  values:
+  - acr
+  - arm
+- name: acrName
+  displayName: Azure Container Registry
+  type: string
+  default: 'ericvanimages'
+- name: acrResourceGroup
+  displayName: Azure Container Registry Resource Group
+  type: string
+  default: 'ericvan-common'
+- name: repository
+  displayName: Repository
+  type: string
+  default: 'pipelineagent/ubuntu-agent-tools:latest'
+
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-${{ parameters.serviceConnection }}-${{ parameters.serviceConnectionType }}-$(SourceBranchName)-$(Build.BuildId)
+
+resources:
+  containers:
+  - ${{ if eq(parameters.serviceConnectionType, 'acr') }}:
+    # https://learn.microsoft.com/en-us/azure/devops/pipelines/process/resources?view=azure-devops#containers-resource-definition
+    - container: agentTools 
+      # endpoint: containerEndpoint
+      endpoint: ${{ parameters.serviceConnection }}
+      image: ${{ parameters.repository }} 
+  - ${{ if eq(parameters.serviceConnectionType, 'arm') }}:
+    # https://learn.microsoft.com/azure/devops/pipelines/process/resources?view=azure-devops#azure-container-registry-resource-type
+    - container: agentTools
+      type: ACR
+      azureSubscription: ${{ parameters.serviceConnection }}
+      resourceGroup: ${{ parameters.acrResourceGroup }}
+      registry: ${{ parameters.acrName }}
+      repository: ${{ parameters.repository }}
+
+jobs:
+# https://learn.microsoft.com/en-us/azure/devops/pipelines/process/resources?view=azure-devops#containers-resource-definition
+- ${{ if eq(parameters.serviceConnectionType, 'acr') }}:
+  - job: image
+    displayName: 'Mount container image (ACR SC)'
+    pool:
+      name: Azure Pipelines
+    container: agentTools
+    steps:
+    - checkout: none
+    - bash: |
+        echo Hello from Ubuntu
+        lsb_release -d
+      displayName: 'bash: Ubuntu info'
+    - pwsh: |
+        Write-Host "`$PSVersionTable.OS"
+        $PSVersionTable.OS
+        Get-InstalledModule | Sort-Object -Property Name
+      displayName: 'pwsh: PowerShell info'
+
+# https://learn.microsoft.com/azure/devops/pipelines/process/resources?view=azure-devops#azure-container-registry-resource-type
+- ${{ if eq(parameters.serviceConnectionType, 'arm') }}:
+  - job: imageInfo
+    displayName: 'Container image metadata (ARM SC)'
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - checkout: none
+    - pwsh: |
+        Write-Host "$(resources.container.agentTools.type)"
+        Write-Host "$(resources.container.agentTools.registry)"
+        Write-Host "$(resources.container.agentTools.repository)"
+        Write-Host "$(resources.container.agentTools.tag)"
+        Write-Host "$(resources.container.agentTools.digest)"
+        Write-Host "$(resources.container.agentTools.URI)"
+        Write-Host "$(resources.container.agentTools.location)"
+      errorActionPreference: Continue
+      failOnStderr: true
