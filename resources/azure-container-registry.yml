@@ -26,6 +26,8 @@ parameters:
   type: string
   default: 'pipelineagent/ubuntu-agent-tools:latest'
 
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-${{ parameters.serviceConnection }}-${{ parameters.serviceConnectionType }}-$(SourceBranchName)-$(Build.BuildId)
+
 resources:
   containers:
   - container: agentTools
@@ -36,22 +38,22 @@ resources:
     repository: ${{ parameters.repository }}
 
 jobs:
-# - ${{ if eq(parameters.serviceConnectionType, 'arm') }}:
-- job: imageInfo
-  pool:
-    vmImage: ubuntu-latest
-  steps:
-  - checkout: none
-  - pwsh: |
-      Write-Host "$(resources.container.agentTools.type)"
-      Write-Host "$(resources.container.agentTools.registry)"
-      Write-Host "$(resources.container.agentTools.repository)"
-      Write-Host "$(resources.container.agentTools.tag)"
-      Write-Host "$(resources.container.agentTools.digest)"
-      Write-Host "$(resources.container.agentTools.URI)"
-      Write-Host "$(resources.container.agentTools.location)"
-    errorActionPreference: Continue
-    failOnStderr: true
+- ${{ if eq(parameters.serviceConnectionType, 'arm') }}:
+  - job: imageInfo
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - checkout: none
+    - pwsh: |
+        Write-Host "$(resources.container.agentTools.type)"
+        Write-Host "$(resources.container.agentTools.registry)"
+        Write-Host "$(resources.container.agentTools.repository)"
+        Write-Host "$(resources.container.agentTools.tag)"
+        Write-Host "$(resources.container.agentTools.digest)"
+        Write-Host "$(resources.container.agentTools.URI)"
+        Write-Host "$(resources.container.agentTools.location)"
+      errorActionPreference: Continue
+      failOnStderr: true
 
 - ${{ if eq(parameters.serviceConnectionType, 'acr') }}:
   - job: image
