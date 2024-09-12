@@ -36,24 +36,24 @@ resources:
     repository: ${{ parameters.repository }}
 
 jobs:
-- ${{ if not(eq(parameters.serviceConnectionType, 'arm')) }}:
-  - job: imageInfo
-    pool:
-      vmImage: ubuntu-latest
-    steps:
-    - checkout: none
-    - pwsh: |
-        Write-Host "$(resources.container.agentTools.type)"
-        Write-Host "$(resources.container.agentTools.registry)"
-        Write-Host "$(resources.container.agentTools.repository)"
-        Write-Host "$(resources.container.agentTools.tag)"
-        Write-Host "$(resources.container.agentTools.digest)"
-        Write-Host "$(resources.container.agentTools.URI)"
-        Write-Host "$(resources.container.agentTools.location)"
-      errorActionPreference: Continue
-      failOnStderr: true
+# - ${{ if eq(parameters.serviceConnectionType, 'arm') }}:
+- job: imageInfo
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - checkout: none
+  - pwsh: |
+      Write-Host "$(resources.container.agentTools.type)"
+      Write-Host "$(resources.container.agentTools.registry)"
+      Write-Host "$(resources.container.agentTools.repository)"
+      Write-Host "$(resources.container.agentTools.tag)"
+      Write-Host "$(resources.container.agentTools.digest)"
+      Write-Host "$(resources.container.agentTools.URI)"
+      Write-Host "$(resources.container.agentTools.location)"
+    errorActionPreference: Continue
+    failOnStderr: true
 
-- ${{ if not(eq(parameters.serviceConnectionType, 'acr')) }}:
+- ${{ if eq(parameters.serviceConnectionType, 'acr') }}:
   - job: image
     pool:
       name: Azure Pipelines
