@@ -30,14 +30,41 @@ name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-${{ parameters.servic
 
 resources:
   containers:
-  - container: agentTools
-    type: ACR
-    azureSubscription: ${{ parameters.serviceConnection }}
-    resourceGroup: ${{ parameters.acrResourceGroup }}
-    registry: ${{ parameters.acrName }}
-    repository: ${{ parameters.repository }}
+  - ${{ if eq(parameters.serviceConnectionType, 'acr') }}:
+    # https://learn.microsoft.com/en-us/azure/devops/pipelines/process/resources?view=azure-devops#containers-resource-definition
+    - container: agentTools 
+      endpoint: ${{ parameters.serviceConnection }}
+      image: ${{ parameters.repository }} 
+  - ${{ if eq(parameters.serviceConnectionType, 'arm') }}:
+    # https://learn.microsoft.com/azure/devops/pipelines/process/resources?view=azure-devops#azure-container-registry-resource-type
+    - container: agentTools
+      type: ACR
+      azureSubscription: ${{ parameters.serviceConnection }}
+      resourceGroup: ${{ parameters.acrResourceGroup }}
+      registry: ${{ parameters.acrName }}
+      repository: ${{ parameters.repository }}
 
 jobs:
+# https://learn.microsoft.com/en-us/azure/devops/pipelines/process/resources?view=azure-devops#containers-resource-definition
+- ${{ if eq(parameters.serviceConnectionType, 'acr') }}:
+  - job: image
+    displayName: 'Mount container image (ACR SC)'
+    pool:
+      name: Azure Pipelines
+    container: agentTools
+    steps:
+    - checkout: none
+    - bash: |
+        echo Hello from Ubuntu
+        lsb_release -d
+      displayName: 'bash: Ubuntu info'
+    - pwsh: |
+        Write-Host "`$PSVersionTable.OS"
+        $PSVersionTable.OS
+        Get-InstalledModule | Sort-Object -Property Name
+      displayName: 'pwsh: PowerShell info'
+
+# https://learn.microsoft.com/azure/devops/pipelines/process/resources?view=azure-devops#azure-container-registry-resource-type
 - ${{ if eq(parameters.serviceConnectionType, 'arm') }}:
   - job: imageInfo
     displayName: 'Container image metadata (ARM SC)'
@@ -55,21 +82,3 @@ jobs:
         Write-Host "$(resources.container.agentTools.location)"
       errorActionPreference: Continue
       failOnStderr: true
-
-- ${{ if eq(parameters.serviceConnectionType, 'acr') }}:
-  - job: image
-    displayName: 'Mount container image metadata (ACR SC)'
-    pool:
-      name: Azure Pipelines
-    container: agentTools
-    steps:
-    - checkout: none
-    - bash: |
-        echo Hello from Ubuntu
-        lsb_release -d
-      displayName: 'bash: Ubuntu info'
-    - pwsh: |
-        Write-Host "`$PSVersionTable.OS"
-        $PSVersionTable.OS
-        Get-InstalledModule | Sort-Object -Property Name
-      displayName: 'pwsh: PowerShell info'
