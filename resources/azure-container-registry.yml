@@ -9,7 +9,7 @@ parameters:
 - name: serviceConnectionType
   displayName: Service Connection Type
   type: string
-  default: acr
+  default: arm
   values:
   - acr
   - arm
@@ -40,6 +40,7 @@ resources:
 jobs:
 - ${{ if eq(parameters.serviceConnectionType, 'arm') }}:
   - job: imageInfo
+    displayName: 'Container image metadata (ARM SC)'
     pool:
       vmImage: ubuntu-latest
     steps:
@@ -57,6 +58,7 @@ jobs:
 
 - ${{ if eq(parameters.serviceConnectionType, 'acr') }}:
   - job: image
+    displayName: 'Mount container image metadata (ACR SC)'
     pool:
       name: Azure Pipelines
     container: agentTools
