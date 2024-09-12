@@ -6,6 +6,13 @@ parameters:
   displayName: Override Service Connection
   type: string
   default: 'my-azure-subscription'
+- name: serviceConnectionType
+  displayName: Service Connection Type
+  type: string
+  default: acr
+  values:
+  - acr
+  - arm
 - name: acrName
   displayName: Azure Container Registry
   type: string
@@ -29,34 +36,36 @@ resources:
     repository: ${{ parameters.repository }}
 
 jobs:
-- job: imageInfo
-  pool:
-    vmImage: ubuntu-latest
-  steps:
-  - checkout: none
-  - pwsh: |
-      Write-Host "$(resources.container.agentTools.type)"
-      Write-Host "$(resources.container.agentTools.registry)"
-      Write-Host "$(resources.container.agentTools.repository)"
-      Write-Host "$(resources.container.agentTools.tag)"
-      Write-Host "$(resources.container.agentTools.digest)"
-      Write-Host "$(resources.container.agentTools.URI)"
-      Write-Host "$(resources.container.agentTools.location)"
-    errorActionPreference: Continue
-    failOnStderr: true
+- ${{ if not(eq(parameters.serviceConnectionType, 'arm')) }}:
+  - job: imageInfo
+    pool:
+      vmImage: ubuntu-latest
+    steps:
+    - checkout: none
+    - pwsh: |
+        Write-Host "$(resources.container.agentTools.type)"
+        Write-Host "$(resources.container.agentTools.registry)"
+        Write-Host "$(resources.container.agentTools.repository)"
+        Write-Host "$(resources.container.agentTools.tag)"
+        Write-Host "$(resources.container.agentTools.digest)"
+        Write-Host "$(resources.container.agentTools.URI)"
+        Write-Host "$(resources.container.agentTools.location)"
+      errorActionPreference: Continue
+      failOnStderr: true
 
-# - job: image
-#   pool:
-#     name: Azure Pipelines
-#   container: agentTools
-#   steps:
-#   - checkout: none
-#   - bash: |
-#       echo Hello from Ubuntu
-#       lsb_release -d
-#     displayName: 'bash: Ubuntu info'
-#   - pwsh: |
-#       Write-Host "`$PSVersionTable.OS"
-#       $PSVersionTable.OS
-#       Get-InstalledModule | Sort-Object -Property Name
-#     displayName: 'pwsh: PowerShell info'
+- ${{ if not(eq(parameters.serviceConnectionType, 'acr')) }}:
+  - job: image
+    pool:
+      name: Azure Pipelines
+    container: agentTools
+    steps:
+    - checkout: none
+    - bash: |
+        echo Hello from Ubuntu
+        lsb_release -d
+      displayName: 'bash: Ubuntu info'
+    - pwsh: |
+        Write-Host "`$PSVersionTable.OS"
+        $PSVersionTable.OS
+        Get-InstalledModule | Sort-Object -Property Name
+      displayName: 'pwsh: PowerShell info'
