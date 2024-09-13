@@ -104,6 +104,7 @@ jobs:
   displayName: 'Azure Windows PowerShell Progress Preference'
   pool:
     vmImage: 'windows-latest'
+  timeoutInMinutes: 120
   steps:
   - task: AzurePowerShell@5
     displayName: 'SilentlyContinue'
