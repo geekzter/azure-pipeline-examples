@@ -11,6 +11,6 @@ for ($i = 1; $i -le 10000; $i++ )
 }
 $stopwatch.Elapsed
 
-Invoke-Webrequest -Uri https://speed.hetzner.de/1GB.bin -OutFile (Join-Path $TempDirectory testfile) -UseBasicParsing
+Invoke-Webrequest -Uri https://ash-speed.hetzner.com/1GB.bin -OutFile (Join-Path $TempDirectory testfile) -UseBasicParsing
 
 $stopwatch.Elapsed
