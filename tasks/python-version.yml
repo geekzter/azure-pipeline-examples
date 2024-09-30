@@ -26,6 +26,7 @@ jobs:
   - pwsh: |
       which python
       python -V
+      Write-Host "PYTHON_PATH: ${env:PYTHON_PATH}"
     displayName: 'Python version'
   - pwsh: |
       which pip
@@ -48,6 +49,7 @@ jobs:
   - pwsh: |
       which python
       python -V
+      Write-Host "PYTHON_PATH: ${env:PYTHON_PATH}"
     displayName: 'Python version'
   - pwsh: |
       which pip
