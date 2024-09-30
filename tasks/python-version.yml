@@ -1,0 +1,43 @@
+parameters:
+- name: pythonVersion
+  displayName: Python version
+  type: number
+  default: '3.x'
+  
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-node${{ parameters.nodeVersion }}-$(Build.BuildId)
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+variables:
+  pythonVersion: ${{ parameters.pythonVersion }}
+
+jobs:
+- job: ubuntuDefault
+  displayName: 'Default'
+  pool:
+    name: 'Azure Pipelines'
+    vmImage: ubuntu-latest
+  steps:
+  - pwsh: python -V
+    displayName: 'Python version'
+  - pwsh: pip --version
+    displayName: 'pip version'
+
+- job: ubuntuUsePythonVersion
+  displayName: 'UsePythonVersion'
+  pool:
+    name: 'Azure Pipelines'
+    vmImage: ubuntu-latest
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '${{ parameters.pythonVersion }}'
+  - pwsh: python -V
+    displayName: 'Python version'
+  - pwsh: pip --version
+    displayName: 'pip version'
