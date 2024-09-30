@@ -1,7 +1,7 @@
 parameters:
 - name: pythonVersion
   displayName: Python version
-  type: number
+  type: string
   default: '3.x'
   
 name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-node${{ parameters.nodeVersion }}-$(Build.BuildId)
