@@ -39,8 +39,8 @@ jobs:
     vmImage: ubuntu-latest
   steps:
   - pwsh: |
-      Write-Host "Python versions pre-installed in $(Agent.ToolsDirectory)"
-      Get-ChildItem $(Agent.ToolsDirectory)/Python -Directory | Select-Object -Property Name
+      Write-Host "Python versions pre-installed in $(Agent.ToolsDirectory):"
+      Get-ChildItem $(Agent.ToolsDirectory)/Python -Directory | Select-Object -Property Name | Sort-Object
     displayName: 'Hosted tool cache'
   - task: UsePythonVersion@0
     inputs:
