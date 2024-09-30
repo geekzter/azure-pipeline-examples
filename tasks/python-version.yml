@@ -38,6 +38,10 @@ jobs:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
   steps:
+  - pwsh: |
+      Write-Host "Pre-installed Python versions"
+      Get-ChildItem $(Agent.ToolsDirectory)/Python -Directory | Select-Object -Property FullName
+      which python
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '${{ parameters.pythonVersion }}'
