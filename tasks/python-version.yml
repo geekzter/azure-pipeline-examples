@@ -4,7 +4,7 @@ parameters:
   type: string
   default: '3.x'
   
-name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-node${{ parameters.nodeVersion }}-$(Build.BuildId)
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-python${{ parameters.pythonVersion }}-$(Build.BuildId)
 trigger: none
 schedules:
 - cron: '0 1 * * *'
