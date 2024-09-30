@@ -23,9 +23,13 @@ jobs:
     name: 'Azure Pipelines'
     vmImage: ubuntu-latest
   steps:
-  - pwsh: python -V
+  - pwsh: |
+      which python
+      python -V
     displayName: 'Python version'
-  - pwsh: pip --version
+  - pwsh: |
+      which pip
+      pip --version
     displayName: 'pip version'
 
 - job: ubuntuUsePythonVersion
@@ -37,7 +41,11 @@ jobs:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '${{ parameters.pythonVersion }}'
-  - pwsh: python -V
+  - pwsh: |
+      which python
+      python -V
     displayName: 'Python version'
-  - pwsh: pip --version
+  - pwsh: |
+      which pip
+      pip --version
     displayName: 'pip version'
