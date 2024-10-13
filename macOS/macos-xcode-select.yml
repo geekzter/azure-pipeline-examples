@@ -8,12 +8,12 @@ schedules:
     - main
 
 variables:
-  xcodeRoot: "/Applications/Xcode_13.2.app"
+  xcodeRoot: "/Applications/Xcode_14.3.1.app"
 
 jobs:
 - job: xcodeSelect
   pool:
-    vmImage: 'macOS-latest'
+    vmImage: 'macOS-14'
   steps:
   - bash: |
       echo '##vso[task.setvariable variable=MD_APPLE_SDK_ROOT;]'$(xcodeRoot)
