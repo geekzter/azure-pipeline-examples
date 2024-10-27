@@ -33,7 +33,6 @@ resources:
   - ${{ if eq(parameters.serviceConnectionType, 'acr') }}:
     # https://learn.microsoft.com/en-us/azure/devops/pipelines/process/resources?view=azure-devops#containers-resource-definition
     - container: agentTools 
-      # endpoint: containerEndpoint
       endpoint: ${{ parameters.serviceConnection }}
       image: ${{ parameters.repository }} 
   - ${{ if eq(parameters.serviceConnectionType, 'arm') }}:
