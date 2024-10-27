@@ -83,7 +83,7 @@ jobs:
     ${{ if eq(parameters.jobType,'containerJob') }}:
       container:
         image: $(containerRegistryFQDN)/$(containerImage)
-        endpoint: $[ coalesce(variables.containerEndpoint,'containerEndpoint') ]
+        endpoint: ${{ coalesce(variables.containerEndpoint,'containerEndpoint') }}
       displayName: 'Container job'
     ${{ else }}:
       displayName: 'Agent job'
