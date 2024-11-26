@@ -1,4 +1,8 @@
 parameters:
+- name: azureDevOpsServiceConnection
+  displayName: Azure DevOps Service Connection
+  type: string
+  default: my-azdo-connection
 - name: serviceConnection
   displayName: Azure Service Connection Name
   type: string
