@@ -2,7 +2,7 @@ parameters:
 - name: azureDevOpsServiceConnection
   displayName: Azure DevOps Service Connection
   type: string
-  default: my-azure-subscription
+  default: my-azdo-connection
   
 pool:
   vmImage: windows-latest
@@ -10,7 +10,7 @@ pool:
 steps:
 - task: PowerShell@2
   inputs:
-    azureDevOpsServiceConnection: 'praval'
+    azureDevOpsServiceConnection: '${{ parameters.azureDevOpsServiceConnection }}'
     targetType: 'inline'
     script: |
       $token = Get-AzDoToken
