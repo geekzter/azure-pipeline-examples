@@ -21,11 +21,11 @@ jobs:
     continueOnError: true
     inputs:
       apkFiles: '**/*.apk'
-      jarsign: true
-      jarsignerKeystoreFile: 'pathToYourKeystoreFile'
-      jarsignerKeystorePassword: '$(jarsignerKeystorePassword)'
-      jarsignerKeystoreAlias: 'yourKeystoreAlias'
-      jarsignerKeyPassword: '$(jarsignerKeyPassword)'
+      jarsign: false
+      # jarsignerKeystoreFile: 'pathToYourKeystoreFile'
+      # jarsignerKeystorePassword: '$(jarsignerKeystorePassword)'
+      # jarsignerKeystoreAlias: 'yourKeystoreAlias'
+      # jarsignerKeyPassword: '$(jarsignerKeyPassword)'
       zipalign: true
   - task: CargoAuthenticate@0
     continueOnError: true
