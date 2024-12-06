@@ -1,0 +1,19 @@
+trigger: none
+
+jobs:
+- job: 
+  strategy:
+    matrix:
+      Ubuntu2204:
+        vmImage: 'ubuntu-22.04'
+      Ubuntu2404:
+        vmImage: 'ubuntu-24.04'
+      Windows:
+        vmImage: 'windows-latest'
+    maxParallel: 3
+  pool:
+    vmImage: $(vmImage)
+  steps:
+  - pwsh: |
+      Write-Host "`$PSVersionTable.OS"
+      $PSVersionTable.OS
