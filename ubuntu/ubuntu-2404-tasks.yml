@@ -21,7 +21,7 @@ jobs:
     continueOnError: true
     inputs:
       cargoServiceConnections: 'cargo-stub'
-  - bash:
+  - task: Bash@3
     condition: eq(variables['vmImage'], 'ubuntu-24.04')
     displayName: 'Install Mono'
     inputs:
