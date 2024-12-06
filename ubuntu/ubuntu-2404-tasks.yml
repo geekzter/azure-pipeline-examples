@@ -17,3 +17,29 @@ jobs:
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
+  - task: AndroidSigning@2
+    continueOnError: true
+    inputs:
+      apkFiles: '**/*.apk'
+      jarsign: true
+      jarsignerKeystoreFile: 'pathToYourKeystoreFile'
+      jarsignerKeystorePassword: '$(jarsignerKeystorePassword)'
+      jarsignerKeystoreAlias: 'yourKeystoreAlias'
+      jarsignerKeyPassword: '$(jarsignerKeyPassword)'
+      zipalign: true
+  - task: CargoAuthenticate@0
+    continueOnError: true
+    inputs:
+      username: "$(CARGO_USERNAME)"
+      password: "$(CARGO_PASSWORD)"
+  - task: MsBuild@1
+    continueOnError: true
+    inputs:
+      solution: '**/*.sln'
+      msbuildArchitecture: 'x64'
+      configuration: 'Release'
+  - task: NuGetCommand@2
+    continueOnError: true
+    inputs:
+      command: 'restore'
+      restoreSolution: '**/*.sln'
