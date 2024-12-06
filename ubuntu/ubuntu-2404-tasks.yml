@@ -30,7 +30,8 @@ jobs:
   - task: MsBuild@1
     continueOnError: true
     inputs:
-      msbuildVersion: 'latest'
+      # msbuildVersion: 'latest'
+      msbuildVersion: '17.0'
       solution: '**/*.sln'
       msbuildArchitecture: 'x64'
       configuration: 'Release'
