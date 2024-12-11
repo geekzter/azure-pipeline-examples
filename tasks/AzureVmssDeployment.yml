@@ -32,7 +32,7 @@ jobs:
   steps:
   - task: AzureVmssDeployment@0
     inputs:
-      azureSubscription: '${{ parameters.serviceConnection }}''
+      azureSubscription: '${{ parameters.serviceConnection }}'
       action: 'Configure application startup'
       vmssName: '${{ parameters.vmssName }}'
       vmssOsType: '${{ parameters.vmssOsType }}'
