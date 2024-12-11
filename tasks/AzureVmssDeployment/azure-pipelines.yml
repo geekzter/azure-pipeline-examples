@@ -1,4 +1,8 @@
 parameters:
+- name: pool
+  displayName: Agent Pool
+  type: string
+  default: 'Azure Pipelines'
 - name: serviceConnection
   displayName: Override Service Connection
   type: string
@@ -6,7 +10,6 @@ parameters:
 - name: vmssName
   displayName: VMSS Name
   type: string
-  default: 'my-azure-subscription'
 - name: vmssOsType
   displayName: OS
   type: string
@@ -26,10 +29,11 @@ jobs:
   displayName: 'RBAC Tests'
 
   pool:
-    name: 'Azure Pipelines'
+    name: '${{ parameters.pool }}'
     vmImage: ubuntu-latest
     
   steps:
+  # https://docs.microsoft.com/azure/devops/pipelines/tasks/deploy/azure-vmss-deployment
   - task: AzureVmssDeployment@0
     inputs:
       azureSubscription: '${{ parameters.serviceConnection }}'
