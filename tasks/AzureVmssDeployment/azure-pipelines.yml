@@ -40,7 +40,7 @@ jobs:
       action: 'Configure application startup'
       vmssName: '${{ parameters.vmssName }}'
       vmssOsType: '${{ parameters.vmssOsType }}'
-      customScriptsDirectory: '/tmp'
+      customScriptsDirectory: '$(Build.SourcesDirectory)/tasks/AzureVmssDeployment/scripts'
       customScript: |
         lsb_release -d
       customScriptsStorageAccount: '${{ parameters.customScriptsStorageAccount }}'

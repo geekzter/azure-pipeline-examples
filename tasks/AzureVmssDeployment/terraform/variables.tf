@@ -13,7 +13,9 @@ variable resource_suffix {
 variable ssh_public_key {
   default                      = "~/.ssh/id_rsa.pub"
 }
-
+variable user_object_id {
+  type = string
+}
 variable user_name {
   default = "azureuser"
   type = string
