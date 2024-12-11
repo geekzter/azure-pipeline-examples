@@ -1,0 +1,43 @@
+parameters:
+- name: serviceConnection
+  displayName: Override Service Connection
+  type: string
+  default: 'my-azure-subscription'
+- name: vmssName
+  displayName: VMSS Name
+  type: string
+  default: 'my-azure-subscription'
+- name: vmssOsType
+  displayName: OS
+  type: string
+  default: Linux
+  values:
+  - Linux
+  - Windows
+- name: customScriptsStorageAccount
+  displayName: 'Custom Scripts Storage Account'
+  type: string
+
+
+trigger: none
+
+jobs:
+- job: rbacTest
+  displayName: 'RBAC Tests'
+
+  pool:
+    name: 'Azure Pipelines'
+    vmImage: ubuntu-latest
+    
+  steps:
+  - task: AzureVmssDeployment@0
+    inputs:
+      azureSubscription: '${{ parameters.serviceConnection }}''
+      action: 'Configure application startup'
+      vmssName: '${{ parameters.vmssName }}'
+      vmssOsType: '${{ parameters.vmssOsType }}'
+      customScriptsDirectory: '/tmp'
+      customScript: |
+        lsb_release -d
+      customScriptsStorageAccount: '${{ parameters.customScriptsStorageAccount }}'
+      skipArchivingCustomScripts: false
