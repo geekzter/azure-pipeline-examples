@@ -1,7 +1,7 @@
 data azurerm_client_config default {}
 
 locals {
-  principal_id                 = var.principal_id != "" ? var.principal_id : data.azurerm_client_config.default.object_id
+  principal_id                 = coalesce(var.principal_id,data.azurerm_client_config.default.object_id)
 }
 
 resource azurerm_role_assignment azure_access {
