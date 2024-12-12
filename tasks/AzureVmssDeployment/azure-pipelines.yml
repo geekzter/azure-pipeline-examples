@@ -34,7 +34,7 @@ jobs:
     
   steps:
   # https://docs.microsoft.com/azure/devops/pipelines/tasks/deploy/azure-vmss-deployment
-  - task: AzureVmssDeployment@0
+  - task: AzureVmssDeployment@1
     inputs:
       azureSubscription: '${{ parameters.serviceConnection }}'
       action: 'Configure application startup'
