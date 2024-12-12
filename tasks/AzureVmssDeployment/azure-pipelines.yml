@@ -47,11 +47,11 @@ jobs:
         # List roles for the service connection
         az vmss list --query "[?name=='${{ parameters.vmssName }}'].id" -o tsv | Set-Variable vmssId
         Write-Host "Roles for service connection ${{ parameters.serviceConnection }} on VMSS ${{ parameters.vmssName }}:"
-        az role assignment list --assignee $principalId --include-inherited --scope $vmssId
+        az role assignment list --assignee $principalId --include-inherited --scope $vmssId --query "[].roleDefinitionName" -o tsv | Sort-Object | Get-Unique
 
         az storage account list --query "[?name=='rcvnvmssftvftovsrc'].id" -o tsv | Set-Variable storageAccountId
         Write-Host "Roles for service connection ${{ parameters.serviceConnection }} on storage account ${{ parameters.customScriptsStorageAccount }}:"
-        az role assignment list --assignee $principalId --include-inherited --scope $storageAccountId
+        az role assignment list --assignee $principalId --include-inherited --scope $storageAccountId --query "[].roleDefinitionName" -o tsv | Sort-Object | Get-Unique
 
   # https://docs.microsoft.com/azure/devops/pipelines/tasks/deploy/azure-vmss-deployment
   - task: AzureVmssDeployment@1
