@@ -33,6 +33,26 @@ jobs:
     vmImage: ubuntu-latest
     
   steps:
+  - task: AzureCLI@2
+    displayName: List ${{ parameters.serviceConnection }} RBAC roles
+    inputs:
+      azureSubscription: '${{ parameters.serviceConnection }}'
+      scriptType: 'pscore'
+      scriptLocation: 'inlineScript'
+      inlineScript: |
+        # Get service connection identity
+        az account show --query user.name -o tsv | Set-Variable appId
+        az ad sp show --id $appId --query id -o tsv | Set-Variable principalId
+
+        # List roles for the service connection
+        az vmss list --query "[?name=='${{ parameters.vmssName }}'].id" -o tsv | Set-Variable vmssId
+        Write-Host "Roles for service connection ${{ parameters.serviceConnection }} on VMSS ${{ parameters.vmssName }}:"
+        az role assignment list --assignee $principalId --include-inherited --scope $vmssId
+
+        az storage account list --query "[?name=='rcvnvmssftvftovsrc'].id" -o tsv | Set-Variable storageAccountId
+        Write-Host "Roles for service connection ${{ parameters.serviceConnection }} on storage account ${{ parameters.customScriptsStorageAccount }}:"
+        az role assignment list --assignee $principalId --include-inherited --scope $storageAccountId
+
   # https://docs.microsoft.com/azure/devops/pipelines/tasks/deploy/azure-vmss-deployment
   - task: AzureVmssDeployment@1
     inputs:
