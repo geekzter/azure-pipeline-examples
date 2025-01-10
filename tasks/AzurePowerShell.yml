@@ -38,8 +38,7 @@ jobs:
       azureSubscription: '$(serviceConnection)'
       scriptType: inlineScript
       inline: |
-        Get-Module | Where-Object -Property Name -Like Az.*
-        Get-InstalledModule Az  
+        Get-Module -All | Where-Object -Property Name -Like Az.*
       pwsh: true
       failOnStandardError: true
   - task: AzurePowerShell@5
@@ -61,8 +60,7 @@ jobs:
       azureSubscription: '$(serviceConnection)'
       scriptType: inlineScript
       inline: |
-        Get-Module | Where-Object -Property Name -Like Az.*
-        Get-InstalledModule Az  
+        Get-Module -All | Where-Object -Property Name -Like Az.*
       azurePowerShellVersion: 'OtherVersion'
       preferredAzurePowerShellVersion: '$(azModuleVersion)'
       pwsh: true
