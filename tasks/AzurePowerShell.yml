@@ -38,7 +38,16 @@ jobs:
       azureSubscription: '$(serviceConnection)'
       scriptType: inlineScript
       inline: |
+        Write-Host "`nLoaded Az modules:"
         Get-Module -All | Where-Object -Property Name -Like Az.*
+
+        Write-Host "`nAz module versions installed:"
+        Get-Module -ListAvailable -Name Az
+
+        if (Get-Command -Name Get-InstalledModule -ErrorAction SilentlyContinue) {
+          Write-Host "`nAz module versions installed with PowerShellGet:"
+          Get-InstalledModule Az -AllVersions
+        }
       pwsh: true
       failOnStandardError: true
   - task: AzurePowerShell@5
@@ -48,8 +57,16 @@ jobs:
       azureSubscription: '$(serviceConnection)'
       scriptType: inlineScript
       inline: |
+        Write-Host "`nLoaded Az modules:"
         Get-Module -All | Where-Object -Property Name -Like Az.*
-        # Get-Module -All -ListAvailable | Where-Object -Property Name -Like Az.*
+
+        Write-Host "`nAz module versions installed:"
+        Get-Module -ListAvailable -Name Az
+
+        if (Get-Command -Name Get-InstalledModule -ErrorAction SilentlyContinue) {
+          Write-Host "`nAz module versions installed with PowerShellGet:"
+          Get-InstalledModule Az -AllVersions
+        }
       azurePowerShellVersion: 'latestVersion'
       pwsh: true
       failOnStandardError: true
@@ -60,7 +77,16 @@ jobs:
       azureSubscription: '$(serviceConnection)'
       scriptType: inlineScript
       inline: |
+        Write-Host "`nLoaded Az modules:"
         Get-Module -All | Where-Object -Property Name -Like Az.*
+
+        Write-Host "`nAz module versions installed:"
+        Get-Module -ListAvailable -Name Az
+
+        if (Get-Command -Name Get-InstalledModule -ErrorAction SilentlyContinue) {
+          Write-Host "`nAz module versions installed with PowerShellGet:"
+          Get-InstalledModule Az -AllVersions
+        }
       azurePowerShellVersion: 'OtherVersion'
       preferredAzurePowerShellVersion: '$(azModuleVersion)'
       pwsh: true
