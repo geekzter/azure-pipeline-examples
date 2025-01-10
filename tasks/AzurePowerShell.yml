@@ -38,7 +38,7 @@ jobs:
       azureSubscription: '$(serviceConnection)'
       scriptType: inlineScript
       inline: |
-        Get-Module Az 
+        Get-Module | Where-Object -Property Name -Like Az.*
         Get-InstalledModule Az  
       pwsh: true
       failOnStandardError: true
@@ -49,13 +49,8 @@ jobs:
       azureSubscription: '$(serviceConnection)'
       scriptType: inlineScript
       inline: |
-        Set-PSDebug -Trace 1
-        # Get-AzContext Format-List
-        # Get-AzContext | Select-Object -ExpandProperty Subscription | Format-List
-
-        Get-Module
-        # Get-Module Az 
-        # Get-InstalledModule Az  
+        Get-Module -All | Where-Object -Property Name -Like Az.*
+        # Get-Module -All -ListAvailable | Where-Object -Property Name -Like Az.*
       azurePowerShellVersion: 'latestVersion'
       pwsh: true
       failOnStandardError: true
@@ -66,7 +61,7 @@ jobs:
       azureSubscription: '$(serviceConnection)'
       scriptType: inlineScript
       inline: |
-        Get-Module Az 
+        Get-Module | Where-Object -Property Name -Like Az.*
         Get-InstalledModule Az  
       azurePowerShellVersion: 'OtherVersion'
       preferredAzurePowerShellVersion: '$(azModuleVersion)'
