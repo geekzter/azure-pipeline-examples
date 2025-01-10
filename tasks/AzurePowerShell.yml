@@ -1,0 +1,54 @@
+# Pipeline to test Service Connections
+
+parameters:
+- name: serviceConnection
+  displayName: Override Service Connection
+  type: string
+  default: 'my-azure-subscription'
+- name: azModuleVersion
+  displayName: Azure Module Version
+  type: string
+  default: 'latest'
+
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
+
+pr: none
+trigger: none
+
+variables:
+- name: serviceConnection
+  ${{ if eq(parameters.serviceConnection, '<from serviceConnection variable>') }}:
+    value: $[ variables['serviceConnectionDefault'] ]
+  ${{ else }}:
+    value: '${{ parameters.serviceConnection }}'
+- name: azModuleVersion
+  value: '${{ parameters.azModuleVersion }}'
+
+jobs:
+- job: azPowerShell
+  displayName: 'Azure PowerShell'
+  pool:
+    name: 'Azure Pipelines'
+    vmImage: ubuntu-latest
+  steps:
+  - task: AzurePowerShell@5
+    displayName: 'latestVersion'
+    inputs:
+      azureSubscription: '$(serviceConnection)'
+      scriptType: inlineScript
+      inline: |
+        Get-Module Az 
+        Get-InstalledModule Az  
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: true
+      failOnStandardError: true
+  - task: AzurePowerShell@5
+    displayName: 'Default'
+    inputs:
+      azureSubscription: '$(serviceConnection)'
+      scriptType: inlineScript
+      inline: |
+        Get-Module Az 
+        Get-InstalledModule Az  
+      pwsh: true
+      failOnStandardError: true
