@@ -32,6 +32,17 @@ jobs:
     vmImage: ubuntu-latest
   steps:
   - task: AzurePowerShell@5
+    displayName: 'Specified version'
+    inputs:
+      azureSubscription: '$(serviceConnection)'
+      scriptType: inlineScript
+      inline: |
+        Get-Module Az 
+        Get-InstalledModule Az  
+      azurePowerShellVersion: '$(azModuleVersion)'
+      pwsh: true
+      failOnStandardError: true
+  - task: AzurePowerShell@5
     displayName: 'latestVersion'
     inputs:
       azureSubscription: '$(serviceConnection)'
