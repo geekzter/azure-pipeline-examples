@@ -50,11 +50,12 @@ jobs:
       scriptType: inlineScript
       inline: |
         Set-PSDebug -Trace 1
-        Get-AzContext Format-List
-        Get-AzContext | Select-Object -ExpandProperty Subscription | Format-List
+        # Get-AzContext Format-List
+        # Get-AzContext | Select-Object -ExpandProperty Subscription | Format-List
 
-        Get-Module Az 
-        Get-InstalledModule Az  
+        Get-Module
+        # Get-Module Az 
+        # Get-InstalledModule Az  
       azurePowerShellVersion: 'latestVersion'
       pwsh: true
       failOnStandardError: true
