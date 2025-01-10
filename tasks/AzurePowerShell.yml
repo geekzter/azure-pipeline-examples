@@ -49,6 +49,10 @@ jobs:
       azureSubscription: '$(serviceConnection)'
       scriptType: inlineScript
       inline: |
+        Set-PSDebug -Trace 1
+        Get-AzContext Format-List
+        Get-AzContext | Select-Object -ExpandProperty Subscription | Format-List
+
         Get-Module Az 
         Get-InstalledModule Az  
       azurePowerShellVersion: 'latestVersion'
