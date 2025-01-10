@@ -46,7 +46,7 @@ jobs:
 
         if (Get-Command -Name Get-InstalledModule -ErrorAction SilentlyContinue) {
           Write-Host "`nAz module versions installed with PowerShellGet:"
-          Get-InstalledModule Az -AllVersions
+          Get-InstalledModule Az -AllVersions -ErrorAction SilentlyContinue
         }
       pwsh: true
       failOnStandardError: true
@@ -65,7 +65,7 @@ jobs:
 
         if (Get-Command -Name Get-InstalledModule -ErrorAction SilentlyContinue) {
           Write-Host "`nAz module versions installed with PowerShellGet:"
-          Get-InstalledModule Az -AllVersions
+          Get-InstalledModule Az -AllVersions -ErrorAction SilentlyContinue
         }
       azurePowerShellVersion: 'latestVersion'
       pwsh: true
@@ -85,7 +85,7 @@ jobs:
 
         if (Get-Command -Name Get-InstalledModule -ErrorAction SilentlyContinue) {
           Write-Host "`nAz module versions installed with PowerShellGet:"
-          Get-InstalledModule Az -AllVersions
+          Get-InstalledModule Az -AllVersions -ErrorAction SilentlyContinue
         }
       azurePowerShellVersion: 'OtherVersion'
       preferredAzurePowerShellVersion: '$(azModuleVersion)'
