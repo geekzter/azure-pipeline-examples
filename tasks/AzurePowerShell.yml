@@ -38,7 +38,7 @@ jobs:
       azureSubscription: '$(serviceConnection)'
       scriptType: inlineScript
       inline: |
-        Write-Host "`nLoaded Az modules:"
+        Write-Host "`nAz modules loaded:"
         Get-Module -All | Where-Object -Property Name -Like Az.*
 
         Write-Host "`nAz module versions installed:"
@@ -57,7 +57,7 @@ jobs:
       azureSubscription: '$(serviceConnection)'
       scriptType: inlineScript
       inline: |
-        Write-Host "`nLoaded Az modules:"
+        Write-Host "`nAz modules loaded:"
         Get-Module -All | Where-Object -Property Name -Like Az.*
 
         Write-Host "`nAz module versions installed:"
@@ -77,7 +77,7 @@ jobs:
       azureSubscription: '$(serviceConnection)'
       scriptType: inlineScript
       inline: |
-        Write-Host "`nLoaded Az modules:"
+        Write-Host "`nAz modules loaded:"
         Get-Module -All | Where-Object -Property Name -Like Az.*
 
         Write-Host "`nAz module versions installed:"
