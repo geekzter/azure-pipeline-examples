@@ -17,10 +17,12 @@ jobs:
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
+
   - task: CargoAuthenticate@0
     continueOnError: true
     inputs:
       cargoServiceConnections: 'cargo-stub'
+
   - task: Bash@3
     condition: eq(variables['vmImage'], 'ubuntu-24.04')
     displayName: 'Install Mono'
@@ -31,6 +33,12 @@ jobs:
         sudo gpg --homedir /tmp --no-default-keyring --keyring /usr/share/keyrings/mono-official-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
         echo "deb [signed-by=/usr/share/keyrings/mono-official-archive-keyring.gpg] https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
         sudo apt update      
+
+  - task: Grunt@0
+    continueOnError: true
+    inputs:
+      gruntFile: 'tmpew.js'
+
   - task: MsBuild@1
     continueOnError: true
     inputs:
@@ -39,7 +47,9 @@ jobs:
       solution: '**/*.sln'
       msbuildArchitecture: 'x64'
       configuration: 'Release'
+
   - task: NuGetToolInstaller@1
+
   - task: NuGetCommand@2
     continueOnError: true
     inputs:
