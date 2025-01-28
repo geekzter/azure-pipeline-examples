@@ -37,7 +37,7 @@ jobs:
   - task: Grunt@0
     continueOnError: true
     inputs:
-      gruntFile: 'tmpew.js'
+      gruntFile: 'Gruntfile.js'
 
   - task: MsBuild@1
     continueOnError: true
