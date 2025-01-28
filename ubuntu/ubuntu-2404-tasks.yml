@@ -18,10 +18,10 @@ jobs:
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
 
-  - task: CargoAuthenticate@0
-    continueOnError: true
-    inputs:
-      cargoServiceConnections: 'cargo-stub'
+  # - task: CargoAuthenticate@0
+  #   continueOnError: true
+  #   inputs:
+  #     cargoServiceConnections: 'cargo-stub'
 
   - task: Bash@3
     condition: eq(variables['vmImage'], 'ubuntu-24.04')
@@ -34,10 +34,35 @@ jobs:
         echo "deb [signed-by=/usr/share/keyrings/mono-official-archive-keyring.gpg] https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
         sudo apt update      
 
-  - task: Grunt@0
-    continueOnError: true
-    inputs:
-      gruntFile: 'ubuntu/Gruntfile.js'
+  - bash: |
+      command -v >&- terraform || {
+        # Install dependencies
+        sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
+
+        # Install the HashiCorp GPG key
+        wget -O- https://apt.releases.hashicorp.com/gpg | \
+          gpg --dearmor | \
+          sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg > /dev/null
+
+        # Verify the key's fingerprint.
+        gpg --no-default-keyring --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg --fingerprint
+
+        # Add the official HashiCorp repository
+        echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | \
+          sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+        # Download package information from HashiCorp
+        sudo apt update
+
+        # Install Terraform from the new repository
+        sudo apt-get install terraform
+      }
+    displayName: 'Install Terraform'
+    
+  # - task: Grunt@0
+  #   continueOnError: true
+  #   inputs:
+  #     gruntFile: 'ubuntu/Gruntfile.js'
 
   - task: MsBuild@1
     continueOnError: true
