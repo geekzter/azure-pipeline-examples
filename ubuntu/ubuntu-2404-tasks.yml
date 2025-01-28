@@ -37,7 +37,7 @@ jobs:
   - task: Grunt@0
     continueOnError: true
     inputs:
-      gruntFile: 'Gruntfile.js'
+      gruntFile: 'ubuntu/Gruntfile.js'
 
   - task: MsBuild@1
     continueOnError: true
