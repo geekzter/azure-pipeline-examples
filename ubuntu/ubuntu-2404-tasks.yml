@@ -57,6 +57,7 @@ jobs:
         # Install Terraform from the new repository
         sudo apt-get install terraform
       }
+    condition: contains(variables['vmImage'], 'ubuntu')
     displayName: 'Install Terraform'
     
   # - task: Grunt@0
