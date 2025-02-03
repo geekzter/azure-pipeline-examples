@@ -58,3 +58,23 @@ jobs:
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
+- job: macOS14arm64
+  pool:
+    vmImage: ' macos-14-arm64'
+  steps:
+  - bash: |
+      echo Hello from macOS Sonoma on Apple Silicon
+      sw_vers
+  - pwsh: |
+      Write-Host "`$PSVersionTable.OS"
+      $PSVersionTable.OS
+- job: macOSInternalLatest
+  pool:
+    vmImage: 'macos-internal-latest'
+  steps:
+  - bash: |
+      echo Hello from macOS on Apple Silicon
+      sw_vers
+  - pwsh: |
+      Write-Host "`$PSVersionTable.OS"
+      $PSVersionTable.OS
