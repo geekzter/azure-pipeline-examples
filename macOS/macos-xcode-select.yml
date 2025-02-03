@@ -8,7 +8,7 @@ schedules:
     - main
 
 variables:
-  xcodeRoot: "/Applications/Xcode_14.3.1.app"
+  xcodeRoot: "/Applications/Xcode_15.3.app"
 
 jobs:
 - job: xcodeSelect
