@@ -8,16 +8,6 @@ schedules:
     - main
 
 jobs:
-- job: macOS12
-  pool:
-    vmImage: 'macOS-12'
-  steps:
-  - bash: |
-      echo Hello from macOS Monterey
-      sw_vers
-  - pwsh: |
-      Write-Host "`$PSVersionTable.OS"
-      $PSVersionTable.OS
 - job: macOS13
   pool:
     vmImage: 'macOS-13'
