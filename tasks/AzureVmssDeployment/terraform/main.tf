@@ -30,6 +30,9 @@ resource azurerm_linux_virtual_machine_scale_set linux_agents {
     public_key                 = file(var.ssh_public_key)
   }
 
+  identity {
+    type                       = "SystemAssigned"
+  }
 
   network_interface {
     name                       = "${azurerm_resource_group.rg.name}-vmss-nic"
