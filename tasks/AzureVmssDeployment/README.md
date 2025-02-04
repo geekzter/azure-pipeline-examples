@@ -2,7 +2,8 @@ Here is a simple flow chart:
 
 ```mermaid
 graph TD;
-    SC-->Storage;
-    SC-->VMSS;
-    VMSS-->Storage;
+    Storage@{ shape: lin-cyl, label: "Disk storage" };
+    Pipeline-->|Service Connection| Storage;
+    Pipeline-->|Service Connection| VMSS;
+    VMSS-->|System-assigned MI| Storage;
 ```
