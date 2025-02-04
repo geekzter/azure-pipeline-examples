@@ -1,0 +1,29 @@
+parameters:
+- name: azureDevOpsServiceConnection
+  displayName: Azure DevOps Service Connection
+  type: string
+  default: my-azdo-connection
+  
+pool:
+  vmImage: windows-latest
+
+steps:
+- task: PowerShell@2
+  inputs:
+    azureDevOpsServiceConnection: '${{ parameters.azureDevOpsServiceConnection }}'
+    targetType: 'inline'
+    script: |
+      $token = Get-AzDoToken
+
+      Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
+      $apiVersion = "7.1-preview.1"
+      $apiUrl = "$(System.CollectionUri)_apis/distributedtask/pools?api-version=${apiVersion}"
+      Invoke-RestMethod -Uri $apiUrl `
+                        -Headers @{
+                            Accept         = "application/json"
+                            Authorization  = "Bearer $token"
+                            "Content-Type" = "application/json"
+                        } `
+                        -Method Get `
+                        | Select-Object -ExpandProperty value `
+                        | Select-Object id, name
