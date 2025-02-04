@@ -57,7 +57,7 @@ jobs:
         az resource show --id $vmssId --query identity.principalId -o tsv | Set-Variable vmssPrincipalId
         if ($vmssPrincipalId) {
           Write-Host "`nRoles for VMSS ${{ parameters.vmssName }} on storage account '${{ parameters.customScriptsStorageAccount }}':"
-          az role assignment list --assignee-object-id $vmssPrincipalId --include-inherited --scope $storageAccountId --query "[].roleDefinitionName" -o tsv | Sort-Object | Get-Unique
+          az role assignment list --assignee $vmssPrincipalId --include-inherited --scope $storageAccountId --query "[].roleDefinitionName" -o tsv | Sort-Object | Get-Unique
         } else {
           Write-Host "`nVMSS ${{ parameters.vmssName }} does not have a system-assigned managed identity."
         }
