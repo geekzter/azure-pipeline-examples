@@ -34,7 +34,7 @@ jobs:
     
   steps:
   - task: AzureCLI@2
-    displayName: List ${{ parameters.serviceConnection }} RBAC roles
+    displayName: List RBAC roles for ${{ parameters.serviceConnection }} and ${{ parameters.vmssName }}
     inputs:
       azureSubscription: '${{ parameters.serviceConnection }}'
       scriptType: 'pscore'
