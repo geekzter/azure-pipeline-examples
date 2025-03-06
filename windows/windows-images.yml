@@ -63,6 +63,17 @@ jobs:
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
 
+- job: 'windows2025'
+  displayName: 'windows-2025 image'
+  pool:
+    vmImage: 'windows-2025'
+  steps:
+  - pwsh: |
+      Write-Host "(Get-ComputerInfo).WindowsProductName"
+      Get-ComputerInfo | Select-Object WindowsProductName
+      Write-Host "`$PSVersionTable.OS"
+      $PSVersionTable.OS
+
 - job: 'windowslatest'
   displayName: 'windows-latest image'
   pool:
