@@ -8,16 +8,6 @@ schedules:
     - main
 
 jobs:
-# - job: 'default'
-#   displayName: 'Default'
-#   pool:
-#     name: 'Default'
-#     demands:
-#     - agent.os -equals Windows_NT
-#   steps:
-#   - pwsh: |
-#       Get-ComputerInfo | Select-Object WindowsProductName
-
 - job: 'hosted'
   displayName: 'Hosted pool'
   pool:
