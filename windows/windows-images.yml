@@ -8,16 +8,6 @@ schedules:
     - main
 
 jobs:
-# - job: 'default'
-#   displayName: 'Default'
-#   pool:
-#     name: 'Default'
-#     demands:
-#     - agent.os -equals Windows_NT
-#   steps:
-#   - pwsh: |
-#       Get-ComputerInfo | Select-Object WindowsProductName
-
 - job: 'hosted'
   displayName: 'Hosted pool'
   pool:
@@ -56,6 +46,17 @@ jobs:
   displayName: 'windows-2022 image'
   pool:
     vmImage: 'windows-2022'
+  steps:
+  - pwsh: |
+      Write-Host "(Get-ComputerInfo).WindowsProductName"
+      Get-ComputerInfo | Select-Object WindowsProductName
+      Write-Host "`$PSVersionTable.OS"
+      $PSVersionTable.OS
+
+- job: 'windows2025'
+  displayName: 'windows-2025 image'
+  pool:
+    vmImage: 'windows-2025'
   steps:
   - pwsh: |
       Write-Host "(Get-ComputerInfo).WindowsProductName"
