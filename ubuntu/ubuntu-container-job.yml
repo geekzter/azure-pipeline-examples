@@ -13,4 +13,9 @@ pool:
 container: ubuntu:20.04
 
 steps:
-- script: printenv
+- bash: |
+    sudo apt-get update
+    sudo apt-get install azure-functions-core-tools-4
+    func --version
+    python -V
+  displayName: 'Install Azure Functions Core Tools'
