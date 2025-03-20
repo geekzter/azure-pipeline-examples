@@ -10,12 +10,13 @@ schedules:
 pool:
   vmImage: 'ubuntu-latest'
 
-container: ubuntu:20.04
+# container: ubuntu:20.04
+container: mcr.microsoft.com/azure-functions/python:4-python3.11
 
 steps:
 - bash: |
-    apt-get update
-    apt-get install azure-functions-core-tools-4
+    # apt-get update
+    # apt-get install azure-functions-core-tools-4
     func --version
     python -V
-  displayName: 'Install Azure Functions Core Tools'
+  displayName: 'Azure Functions Core Tools'
