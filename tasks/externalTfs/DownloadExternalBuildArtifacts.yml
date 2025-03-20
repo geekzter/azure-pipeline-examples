@@ -1,16 +1,14 @@
-# parameters:
-# - name: serviceConnection
-#   displayName: Override Service Connection
-#   type: string
-#   default: 'my-azure-subscription'
-# - name: storageAccountName
-#   displayName: Storage Account
-#   type: string
-#   default: '<from storageAccountName variable>'
-# - name: storageContainerName
-#   displayName: Storage Account Container
-#   type: string
-#   default: '<from storageContainerName variable>'
+parameters:
+- name: serviceConnection
+  displayName: Override Service Connection
+  type: string
+  default: 'my-azure-devops-connection'
+- name: definitionId
+  displayName: Pipeline Definition Id
+  type: number
+- name: buildId
+  displayName: Pipeline Build Id
+  type: number
 
 name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
 
@@ -32,6 +30,6 @@ jobs:
     inputs: 
       connection: $(AzDOConnection)
       project: "Pipeline Playground"
-      definition: 4
-      version: 3713
+      definition: ${{ parameters.definitionId }}
+      version: ${{ parameters.buildId }}
       downloadPath: "$(Build.ArtifactStagingDirectory)"
