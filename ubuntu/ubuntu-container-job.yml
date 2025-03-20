@@ -8,7 +8,7 @@ schedules:
     - main
 
 jobs:
-- job: Build
+- job: funcTools
   container: mcr.microsoft.com/azure-functions/python:4-python3.11
   displayName: 'Use Azure Functions Python container image'
   pool:
@@ -19,7 +19,7 @@ jobs:
       python -V
     displayName: 'Azure Functions Core Tools'
 
-- job: Build
+- job: ubuntu
   container: ubuntu:20.04
   displayName: 'Use container image'
   pool:
