@@ -4,7 +4,7 @@ pr: none
 trigger: none
 
 variables:
-  artifactName: ${{ split(variables['System.CollectionUri'],'/')[2] }}-${{ variables['System.TeamProject'] }}
+  artifactName: ${{ split(variables['System.CollectionUri'],'/')[3] }}-${{ replace(variables['System.TeamProject'],' ','') }}
 
 jobs:
 - job: publish
