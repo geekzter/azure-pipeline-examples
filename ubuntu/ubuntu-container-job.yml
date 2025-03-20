@@ -33,8 +33,8 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-  - script: /tmp/docker exec -t -u 0 ubuntu2004 sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
-    displayName: Set up sudo
+  # - script: /tmp/docker exec -t -u 0 ubuntu2004 sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
+  #   displayName: Set up sudo
   - bash: |
       # apt-get install -y -qq --no-install-recommends \
       #   apt-transport-https \
