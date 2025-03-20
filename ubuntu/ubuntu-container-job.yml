@@ -9,7 +9,7 @@ schedules:
 
 jobs:
 - job: funcTools
-  container: mcr.microsoft.com/azure-functions/python:4-python3.11
+  container: mcr.microsoft.com/azure-functions/python:3-python3.11
   displayName: 'Use Azure Functions Python container image'
   pool:
     vmImage: 'ubuntu-latest'
@@ -19,9 +19,11 @@ jobs:
       python -V
     displayName: 'Azure Functions Core Tools'
 
+
+# https://github.com/mariadb-corporation/mariadb-connector-odbc/blob/dd67939300b2b693e920a5a7e8dab0a2b98fba2c/azure-pipelines.yml#L135
 - job: ubuntu
   container: ubuntu:20.04
-  displayName: 'Use container image'
+  displayName: 'Use ubuntu:20.04 container image'
   pool:
     vmImage: 'ubuntu-latest'
   steps:
@@ -29,10 +31,6 @@ jobs:
       apt-get install -y -qq --no-install-recommends \
         apt-transport-https \
         apt-utils \
-        ca-certificates \
-        curl \
-        lsb-release \
-        software-properties-common \
         wget
 
       wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
