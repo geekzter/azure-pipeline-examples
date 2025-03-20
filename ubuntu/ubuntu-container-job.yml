@@ -15,7 +15,7 @@ resources:
 
 jobs:
 - job: funcTools
-  container: mcr.microsoft.com/azure-functions/python:4-python3.11
+  container: mcr.microsoft.com/azure-functions/python:4-python3.11-core-tools
   displayName: 'Use Azure Functions Python container image'
   pool:
     vmImage: 'ubuntu-latest'
@@ -27,26 +27,26 @@ jobs:
 
 
 # https://github.com/mariadb-corporation/mariadb-connector-odbc/blob/dd67939300b2b693e920a5a7e8dab0a2b98fba2c/azure-pipelines.yml#L135
-- job: ubuntu
-  container: ubuntu:20.04 # ubuntu2004
-  displayName: 'Use ubuntu:20.04 container image'
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  # - script: /tmp/docker exec -t -u 0 ubuntu2004 sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
-  #   displayName: Set up sudo
-  - bash: |
-      # apt-get install -y -qq --no-install-recommends \
-      #   apt-transport-https \
-      #   apt-utils \
-      #   wget
+# - job: ubuntu
+#   container: ubuntu:20.04 # ubuntu2004
+#   displayName: 'Use ubuntu:20.04 container image'
+#   pool:
+#     vmImage: 'ubuntu-latest'
+#   steps:
+#   # - script: /tmp/docker exec -t -u 0 ubuntu2004 sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
+#   #   displayName: Set up sudo
+#   - bash: |
+#       # apt-get install -y -qq --no-install-recommends \
+#       #   apt-transport-https \
+#       #   apt-utils \
+#       #   wget
 
-      # wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
-      # sudo dpkg -i packages-microsoft-prod.deb
-      # apt-get update
-      # apt-get install azure-functions-core-tools-4
+#       # wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+#       # sudo dpkg -i packages-microsoft-prod.deb
+#       # apt-get update
+#       # apt-get install azure-functions-core-tools-4
 
-      npm i -g azure-functions-core-tools@3 --unsafe-perm true
-      func --version
-      python -V
-    displayName: 'Install Azure Functions Core Tools'
+#       npm i -g azure-functions-core-tools@3 --unsafe-perm true
+#       func --version
+#       python -V
+#     displayName: 'Install Azure Functions Core Tools'
