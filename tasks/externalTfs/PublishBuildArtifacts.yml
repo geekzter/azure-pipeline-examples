@@ -1,0 +1,25 @@
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-$(Build.BuildId)
+
+pr: none
+trigger: none
+
+variables:
+  artifactName: ${{ split(variables['System.CollectionUri'])[2] }}-${{ variables['System.TeamProject'] }}
+
+jobs:
+- job: publish
+  displayName: 'Publish'
+  pool:
+    name: 'Azure Pipelines'
+    vmImage: windows-latest
+  steps:
+  - pwsh: |
+      Write-Host "Artifact name: $(artifactName)"
+      Write-Output "hello artifact" >$(Build.ArtifactStagingDirectory)\artifact.txt
+    displayName: "Create Artifact"
+  - task: PublishBuildArtifacts@1
+    displayName: "Publish Artifact"
+    inputs: 
+      PathtoPublish: "$(Build.ArtifactStagingDirectory)"
+      ArtifactName: $(artifactName)
+      publishLocation: "Container"

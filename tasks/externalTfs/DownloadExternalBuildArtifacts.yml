@@ -21,8 +21,8 @@ trigger: none
 
 
 jobs:
-- job: azCopy
-  displayName: 'Agent File Copy'
+- job: download
+  displayName: "Download Artifact"
   pool:
     name: 'Azure Pipelines'
     vmImage: windows-latest
