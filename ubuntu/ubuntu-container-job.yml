@@ -8,9 +8,17 @@ schedules:
     - main
 
 jobs:
-- job: ubuntu-container-job
+- job: ubuntu20
+  container: ubuntu:20.04
+  displayName: Use Azure Functions Python container image
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - script: printenv
+
+- job: funcTools
   container: mcr.microsoft.com/azure-functions/python:4-python3.11-core-tools
-  displayName: 'Use Azure Functions Python container image'
+  displayName: Use Azure Functions Python container image
   pool:
     vmImage: 'ubuntu-latest'
   steps:
