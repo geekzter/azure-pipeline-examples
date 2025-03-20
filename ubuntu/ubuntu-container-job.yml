@@ -11,7 +11,7 @@ resources:
   containers:
   - container: ubuntu2004
     image: ubuntu:20.04
-    options: "--name ubuntu2004 -v /usr/bin/docker:/tmp/docker:ro"
+    # options: "--name ubuntu2004 -v /usr/bin/docker:/tmp/docker:ro"
 
 jobs:
 - job: funcTools
@@ -28,7 +28,7 @@ jobs:
 
 # https://github.com/mariadb-corporation/mariadb-connector-odbc/blob/dd67939300b2b693e920a5a7e8dab0a2b98fba2c/azure-pipelines.yml#L135
 - job: ubuntu
-  container: ubuntu2004
+  container: ubuntu:20.04 # ubuntu2004
   displayName: 'Use ubuntu:20.04 container image'
   pool:
     vmImage: 'ubuntu-latest'
