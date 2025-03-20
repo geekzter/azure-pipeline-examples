@@ -8,16 +8,16 @@ schedules:
     - main
 
 jobs:
-- job: funcTools
-  container: mcr.microsoft.com/azure-functions/python:3-python3.11
-  displayName: 'Use Azure Functions Python container image'
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  - bash: |
-      func --version
-      python -V
-    displayName: 'Azure Functions Core Tools'
+# - job: funcTools
+#   container: mcr.microsoft.com/azure-functions/python:4-python3.11
+#   displayName: 'Use Azure Functions Python container image'
+#   pool:
+#     vmImage: 'ubuntu-latest'
+#   steps:
+#   - bash: |
+#       func --version
+#       python -V
+#     displayName: 'Azure Functions Core Tools'
 
 
 # https://github.com/mariadb-corporation/mariadb-connector-odbc/blob/dd67939300b2b693e920a5a7e8dab0a2b98fba2c/azure-pipelines.yml#L135
@@ -27,6 +27,8 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
+  - script: /tmp/docker exec -t -u 0 ubuntu:20.04 sh -c "apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -o Dpkg::Options::="--force-confold" -y install sudo"
+    displayName: Set up sudo
   - bash: |
       apt-get install -y -qq --no-install-recommends \
         apt-transport-https \
