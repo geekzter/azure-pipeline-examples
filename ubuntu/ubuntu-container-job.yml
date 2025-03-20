@@ -7,16 +7,29 @@ schedules:
     include:
     - main
 
-pool:
-  vmImage: 'ubuntu-latest'
-
-# container: ubuntu:20.04
-container: mcr.microsoft.com/azure-functions/python:4-python3.11
-
-steps:
+jobs:
+- job: Build
+  container: mcr.microsoft.com/azure-functions/python:4-python3.11
+  displayName: 'Use Azure Functions Python container image'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
 - bash: |
-    # apt-get update
-    # apt-get install azure-functions-core-tools-4
     func --version
     python -V
   displayName: 'Azure Functions Core Tools'
+
+- job: Build
+  container: ubuntu:20.04
+  displayName: 'Use container image'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - bash: |
+      wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
+      sudo dpkg -i packages-microsoft-prod.deb
+      apt-get update
+      apt-get install azure-functions-core-tools-4
+      func --version
+      python -V
+    displayName: 'Install Azure Functions Core Tools'
