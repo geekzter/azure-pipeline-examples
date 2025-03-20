@@ -14,10 +14,10 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-- bash: |
-    func --version
-    python -V
-  displayName: 'Azure Functions Core Tools'
+  - bash: |
+      func --version
+      python -V
+    displayName: 'Azure Functions Core Tools'
 
 - job: Build
   container: ubuntu:20.04
