@@ -46,7 +46,7 @@ jobs:
       displayName: 'Use Azure Functions Core Tools'
 
 - ${{ if or(eq(parameters.agentType, 'Managed DevOps Pool'),eq(parameters.agentType, 'All')) }}:
-  - job: hosted
+  - job: mdp
     displayName: Use Managed DevOps Pool ${{ parameters.mdpImageLabel }} image
     pool:
       name: '${{ parameters.mdpName }}'
@@ -66,7 +66,7 @@ jobs:
       displayName: 'Use Azure Functions Core Tools'
 
 - ${{ if or(eq(parameters.agentType, 'Container Job'),eq(parameters.agentType, 'All')) }}:
-  - job: funcTools
+  - job: container
     container: mcr.microsoft.com/azure-functions/python:4-python3.11-core-tools
     displayName: Use mcr.microsoft.com/azure-functions container image
     pool:
