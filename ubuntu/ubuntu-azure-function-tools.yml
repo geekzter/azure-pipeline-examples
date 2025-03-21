@@ -37,12 +37,7 @@ jobs:
       vmImage: 'ubuntu-20.04'
     steps:
     - ${{ if parameters.installFuncTools }}:
-      - bash: |
-          # wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
-          # sudo dpkg -i packages-microsoft-prod.deb  
-          # sudo apt-get update
-          # sudo apt-get install azure-functions-core-tools-4  
-          npm i -g azure-functions-core-tools@4 --unsafe-perm true
+      - bash: npm i -g azure-functions-core-tools@4 --unsafe-perm true
         displayName: 'Install Azure Functions Core Tools'
     - bash: |
         func --version
@@ -60,9 +55,10 @@ jobs:
       - bash: |
           wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
           sudo dpkg -i packages-microsoft-prod.deb  
-          sudo apt-get update
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt update
+          sudo apt install python3.11
           sudo apt-get install azure-functions-core-tools-4  
-          # npm i -g azure-functions-core-tools@4 --unsafe-perm true
         displayName: 'Install Azure Functions Core Tools'
     - bash: |
         func --version
