@@ -15,14 +15,3 @@ jobs:
     vmImage: 'ubuntu-latest'
   steps:
   - script: printenv
-
-- job: funcTools
-  container: mcr.microsoft.com/azure-functions/python:4-python3.11-core-tools
-  displayName: Use Azure Functions Python container image
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  - bash: |
-      func --version
-      python -V
-    displayName: 'Use Azure Functions Core Tools'
