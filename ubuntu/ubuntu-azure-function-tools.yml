@@ -23,7 +23,7 @@ parameters:
   default: false
   
 trigger: none
-schedules: none
+
 jobs:
 - ${{ if or(eq(parameters.agentType, 'Azure Pipelines'),eq(parameters.agentType, 'All')) }}:
   - job: hosted
