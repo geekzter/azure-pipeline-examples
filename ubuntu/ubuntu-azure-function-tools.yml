@@ -20,7 +20,7 @@ parameters:
 - name: installFuncTools
   displayName: Install Azure Functions Core Tools
   type: boolean
-  default: false
+  default: true
   
 trigger: none
 
@@ -50,6 +50,8 @@ jobs:
         sudo dpkg -i packages-microsoft-prod.deb  
         sudo apt-get update
         sudo apt-get install azure-functions-core-tools-4  
+
+        # npm i -g azure-functions-core-tools@4 --unsafe-perm true
 
     - bash: |
         func --version
