@@ -49,8 +49,8 @@ jobs:
     displayName: Use Managed DevOps Pool ${{ parameters.mdpImageLabel }} image
     pool:
       name: '${{ parameters.mdpName }}'
-    demands:
-    - ImageOverride -equals ${{ parameters.mdpImageLabel }}
+      demands:
+      - ImageOverride -equals ${{ parameters.mdpImageLabel }}
     steps:
     - ${{ if parameters.installFuncTools }}:
       - bash: |
