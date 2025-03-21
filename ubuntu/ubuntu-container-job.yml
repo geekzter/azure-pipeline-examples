@@ -10,7 +10,7 @@ schedules:
 jobs:
 - job: ubuntu20
   container: ubuntu:20.04
-  displayName: Use Azure Functions Python container image
+  displayName: Use Ubuntu 20.04 image
   pool:
     vmImage: 'ubuntu-latest'
   steps:
