@@ -45,8 +45,6 @@ jobs:
       name: 'Azure Pipelines'
       vmImage: 'ubuntu-20.04'
     steps:
-    # - bash: npm i -g azure-functions-core-tools@4 --unsafe-perm true
-    #   displayName: 'Install Azure Functions Core Tools'
     - task: FuncToolsInstaller@0
       displayName: 'Install Azure Functions Core Tools'
       inputs:
@@ -57,7 +55,7 @@ jobs:
       displayName: 'Use Python ${{ parameters.pythonVersion }}'
     - bash: |
         func --version
-        python -V
+        python --version
       displayName: 'Use Azure Functions Core Tools'
 
 - ${{ if or(eq(parameters.agentType, 'Managed DevOps Pool'),eq(parameters.agentType, 'All')) }}:
@@ -69,13 +67,6 @@ jobs:
       # demands:
       # - ImageOverride -equals ${{ parameters.mdpImageLabel }}
     steps:
-    # - bash: |
-    #     wget -q https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb
-    #     sudo dpkg -i packages-microsoft-prod.deb  
-    #     # sudo add-apt-repository ppa:deadsnakes/ppa
-    #     sudo apt update
-    #     sudo apt -y install azure-functions-core-tools-4 # python${{ parameters.pythonVersion }}
-    #   displayName: 'Install Azure Functions Core Tools'
     - bash: |
         sudo apt update
         sudo apt -y install unzip
@@ -88,15 +79,13 @@ jobs:
         sudo add-apt-repository ppa:deadsnakes/ppa
         sudo apt update
         sudo apt -y install python${{ parameters.pythonVersion }} python-is-python3
-        echo Python is in $PYTHONPATH
-        echo ##vso[task.prependpath]$PYTHONPATH
         which python${{ parameters.pythonVersion }}
         which python3
         which python
       displayName: 'Install Python ${{ parameters.pythonVersion }}'
     - bash: |
         func --version
-        python -V
+        python --version
       displayName: 'Use Azure Functions Core Tools'
 
 - ${{ if or(eq(parameters.agentType, 'Container Job'),eq(parameters.agentType, 'All')) }}:
@@ -109,5 +98,5 @@ jobs:
     steps:
     - bash: |
         func --version
-        python -V
+        python --version
       displayName: 'Use Azure Functions Core Tools'
