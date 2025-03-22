@@ -87,7 +87,7 @@ jobs:
     - bash: |
         sudo add-apt-repository ppa:deadsnakes/ppa
         sudo apt update
-        sudo apt -y install python${{ parameters.pythonVersion }}
+        sudo apt -y install python${{ parameters.pythonVersion }} python-is-python3
         echo Python is in $PYTHONPATH
         echo ##vso[task.prependpath]$PYTHONPATH
         which python${{ parameters.pythonVersion }}
