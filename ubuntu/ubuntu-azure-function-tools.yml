@@ -73,9 +73,12 @@ jobs:
     - bash: |
         sudo add-apt-repository ppa:deadsnakes/ppa
         sudo apt update
-        sudo apt -y install python${{ parameters.pythonVersion }} python-is-python3
-        sudo update-alternatives --set python /usr/bin/python${{ parameters.pythonVersion }}
-        sudo update-alternatives --set python3 /usr/bin/python${{ parameters.pythonVersion }}
+        sudo apt -y install python${{ parameters.pythonVersion }} # python-is-python3
+        # sudo update-alternatives --set python /usr/bin/python${{ parameters.pythonVersion }}
+        # sudo update-alternatives --set python3 /usr/bin/python${{ parameters.pythonVersion }}
+        sudo update-alternatives --install /usr/local/bin/python python /usr/bin/python${{ parameters.pythonVersion }} 3
+        sudo update-alternatives --config python
+        echo $PATH
         which python${{ parameters.pythonVersion }}
         python${{ parameters.pythonVersion }} --version
         which python3
