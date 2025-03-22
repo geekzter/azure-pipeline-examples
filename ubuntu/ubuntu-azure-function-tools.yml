@@ -32,11 +32,6 @@ parameters:
   
 trigger: none
 
-variables:
-  funcToolsVersion: '4'
-  # containerImage: 'mcr.microsoft.com/azure-functions/python:${{ parameters.funcToolsVersion }}-python${{ parameters.pythonVersion }}-core-tools'
-  containerImage: 'mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }}-core-tools'
-
 jobs:
 - ${{ if or(eq(parameters.agentType, 'Azure Pipelines'),eq(parameters.agentType, 'All')) }}:
   - job: hosted
@@ -80,8 +75,11 @@ jobs:
         sudo apt update
         sudo apt -y install python${{ parameters.pythonVersion }} python-is-python3
         which python${{ parameters.pythonVersion }}
+        python${{ parameters.pythonVersion }} --version
         which python3
+        python3 --version
         which python
+        python --version
       displayName: 'Install Python ${{ parameters.pythonVersion }}'
     - bash: |
         func --version
@@ -90,8 +88,8 @@ jobs:
 
 - ${{ if or(eq(parameters.agentType, 'Container Job'),eq(parameters.agentType, 'All')) }}:
   - job: hostedContainer
-    container: $(containerImage)
-    displayName: Use $(containerImage) container image
+    container: ${{ parameters.containerImage }}
+    displayName: Use ${{ parameters.containerImage }} container image
     pool:
       name: 'Azure Pipelines'
       vmImage: 'ubuntu-latest'
