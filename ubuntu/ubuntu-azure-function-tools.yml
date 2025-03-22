@@ -67,6 +67,10 @@ jobs:
     #     sudo apt update
     #     sudo apt -y install azure-functions-core-tools-4 # python${{ parameters.pythonVersion }}
     #   displayName: 'Install Azure Functions Core Tools'
+    - bash: |
+        sudo apt update
+        sudo apt -y install unzip
+      displayName: 'Install Pre-Requisites'
     - task: FuncToolsInstaller@0
       displayName: 'Install Azure Functions Core Tools'
       inputs:
