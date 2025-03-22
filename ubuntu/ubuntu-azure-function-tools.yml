@@ -63,8 +63,8 @@ jobs:
     displayName: Use Managed DevOps Pool image
     pool:
       name: '${{ parameters.mdpName }}'
-      # demands:
-      # - ImageOverride -equals ${{ parameters.mdpImageLabel }}
+      demands:
+      - ImageOverride -equals ${{ parameters.mdpImageLabel }}
     steps:
     - bash: |
         sudo apt -y install unzip
