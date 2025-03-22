@@ -90,6 +90,9 @@ jobs:
         sudo apt -y install python${{ parameters.pythonVersion }}
         echo Python is in $PYTHONPATH
         echo ##vso[task.prependpath]$PYTHONPATH
+        which python${{ parameters.pythonVersion }}
+        which python3
+        which python
       displayName: 'Install Python ${{ parameters.pythonVersion }}'
     - bash: |
         func --version
