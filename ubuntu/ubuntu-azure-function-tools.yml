@@ -29,10 +29,6 @@ parameters:
   displayName: Python Version
   type: string
   default: 3.11
-# - name: funcToolsVersion
-#   displayName: Azure Functions Core Tools Version
-#   type: string
-#   default: 4
   
 trigger: none
 
@@ -60,7 +56,6 @@ jobs:
 - ${{ if or(eq(parameters.agentType, 'Managed DevOps Pool'),eq(parameters.agentType, 'All')) }}:
   - job: mdp
     displayName: Use Managed DevOps Pool ${{ parameters.mdpImageLabel }} image
-    # displayName: Use Managed DevOps Pool image
     pool:
       name: '${{ parameters.mdpName }}'
       demands:
