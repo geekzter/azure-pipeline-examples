@@ -9,14 +9,18 @@ parameters:
   - Container Job
   - Managed DevOps Pool
   - All
+- name: hostedImageLabel
+  displayName: Microsoft-hosted Image
+  type: string
+  default: ubuntu-20.04
 - name: mdpName
   displayName: Managed DevOps Pool Name
   type: string
   default: Specify MDP Pool
-# - name: mdpImageLabel
-#   displayName: Managed DevOps Pool Image
-#   type: string
-#   default: ubuntu-20.04
+- name: mdpImageLabel
+  displayName: Managed DevOps Pool Image
+  type: string
+  default: ubuntu-20.04
 - name: containerImage
   displayName: Container image
   type: string
@@ -35,10 +39,10 @@ trigger: none
 jobs:
 - ${{ if or(eq(parameters.agentType, 'Azure Pipelines'),eq(parameters.agentType, 'All')) }}:
   - job: hosted
-    displayName: Use Azure Pipelines ubuntu-20.04 image
+    displayName: Use Azure Pipelines ${{ parameters.hostedImageLabel }} image
     pool:
       name: 'Azure Pipelines'
-      vmImage: 'ubuntu-20.04'
+      vmImage: '${{ parameters.hostedImageLabel }}'
     steps:
     - task: FuncToolsInstaller@0
       displayName: 'Install Azure Functions Core Tools'
@@ -63,7 +67,6 @@ jobs:
       # - ImageOverride -equals ${{ parameters.mdpImageLabel }}
     steps:
     - bash: |
-        sudo apt update
         sudo apt -y install unzip
       displayName: 'Install Pre-Requisites'
     - task: FuncToolsInstaller@0
@@ -74,8 +77,6 @@ jobs:
         sudo add-apt-repository ppa:deadsnakes/ppa
         sudo apt update
         sudo apt -y install python${{ parameters.pythonVersion }} # python-is-python3
-        # sudo update-alternatives --set python /usr/bin/python${{ parameters.pythonVersion }}
-        # sudo update-alternatives --set python3 /usr/bin/python${{ parameters.pythonVersion }}
         sudo update-alternatives --install /usr/local/bin/python3 python3 /usr/bin/python${{ parameters.pythonVersion }} 3
         sudo update-alternatives --install /usr/local/bin/python python /usr/bin/python${{ parameters.pythonVersion }} 3
         sudo update-alternatives --config python
