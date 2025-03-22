@@ -21,10 +21,6 @@ parameters:
   displayName: Managed DevOps Pool Image
   type: string
   default: ubuntu-20.04
-- name: containerImage
-  displayName: Container image
-  type: string
-  default: mcr.microsoft.com/azure-functions/python:4-python3.11-core-tools
 - name: pythonVersion
   displayName: Python Version
   type: string
@@ -86,8 +82,8 @@ jobs:
 
 - ${{ if or(eq(parameters.agentType, 'Container Job'),eq(parameters.agentType, 'All')) }}:
   - job: hostedContainer
-    container: ${{ parameters.containerImage }}
-    displayName: Use ${{ parameters.containerImage }} container image
+    container: mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }}-core-tools
+    displayName: Use mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }}-core-tools container image
     pool:
       name: 'Azure Pipelines'
       vmImage: 'ubuntu-latest'
