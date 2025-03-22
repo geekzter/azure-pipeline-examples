@@ -13,10 +13,10 @@ parameters:
   displayName: Managed DevOps Pool Name
   type: string
   default: Specify MDP Pool
-- name: mdpImageLabel
-  displayName: Managed DevOps Pool Image
-  type: string
-  default: ubuntu-20.04
+# - name: mdpImageLabel
+#   displayName: Managed DevOps Pool Image
+#   type: string
+#   default: ubuntu-20.04
 - name: containerImage
   displayName: Container image
   type: string
@@ -52,8 +52,7 @@ jobs:
         sudo dpkg -i packages-microsoft-prod.deb  
         sudo add-apt-repository ppa:deadsnakes/ppa
         sudo apt update
-        sudo apt install python3.11
-        sudo apt-get install azure-functions-core-tools-4  
+        sudo apt -y install python3.11 azure-functions-core-tools-4  
       displayName: 'Install Azure Functions Core Tools'
     - bash: |
         func --version
