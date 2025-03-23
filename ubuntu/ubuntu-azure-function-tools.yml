@@ -33,7 +33,7 @@ parameters:
   type: string
   default: 3.11
   
-name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-hosted:${{ parameters.hostedImageLabel }}-mdp:${{ parameters.mdpImageLabel }}-python:${{ parameters.pythonVersion }}-$(Build.BuildId)
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.agentType }}-hosted:${{ parameters.hostedImageLabel }}-mdp:${{ parameters.mdpImageLabel }}-python:${{ parameters.pythonVersion }}-$(Build.BuildId)
 
 trigger: none
 
