@@ -56,7 +56,8 @@ jobs:
         versionSpec: '${{ parameters.pythonVersion }}'
       displayName: 'Use Python ${{ parameters.pythonVersion }}'
     - bash: |
-        func --version
+        lsb_release -a
+        echo Azure Function Core Tools $(func --version)
         python --version
       displayName: 'Use Azure Functions Core Tools'
 
@@ -95,7 +96,8 @@ jobs:
         echo $(which python) $(python --version)
       displayName: 'Install Python ${{ parameters.pythonVersion }}'
     - bash: |
-        func --version
+        lsb_release -a
+        echo Azure Function Core Tools $(func --version)
         python --version
       displayName: 'Use Azure Functions Core Tools'
 
@@ -112,10 +114,7 @@ jobs:
       vmImage: 'ubuntu-latest'
     steps:
     - bash: |
-        # cat /etc/os-release
         lsb_release -a
-        # hostnamectl
-        # uname -r
-        func --version
+        echo Azure Function Core Tools $(func --version)
         python --version
       displayName: 'Use Azure Functions Core Tools'
