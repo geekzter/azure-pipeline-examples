@@ -78,8 +78,7 @@ jobs:
     # Assume this is a bare Ubuntu 20.04 image
     # When using an Azure Pipelines image, the same steps as above can be used
     - bash: |
-        # unzip is required by FuncToolsInstaller@0
-        sudo apt -y install unzip
+        sudo apt -y install unzip lsb-release
       displayName: 'Install Pre-Requisites'
     - task: FuncToolsInstaller@0
       displayName: 'Install Azure Functions Core Tools'
@@ -91,6 +90,7 @@ jobs:
     # https://github.com/deadsnakes
     # https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa
     - bash: |
+        set +x
         sudo add-apt-repository ppa:deadsnakes/ppa
         sudo apt update
         sudo apt -y install python${{ parameters.pythonVersion }}
