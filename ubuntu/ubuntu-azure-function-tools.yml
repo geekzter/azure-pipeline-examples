@@ -91,12 +91,18 @@ jobs:
     # https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa
     - bash: |
         set +x
-        sudo add-apt-repository ppa:deadsnakes/ppa
-        sudo apt update
-        sudo apt -y install python${{ parameters.pythonVersion }}
-        sudo update-alternatives --install /usr/local/bin/python3 python3 /usr/bin/python${{ parameters.pythonVersion }} 3
-        sudo update-alternatives --install /usr/local/bin/python python /usr/bin/python${{ parameters.pythonVersion }} 3
-        sudo update-alternatives --config python
+    
+        if python --version 2>&1 | grep -q '^Python ${{ parameters.pythonVersion }}'; then
+          echo "Python ${{ parameters.pythonVersion }} already installed"
+        else
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt update
+          sudo apt -y install python${{ parameters.pythonVersion }}
+          sudo update-alternatives --install /usr/local/bin/python3 python3 /usr/bin/python${{ parameters.pythonVersion }} 3
+          sudo update-alternatives --install /usr/local/bin/python python /usr/bin/python${{ parameters.pythonVersion }} 3
+          sudo update-alternatives --config python
+        fi
+
         echo $(which python${{ parameters.pythonVersion }}) $(python${{ parameters.pythonVersion }} --version)
         echo $(which python3) $(python3 --version)
         echo $(which python) $(python --version)
