@@ -1,4 +1,11 @@
-# This pipeline is for CI/CD
+# This pipeline provides alternative ways to install Azure Functions Core Tools and Python on different agent types.
+# The alternative agent types are:
+# 1. Azure Pipelines (Microsoft-hosted agent) 
+# 2. Managed DevOps Pool (Self-hosted agent)
+# 3. Container Job (Containerized agent)
+# To work around an issue with a given combination Operating System, Python version and Azure Functions Core Tools version, specifiy alternate image labels and/or Python versions
+# e.g. https://github.com/Azure/azure-functions-python-worker/issues/1651
+
 parameters:
 - name: agentType
   displayName: Agent Type
@@ -26,6 +33,8 @@ parameters:
   type: string
   default: 3.11
   
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-hosted:${{ parameters.hostedImageLabel }}-mdp:${{ parameters.mdpImageLabel }}-python:${{ parameters.pythonVersion }}-$(Build.BuildId)
+
 trigger: none
 
 jobs:
@@ -36,10 +45,12 @@ jobs:
       name: 'Azure Pipelines'
       vmImage: '${{ parameters.hostedImageLabel }}'
     steps:
+    # Use tool installer to install Azure Functions Core Tools
     - task: FuncToolsInstaller@0
       displayName: 'Install Azure Functions Core Tools'
       inputs:
         version: 'latest'
+    # Use tool installer to install Python
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '${{ parameters.pythonVersion }}'
@@ -57,13 +68,21 @@ jobs:
       demands:
       - ImageOverride -equals ${{ parameters.mdpImageLabel }}
     steps:
+    # Assume this is a bare Ubuntu 20.04 image
+    # When using an Azure Pipelines image, the same steps as above can be used
     - bash: |
+        # unzip is required by FuncToolsInstaller@0
         sudo apt -y install unzip
       displayName: 'Install Pre-Requisites'
     - task: FuncToolsInstaller@0
       displayName: 'Install Azure Functions Core Tools'
       inputs:
         version: 'latest'
+    # Use UsePythonVersion@0 task does not work on self-hosted agents, unless Agent.ToolsDirectory has been configured
+    # https://learn.microsoft.com/azure/devops/pipelines/tasks/reference/use-python-version-v0?view=azure-pipelines#how-can-i-configure-a-self-hosted-agent-to-use-this-task
+    # Using bash to install Python instead
+    # https://github.com/deadsnakes
+    # https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa
     - bash: |
         sudo add-apt-repository ppa:deadsnakes/ppa
         sudo apt update
@@ -80,6 +99,10 @@ jobs:
         python --version
       displayName: 'Use Azure Functions Core Tools'
 
+# This uses the Azure Functions Core Tools container image from Microsoft Container Registry (MCR)
+# https://hub.docker.com/r/microsoft/azure-functions
+# https://mcr.microsoft.com/en-us/artifact/mar/azure-functions/python/tags
+# https://github.com/Azure/azure-functions-docker
 - ${{ if or(eq(parameters.agentType, 'Container Job'),eq(parameters.agentType, 'All')) }}:
   - job: hostedContainer
     container: mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }}-core-tools
