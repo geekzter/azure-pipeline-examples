@@ -33,7 +33,7 @@ parameters:
   type: string
   default: 3.11
   
-name: $(Date:yyyyMMdd)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.agentType }}-hosted_${{ replace(lower(parameters.hostedImageLabel),' ','_') }}-mdp_${{ parameters.mdpImageLabel }}-python_${{ parameters.pythonVersion }}-$(Build.BuildId)
+name: $(Date:yyyyMMdd)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.agentType }}-python_${{ parameters.pythonVersion }}-hosted_${{ replace(lower(parameters.hostedImageLabel),' ','_') }}-mdp_${{ parameters.mdpImageLabel }}
 
 trigger: none
 
@@ -114,4 +114,8 @@ jobs:
     - bash: |
         func --version
         python --version
+        cat /etc/os-release
+        lsb_release -a
+        hostnamectl
+        uname -r
       displayName: 'Use Azure Functions Core Tools'
