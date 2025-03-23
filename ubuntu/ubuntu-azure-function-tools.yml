@@ -118,7 +118,18 @@ jobs:
 # https://mcr.microsoft.com/en-us/artifact/mar/azure-functions/python/tags
 # https://github.com/Azure/azure-functions-docker
 - ${{ if or(eq(parameters.agentType, 'Container Job'),eq(parameters.agentType, 'All')) }}:
-  - job: hostedContainer
+  - job: hostedWorkedContainer
+    container: mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }}
+    displayName: Use mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }} container image
+    pool:
+      name: 'Azure Pipelines'
+      vmImage: 'ubuntu-latest'
+    steps:
+    - bash: |
+        lsb_release -a
+        python --version
+      displayName: 'Use Azure Functions Python Worker'
+  - job: hostedToolContainer
     container: mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }}-core-tools
     displayName: Use mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }}-core-tools container image
     pool:
