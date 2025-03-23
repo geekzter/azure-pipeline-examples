@@ -92,6 +92,7 @@ jobs:
     - bash: |
         set +x
     
+        python --version
         if python --version 2>&1 | grep -q '^Python ${{ parameters.pythonVersion }}'; then
           echo "Python ${{ parameters.pythonVersion }} already installed"
         else
@@ -126,7 +127,7 @@ jobs:
       vmImage: 'ubuntu-latest'
     steps:
     - bash: |
-        lsb_release -a
+        cat /etc/os-release
         python --version
       displayName: 'Use Azure Functions Python Worker'
   - job: hostedToolContainer
