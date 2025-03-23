@@ -112,10 +112,10 @@ jobs:
       vmImage: 'ubuntu-latest'
     steps:
     - bash: |
-        func --version
-        python --version
         # cat /etc/os-release
         lsb_release -a
-        hostnamectl
+        # hostnamectl
         # uname -r
+        func --version
+        python --version
       displayName: 'Use Azure Functions Core Tools'
