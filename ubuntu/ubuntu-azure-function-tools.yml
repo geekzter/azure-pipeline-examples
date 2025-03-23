@@ -114,8 +114,8 @@ jobs:
     - bash: |
         func --version
         python --version
-        cat /etc/os-release
+        # cat /etc/os-release
         lsb_release -a
         hostnamectl
-        uname -r
+        # uname -r
       displayName: 'Use Azure Functions Core Tools'
