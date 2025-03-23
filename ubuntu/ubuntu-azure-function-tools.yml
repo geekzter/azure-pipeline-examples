@@ -10,9 +10,9 @@ parameters:
 - name: agentType
   displayName: Agent Type
   type: string
-  default: Azure Pipelines
+  default: Microsoft-hosted
   values:
-  - Azure Pipelines
+  - Microsoft-hosted
   - Container Job
   - Managed DevOps Pool
   - All
@@ -20,6 +20,12 @@ parameters:
   displayName: Microsoft-hosted Image
   type: string
   default: ubuntu-20.04
+  values:
+  # https://learn.microsoft.com/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software
+  # https://github.com/actions/runner-images/tree/main/images/ubuntu
+  - ubuntu-20.04
+  - ubuntu-22.04
+  - ubuntu-24.04
 - name: mdpName
   displayName: Managed DevOps Pool Name
   type: string
@@ -38,9 +44,9 @@ name: $(Date:yyyyMMdd)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parame
 trigger: none
 
 jobs:
-- ${{ if or(eq(parameters.agentType, 'Azure Pipelines'),eq(parameters.agentType, 'All')) }}:
+- ${{ if or(eq(parameters.agentType, 'Microsoft-hosted'),eq(parameters.agentType, 'All')) }}:
   - job: hosted
-    displayName: Use Azure Pipelines ${{ parameters.hostedImageLabel }} image
+    displayName: Use Microsoft-hosted ${{ parameters.hostedImageLabel }} image
     pool:
       name: 'Azure Pipelines'
       vmImage: '${{ parameters.hostedImageLabel }}'
