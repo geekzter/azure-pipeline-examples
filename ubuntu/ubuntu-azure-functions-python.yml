@@ -1,7 +1,7 @@
 # This pipeline provides alternative ways to install Azure Functions Core Tools and Python on different agent types.
 # The alternative agent types are:
 # 1. Azure Pipelines (Microsoft-hosted agent) 
-# 2. Managed DevOps Pool (Self-hosted agent)
+# 2. Managed DevOps Pool, see https://devblogs.microsoft.com/devops/managed-devops-pools-ga/
 # 3. Container Job (Containerized agent)
 # To work around an issue with a given combination Operating System, Python version and Azure Functions Core Tools version, specifiy alternate image labels and/or Python versions
 # e.g. https://github.com/Azure/azure-functions-python-worker/issues/1651
@@ -33,6 +33,7 @@ parameters:
 - name: mdpImageLabel
   displayName: Managed DevOps Pool Image
   type: string
+  # https://learn.microsoft.com/azure/devops/managed-devops-pools/configure-images?view=azure-devops&tabs=azure-portal
   default: ubuntu-20.04
 - name: pythonVersion
   displayName: Python Version
