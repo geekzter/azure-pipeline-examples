@@ -146,7 +146,7 @@ jobs:
   #     displayName: 'Use Azure Functions Core Tools'
   - job: ubuntuContainer
     # container: ubuntu:20.04
-    container: python:3.11-bullseye⁠
+    container: python:3.11
     displayName: Use ubuntu:20.04 container image
     pool:
       name: 'Azure Pipelines'
