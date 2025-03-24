@@ -116,35 +116,37 @@ jobs:
       displayName: 'Use Azure Functions Core Tools'
 
 # This uses the Azure Functions Core Tools container image from Microsoft Container Registry (MCR)
-# https://hub.docker.com/r/microsoft/azure-functions
-# https://mcr.microsoft.com/en-us/artifact/mar/azure-functions/python/tags
-# https://github.com/Azure/azure-functions-docker
 - ${{ if or(eq(parameters.agentType, 'Container Job'),eq(parameters.agentType, 'All')) }}:
-  # - job: hostedHostContainer
-  #   container: mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }}
-  #   displayName: Use mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }} container image
-  #   pool:
-  #     name: 'Azure Pipelines'
-  #     vmImage: 'ubuntu-latest'
-  #   steps:
-  #   - bash: |
-  #       cat /etc/os-release
-  #       echo Azure Function Host $HOST_VERSION
-  #       python --version
-  #     displayName: 'Use Azure Functions Python Worker'
-  # - job: hostedToolContainer
-  #   container: mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }}-core-tools
-  #   displayName: Use mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }}-core-tools container image
-  #   pool:
-  #     name: 'Azure Pipelines'
-  #     vmImage: 'ubuntu-latest'
-  #   steps:
-  #   - bash: |
-  #       lsb_release -a
-  #       echo Azure Function Core Tools $(func --version)
-  #       python --version
-  #     displayName: 'Use Azure Functions Core Tools'
+  - job: hostedHostContainer
+  # https://hub.docker.com/r/microsoft/azure-functions
+  # https://mcr.microsoft.com/en-us/artifact/mar/azure-functions/python/tags
+  # https://github.com/Azure/azure-functions-docker
+    container: mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }}
+    displayName: Use mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }} container image
+    pool:
+      name: 'Azure Pipelines'
+      vmImage: 'ubuntu-latest'
+    steps:
+    - bash: |
+        cat /etc/os-release
+        echo Azure Function Host $HOST_VERSION
+        python --version
+      displayName: 'Use Azure Functions Python Worker'
+  - job: hostedToolContainer
+    container: mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }}-core-tools
+    displayName: Use mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }}-core-tools container image
+    pool:
+      name: 'Azure Pipelines'
+      vmImage: 'ubuntu-latest'
+    steps:
+    - bash: |
+        lsb_release -a
+        echo Azure Function Core Tools $(func --version)
+        python --version
+      displayName: 'Use Azure Functions Core Tools'
   - job: devContainer
+    # https://hub.docker.com/r/microsoft/devcontainers-python
+    # https://github.com/devcontainers/images/tree/main/src/python
     container: mcr.microsoft.com/devcontainers/python:${{ parameters.pythonVersion }}-${{ iif(eq(parameters.hostedImageLabel, 'ubuntu-20.04'), 'bullseye', 'bookworm') }}
     displayName: Use mcr.microsoft.com/devcontainers/python:${{ parameters.pythonVersion }}-${{ iif(eq(parameters.hostedImageLabel, 'ubuntu-20.04'), 'bullseye', 'bookworm') }} container image
     pool:
