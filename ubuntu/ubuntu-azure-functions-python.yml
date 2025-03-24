@@ -145,13 +145,25 @@ jobs:
   #       python --version
   #     displayName: 'Use Azure Functions Core Tools'
   - job: ubuntuContainer
-    container: ubuntu:20.04
+    # container: ubuntu:20.04
+    container: python:3.11-bullseye⁠
     displayName: Use ubuntu:20.04 container image
     pool:
       name: 'Azure Pipelines'
       vmImage: 'ubuntu-latest'
     steps:
     - bash: |
+        apt-get install -y -qq --no-install-recommends \
+          apt-transport-https \
+          apt-utils \
+          ca-certificates \
+          curl \
+          git \
+          iputils-ping \
+          jq \
+          lsb-release \
+          software-properties-common \
+          wget
         apt -y install unzip lsb-release
         # lsb_release -a
         cat /etc/os-release
