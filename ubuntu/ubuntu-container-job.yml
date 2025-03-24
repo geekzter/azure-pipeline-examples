@@ -7,10 +7,11 @@ schedules:
     include:
     - main
 
-pool:
-  vmImage: 'ubuntu-latest'
-
-container: ubuntu:20.04
-
-steps:
-- script: printenv
+jobs:
+- job: ubuntu20
+  container: ubuntu:20.04
+  displayName: Use Ubuntu 20.04 image
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - script: printenv

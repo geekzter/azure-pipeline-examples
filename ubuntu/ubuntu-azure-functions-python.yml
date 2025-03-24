@@ -1,0 +1,165 @@
+# This pipeline provides alternative ways to install Azure Functions Core Tools and Python on different agent types.
+# The alternative agent types are:
+# 1. Azure Pipelines (Microsoft-hosted agent) 
+# 2. Managed DevOps Pool, see https://devblogs.microsoft.com/devops/managed-devops-pools-ga/
+# 3. Container Job (Containerized agent)
+# To work around an issue with a given combination Operating System, Python version and Azure Functions Core Tools version, specifiy alternate image labels and/or Python versions
+# e.g. https://github.com/Azure/azure-functions-python-worker/issues/1651
+
+parameters:
+- name: agentType
+  displayName: Agent Type
+  type: string
+  default: Microsoft-hosted
+  values:
+  - Microsoft-hosted
+  - Container Job
+  - Managed DevOps Pool
+  - All
+- name: hostedImageLabel
+  displayName: Microsoft-hosted Image
+  type: string
+  default: ubuntu-20.04
+  values:
+  # https://learn.microsoft.com/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software
+  # https://github.com/actions/runner-images/tree/main/images/ubuntu
+  - ubuntu-20.04
+  - ubuntu-22.04
+  - ubuntu-24.04
+- name: mdpName
+  displayName: Managed DevOps Pool Name
+  type: string
+  default: Specify MDP Pool
+- name: mdpImageLabel
+  displayName: Managed DevOps Pool Image
+  type: string
+  # https://learn.microsoft.com/azure/devops/managed-devops-pools/configure-images?view=azure-devops&tabs=azure-portal
+  default: ubuntu-20.04
+- name: pythonVersion
+  displayName: Python Version
+  type: string
+  default: 3.11
+  
+name: $(Date:yyyyMMdd)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.agentType }}-python_${{ parameters.pythonVersion }}-hosted_${{ replace(lower(parameters.hostedImageLabel),' ','_') }}-mdp_${{ parameters.mdpImageLabel }}
+
+trigger: none
+
+jobs:
+- ${{ if or(eq(parameters.agentType, 'Microsoft-hosted'),eq(parameters.agentType, 'All')) }}:
+  - job: hosted
+    displayName: Use Microsoft-hosted ${{ parameters.hostedImageLabel }} image
+    pool:
+      name: 'Azure Pipelines'
+      vmImage: '${{ parameters.hostedImageLabel }}'
+    steps:
+    # Use tool installer to install Azure Functions Core Tools
+    - task: FuncToolsInstaller@0
+      displayName: 'Install Azure Functions Core Tools'
+      inputs:
+        version: 'latest'
+    # Use tool installer to install Python
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '${{ parameters.pythonVersion }}'
+      displayName: 'Use Python ${{ parameters.pythonVersion }}'
+    - bash: |
+        lsb_release -a
+        echo Azure Function Core Tools $(func --version)
+        python --version
+      displayName: 'Use Azure Functions Core Tools'
+
+- ${{ if or(eq(parameters.agentType, 'Managed DevOps Pool'),eq(parameters.agentType, 'All')) }}:
+  - job: mdp
+    displayName: Use Managed DevOps Pool ${{ parameters.mdpImageLabel }} image
+    pool:
+      name: '${{ parameters.mdpName }}'
+      demands:
+      - ImageOverride -equals ${{ parameters.mdpImageLabel }}
+    steps:
+    # Assume this is a bare Ubuntu 20.04 image
+    # When using an Azure Pipelines image, the same steps as above can be used
+    - bash: |
+        sudo apt -y install unzip lsb-release
+      displayName: 'Install Pre-Requisites'
+    - task: FuncToolsInstaller@0
+      displayName: 'Install Azure Functions Core Tools'
+      inputs:
+        version: 'latest'
+    # Use UsePythonVersion@0 task does not work on self-hosted agents, unless Agent.ToolsDirectory has been configured
+    # https://learn.microsoft.com/azure/devops/pipelines/tasks/reference/use-python-version-v0?view=azure-pipelines#how-can-i-configure-a-self-hosted-agent-to-use-this-task
+    # Using bash to install Python instead
+    # https://github.com/deadsnakes
+    # https://launchpad.net/~deadsnakes/+archive/ubuntu/ppa
+    - bash: |
+        python --version
+        if python --version 2>&1 | grep -q '^Python ${{ parameters.pythonVersion }}'; then
+          echo "Python ${{ parameters.pythonVersion }} already installed"
+        else
+          echo "Installing Python ${{ parameters.pythonVersion }}"
+          sudo add-apt-repository ppa:deadsnakes/ppa
+          sudo apt update
+          sudo apt -y install python${{ parameters.pythonVersion }}
+          echo "Python ${{ parameters.pythonVersion }} installed"
+          echo Configuring alternatives
+          sudo update-alternatives --install /usr/local/bin/python3 python3 /usr/bin/python${{ parameters.pythonVersion }} 3
+          sudo update-alternatives --install /usr/local/bin/python python /usr/bin/python${{ parameters.pythonVersion }} 3
+          sudo update-alternatives --set python /usr/bin/python${{ parameters.pythonVersion }}
+        fi
+
+        echo $(which python${{ parameters.pythonVersion }}) $(python${{ parameters.pythonVersion }} --version)
+        echo $(which python3) $(python3 --version)
+        echo $(which python) $(python --version)
+      displayName: 'Install Python ${{ parameters.pythonVersion }}'
+    - bash: |
+        lsb_release -a
+        echo Azure Function Core Tools $(func --version)
+        python --version
+      displayName: 'Use Azure Functions Core Tools'
+
+# This uses the Azure Functions Core Tools container image from Microsoft Container Registry (MCR)
+- ${{ if or(eq(parameters.agentType, 'Container Job'),eq(parameters.agentType, 'All')) }}:
+  # - job: hostedHostContainer
+  # # https://hub.docker.com/r/microsoft/azure-functions
+  # # https://mcr.microsoft.com/en-us/artifact/mar/azure-functions/python/tags
+  # # https://github.com/Azure/azure-functions-docker
+  #   container: mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }}
+  #   displayName: Use mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }} container image
+  #   pool:
+  #     name: 'Azure Pipelines'
+  #     vmImage: 'ubuntu-latest'
+  #   steps:
+  #   - bash: |
+  #       cat /etc/os-release
+  #       echo Azure Function Host $HOST_VERSION
+  #       python --version
+  #     displayName: 'Use Azure Functions Python Worker'
+  # - job: hostedToolContainer
+  #   container: mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }}-core-tools
+  #   displayName: Use mcr.microsoft.com/azure-functions/python:4-python${{ parameters.pythonVersion }}-core-tools container image
+  #   pool:
+  #     name: 'Azure Pipelines'
+  #     vmImage: 'ubuntu-latest'
+  #   steps:
+  #   - bash: |
+  #       lsb_release -a
+  #       echo Azure Function Core Tools $(func --version)
+  #       python --version
+  #     displayName: 'Use Azure Functions Core Tools'
+  - job: devContainer
+    # https://hub.docker.com/r/microsoft/devcontainers-python
+    # https://github.com/devcontainers/images/tree/main/src/python
+    container: mcr.microsoft.com/devcontainers/python:${{ parameters.pythonVersion }}-${{ iif(eq(parameters.hostedImageLabel, 'ubuntu-20.04'), 'bullseye', 'bookworm') }}
+    displayName: Use mcr.microsoft.com/devcontainers/python:${{ parameters.pythonVersion }}-${{ iif(eq(parameters.hostedImageLabel, 'ubuntu-20.04'), 'bullseye', 'bookworm') }} container image
+    pool:
+      name: 'Azure Pipelines'
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: FuncToolsInstaller@0
+      displayName: 'Install Azure Functions Core Tools'
+      inputs:
+        version: 'latest'
+    - bash: |
+        lsb_release -a
+        echo Azure Function Core Tools $(func --version)
+        python --version
+      displayName: 'Use Azure Functions Core Tools'
