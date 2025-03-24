@@ -154,6 +154,10 @@ jobs:
       name: 'Azure Pipelines'
       vmImage: 'ubuntu-latest'
     steps:
+    - task: FuncToolsInstaller@0
+      displayName: 'Install Azure Functions Core Tools'
+      inputs:
+        version: 'latest'
     - bash: |
         apt-get install -y -qq --no-install-recommends \
           apt-transport-https \
