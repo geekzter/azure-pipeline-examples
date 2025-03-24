@@ -152,8 +152,12 @@ jobs:
       vmImage: 'ubuntu-latest'
     steps:
     - bash: |
+        sudo apt -y install unzip lsb-release
         # lsb_release -a
         cat /etc/os-release
+        sudo add-apt-repository ppa:deadsnakes/ppa
+        sudo apt update
+        sudo apt -y install python${{ parameters.pythonVersion }}
         # echo Azure Function Core Tools $(func --version)
         python --version
       displayName: 'Use Azure Functions Core Tools'
