@@ -145,16 +145,16 @@ jobs:
   #       python --version
   #     displayName: 'Use Azure Functions Core Tools'
   - job: devContainer
-    container: mcr.microsoft.com/devcontainers/python:${{ parameters.pythonVersion }}-bullseye
-    displayName: Use mcr.microsoft.com/devcontainers/python container image
+    container: mcr.microsoft.com/devcontainers/python:${{ parameters.pythonVersion }}-${{ iif(eq(parameters.hostedImageLabel, 'ubuntu-20.04'), 'bullseye', 'bookworm') }}
+    displayName: Use mcr.microsoft.com/devcontainers/python:${{ parameters.pythonVersion }}-${{ iif(eq(parameters.hostedImageLabel, 'ubuntu-20.04'), 'bullseye', 'bookworm') }} container image
     pool:
       name: 'Azure Pipelines'
       vmImage: 'ubuntu-latest'
     steps:
-    # - task: FuncToolsInstaller@0
-    #   displayName: 'Install Azure Functions Core Tools'
-    #   inputs:
-    #     version: 'latest'
+    - task: FuncToolsInstaller@0
+      displayName: 'Install Azure Functions Core Tools'
+      inputs:
+        version: 'latest'
     - bash: |
         lsb_release -a
         echo Azure Function Core Tools $(func --version)
