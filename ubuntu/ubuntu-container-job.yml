@@ -1,6 +1,6 @@
 parameters:
 - name: containerImage
-  displayName: Container Image
+  displayName: Docker Hub Container Image
   type: string
   default: ubuntu:20.04
 
