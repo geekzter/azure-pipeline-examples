@@ -12,7 +12,7 @@ schedules:
     include:
     - main
 
-name: $(Date:yyyyMMdd)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.containerImage }}
+name: $(Date:yyyyMMdd)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ replace(parameters.containerImage,':,'_') }}
 
 jobs:
 - job: ubuntu20
