@@ -1,4 +1,9 @@
-trigger: none
+parameters:
+- name: containerImage
+  displayName: Container Image
+  type: string
+  default: ubuntu:20.04
+
 schedules:
 - cron: '0 1 * * *'
   displayName: 'Nightly build (UTC)'
@@ -6,12 +11,6 @@ schedules:
   branches:
     include:
     - main
-
-parameters:
-- name: containerImage
-  displayName: Container Image
-  type: string
-  default: ubuntu:20.04
 
 name: $(Date:yyyyMMdd)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.containerImage }}
 
