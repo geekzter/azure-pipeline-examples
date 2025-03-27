@@ -13,6 +13,8 @@ parameters:
   type: string
   default: ubuntu:20.04
 
+name: $(Date:yyyyMMdd)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.containerImage }}
+
 jobs:
 - job: ubuntu20
   container: ${{ parameters.containerImage }}
