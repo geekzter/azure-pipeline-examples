@@ -9,7 +9,7 @@ schedules:
 
 jobs:
 - job: ubuntu20
-  container: ubuntu:20.04
+  container: mcr.microsoft.com/vscode/devcontainers/base:ubuntu-20.04
   displayName: Use Ubuntu 20.04 image
   pool:
     vmImage: 'ubuntu-latest'
