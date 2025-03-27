@@ -7,10 +7,16 @@ schedules:
     include:
     - main
 
+parameters:
+- name: containerImage
+  displayName: Container Image
+  type: string
+  default: ubuntu:20.04
+
 jobs:
 - job: ubuntu20
-  container: mcr.microsoft.com/vscode/devcontainers/base:ubuntu-20.04
-  displayName: Use Ubuntu 20.04 image
+  container: ${{ parameters.containerImage }}
+  displayName: Use Ubuntu ${{ parameters.containerImage }} image
   pool:
     vmImage: 'ubuntu-latest'
   steps:
