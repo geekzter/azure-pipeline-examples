@@ -12,12 +12,12 @@ jobs:
   displayName: 'Test CDN access'
   strategy:
     matrix:
-      # macOS:
-      #   vmImage: 'macos-latest'
+      macOS:
+        vmImage: 'macos-latest'
       Ubuntu:
         vmImage: 'ubuntu-latest'
-      # Windows:
-      #   vmImage: 'windows-latest'
+      Windows:
+        vmImage: 'windows-latest'
     maxParallel: 3
   pool:
     vmImage: $(vmImage)
@@ -26,7 +26,7 @@ jobs:
       $ErrorActionPreference = 'Stop'
       try {
         Invoke-WebRequest -Method HEAD `
-                          -Uri https://download.agent.dev.azureasdasd.com/agent/health/probe `
+                          -Uri https://download.agent.dev.azure.com/agent/health/probe `
                           -TimeoutSec 1 `
                           -UseBasicParsing `
                           | Set-Variable response
