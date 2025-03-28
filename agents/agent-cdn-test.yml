@@ -26,7 +26,7 @@ jobs:
       $ErrorActionPreference = 'Stop'
       try {
         Invoke-WebRequest -Method HEAD `
-                          -Uri https://download.agent.dev.azure.com/agent/health/probeZZ `
+                          -Uri https://download.agent.dev.azureasdasd.com/agent/health/probe `
                           -TimeoutSec 1 `
                           -UseBasicParsing `
                           | Set-Variable response
@@ -37,7 +37,7 @@ jobs:
         }
       } catch {
         Write-Host "##vso[task.logissue type=warning]Can't access download.agent.dev.azure.com. Please make sure the access is not blocked by a firewall."
-        Write-Error "Agent CDN is inaccessible. Status code: $($response.StatusCode)"
+        Write-Error "Agent CDN is inaccessible. Please make sure the access is not blocked by a firewall"
         $response | Format-List
       }
     displayName: 'Test download.agent.dev.azure.com access'
