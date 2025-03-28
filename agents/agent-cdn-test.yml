@@ -9,7 +9,7 @@ schedules:
 
 jobs:
 - job: 
-  displayName: 'Test CDN access'
+  displayName: 'Test access to CDN download.agent.dev.azure.com'
   strategy:
     matrix:
       macOS:
