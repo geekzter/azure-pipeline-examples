@@ -24,15 +24,21 @@ jobs:
   steps:
   - pwsh: |
       $ErrorActionPreference = 'Stop'
-      Invoke-WebRequest -Method HEAD `
-                        -Uri https://downloadbogus.agent.dev.azure.com/agent/4.253.0/vsts-agent-osx-arm64-4.253.0.tar.gz `
+      try {
+        $response = Invoke-WebRequest -Method HEAD `
+                        -Uri https://download.agent.dev.azure.com/agent/4.253.0/vsts-agent-osx-arm64-4.253.0.tar.gzZZZZZ `
                         -TimeoutSec 1 `
                         | Set-Variable response
-      if ($response.StatusCode -lt 400) {
-        Write-Host "Agent CDN is accessible. Status code: $($response.StatusCode)"
-      } else {
+        if ($response.StatusCode -lt 400) {
+          Write-Host "Agent CDN is accessible. Status code: $($response.StatusCode)"
+        } else {
+          Write-Host "##vso[task.logissue type=warning]Can't access download.agent.dev.azure.com. Please make sure the access is not blocked by a firewall."
+          Write-Warning "Agent CDN is inaccessible. Status code: $($response.StatusCode)"
+          $response | Format-List
+        }
+      } catch {
         Write-Host "##vso[task.logissue type=warning]Can't access download.agent.dev.azure.com. Please make sure the access is not blocked by a firewall."
-        Write-Warning "Agent CDN is inaccessible. Status code: $($response.StatusCode)"
+        Write-Warning "Agent CDN is inaccessible."
         $response | Format-List
       }
     displayName: 'Test download.agent.dev.azure.com access'
