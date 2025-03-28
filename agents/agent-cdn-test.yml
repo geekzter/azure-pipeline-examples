@@ -29,7 +29,7 @@ jobs:
                           -Uri https://download.agent.dev.azure.com/agent/4.253.0/vsts-agent-osx-arm64-4.253.0.tar.gzZZZZZ `
                           -TimeoutSec 1 `
                           -SkipHttpErrorCheck `
-                          -UseBasicParsing ``
+                          -UseBasicParsing `
                           | Set-Variable response
         if ($response.StatusCode -lt 400) {
           Write-Host "Agent CDN is accessible. Status code: $($response.StatusCode)"
