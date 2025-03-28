@@ -51,6 +51,11 @@ jobs:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)
     workingDirectory: azure-pipeline-examples/deployment/terraform-private-module-registry
 
+  - task: TerraformInstaller@0
+    displayName: 'Install Terraform'
+    inputs:
+      terraformVersion: 'latest'
+
   - pwsh: |
       terraform init
       terraform apply -auto-approve
