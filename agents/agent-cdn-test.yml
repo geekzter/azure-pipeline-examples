@@ -27,7 +27,7 @@ jobs:
       try {
         Invoke-WebRequest -Method HEAD `
                           -Uri https://download.agent.dev.azure.com/agent/health/probe `
-                          -TimeoutSec 1 `
+                          -TimeoutSec 5 `
                           -UseBasicParsing `
                           | Set-Variable response
         if ($response.StatusCode -lt 400) {
