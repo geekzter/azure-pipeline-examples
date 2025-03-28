@@ -1,0 +1,37 @@
+trigger: none
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+
+jobs:
+- job: 
+  displayName: 'Test CDN access'
+  strategy:
+    matrix:
+      # macOS:
+      #   vmImage: 'macos-latest'
+      Ubuntu:
+        vmImage: 'ubuntu-latest'
+      # Windows:
+      #   vmImage: 'windows-latest'
+    maxParallel: 3
+  pool:
+    vmImage: $(vmImage)
+  steps:
+  - pwsh: |
+      $ErrorActionPreference = 'Stop'
+      Invoke-WebRequest -Method HEAD `
+                        -Uri https://download.agent.dev.azure.com/agent/4.253.0/vsts-agent-osx-arm64-4.253.0.tar.gz `
+                        -TimeoutSec 1 `
+                        | Set-Variable response
+      if ($response.StatusCode -lt 400) {
+        Write-Host "##vso[task.setvariable variable=cdnStatus;]true"
+      } else {
+        Write-Host "##vso[task.logissue type=warning]Can't access download.agent.dev.azure.com. Please make sure the access is not blocked by a firewall."
+        $response | Format-List
+      }
+    displayName: 'Test download.agent.dev.azure.com access'
