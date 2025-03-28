@@ -33,12 +33,11 @@ jobs:
         if ($response.StatusCode -lt 400) {
           Write-Host "Agent CDN is accessible. Status code: $($response.StatusCode)"
         } else {
-          throw "Agent CDN is inaccessible"
+          throw
         }
       } catch {
-        Write-Warning "Exception"
         Write-Host "##vso[task.logissue type=warning]Can't access download.agent.dev.azure.com. Please make sure the access is not blocked by a firewall."
-        Write-Warning "Agent CDN is inaccessible. Status code: $($response.StatusCode)"
+        Write-Error "Agent CDN is inaccessible. Status code: $($response.StatusCode)"
         $response | Format-List
       }
     displayName: 'Test download.agent.dev.azure.com access'
