@@ -41,3 +41,27 @@ jobs:
         $response | Format-List
       }
     displayName: 'Test download.agent.dev.azure.com access'
+
+- job: 
+  pool:
+    name: MyPool
+  steps:
+  - pwsh: |
+      $ErrorActionPreference = 'Stop'
+      try {
+        Invoke-WebRequest -Method HEAD `
+                          -Uri https://download.agent.dev.azure.com/agent/health/probe `
+                          -TimeoutSec 5 `
+                          -UseBasicParsing `
+                          | Set-Variable response
+        if ($response.StatusCode -lt 400) {
+          Write-Host "Agent CDN is accessible. Status code: $($response.StatusCode)"
+        } else {
+          throw
+        }
+      } catch {
+        Write-Host "##vso[task.logissue type=warning]Can't access download.agent.dev.azure.com. Please make sure the access is not blocked by a firewall."
+        Write-Error "Agent CDN is inaccessible. Please make sure the access is not blocked by a firewall"
+        $response | Format-List
+      }
+    displayName: 'Test download.agent.dev.azure.com access'
