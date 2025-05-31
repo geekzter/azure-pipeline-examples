@@ -19,11 +19,10 @@ parameters:
 - name: hostedImageLabel
   displayName: Microsoft-hosted Image
   type: string
-  default: ubuntu-20.04
+  default: ubuntu-22.04
   values:
   # https://learn.microsoft.com/azure/devops/pipelines/agents/hosted?view=azure-devops&tabs=yaml#software
   # https://github.com/actions/runner-images/tree/main/images/ubuntu
-  - ubuntu-20.04
   - ubuntu-22.04
   - ubuntu-24.04
 - name: mdpName
@@ -34,7 +33,7 @@ parameters:
   displayName: Managed DevOps Pool Image
   type: string
   # https://learn.microsoft.com/azure/devops/managed-devops-pools/configure-images?view=azure-devops&tabs=azure-portal
-  default: ubuntu-20.04
+  default: ubuntu-22.04
 - name: pythonVersion
   displayName: Python Version
   type: string
@@ -148,8 +147,8 @@ jobs:
   - job: devContainer
     # https://hub.docker.com/r/microsoft/devcontainers-python
     # https://github.com/devcontainers/images/tree/main/src/python
-    container: mcr.microsoft.com/devcontainers/python:${{ parameters.pythonVersion }}-${{ iif(eq(parameters.hostedImageLabel, 'ubuntu-20.04'), 'bullseye', 'bookworm') }}
-    displayName: Use mcr.microsoft.com/devcontainers/python:${{ parameters.pythonVersion }}-${{ iif(eq(parameters.hostedImageLabel, 'ubuntu-20.04'), 'bullseye', 'bookworm') }} container image
+    container: mcr.microsoft.com/devcontainers/python:${{ parameters.pythonVersion }}-${{ iif(eq(parameters.hostedImageLabel, 'ubuntu-22.04'), 'bookworm', 'trixie') }}
+    displayName: Use mcr.microsoft.com/devcontainers/python:${{ parameters.pythonVersion }}-${{ iif(eq(parameters.hostedImageLabel, 'ubuntu-22.04'), 'bookworm', 'trixie') }} container image
     pool:
       name: 'Azure Pipelines'
       vmImage: 'ubuntu-latest'
