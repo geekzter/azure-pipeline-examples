@@ -8,16 +8,6 @@ schedules:
     - main
 
 jobs:
-- job: ubuntu2004
-  pool:
-    vmImage: 'ubuntu-20.04'
-  steps:
-  - bash: |
-      echo Hello from Ubuntu 20.04
-      lsb_release -d
-  - pwsh: |
-      Write-Host "`$PSVersionTable.OS"
-      $PSVersionTable.OS
 - job: ubuntu2204
   pool:
     vmImage: 'ubuntu-22.04'
