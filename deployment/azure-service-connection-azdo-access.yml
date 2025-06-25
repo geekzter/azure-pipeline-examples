@@ -26,6 +26,36 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
+  - task: AzurePowerShell@5
+    displayName: 'PowerShell -> Azure DevOps REST API'
+    inputs:
+      azureSubscription: '${{ parameters.serviceConnection }}'
+      scriptType: inlineScript
+      inline: |
+        Write-Host "`nObtaining access token for Service Connection identity..."
+        # 499b84ac-1321-427f-aa17-267ca6975798 is the Azure DevOps resource ID
+        Get-AzAccessToken -AsSecureString `
+                          -ResourceUrl "499b84ac-1321-427f-aa17-267ca6975798" `
+                          | Select-Object -ExpandProperty Token `
+                          | ConvertFrom-SecureString -AsPlainText `
+                          | Set-Variable -Name azdoToken
+
+        Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
+        $apiVersion = "7.1"
+        $apiUrl = "$(System.CollectionUri)_apis/distributedtask/pools?api-version=${apiVersion}"
+        Invoke-RestMethod -Uri $apiUrl `
+                          -Headers @{
+                              Accept         = "application/json"
+                              Authorization  = "Bearer $azdoToken"
+                              "Content-Type" = "application/json"
+                          } `
+                          -Method Get `
+                          | Select-Object -ExpandProperty value `
+                          | Select-Object id, name
+        
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: true
+
   - task: AzureCLI@2
     condition: succeededOrFailed()
     displayName: 'Azure CLI -> DevOps CLI'
@@ -86,33 +116,3 @@ jobs:
                           | Select-Object -ExpandProperty value `
                           | Select-Object id, name
       failOnStandardError: true
-
-  - task: AzurePowerShell@5
-    displayName: 'PowerShell -> Azure DevOps REST API'
-    inputs:
-      azureSubscription: '${{ parameters.serviceConnection }}'
-      scriptType: inlineScript
-      inline: |
-        Write-Host "`nObtaining access token for Service Connection identity..."
-        # 499b84ac-1321-427f-aa17-267ca6975798 is the Azure DevOps resource ID
-        Get-AzAccessToken -AsSecureString `
-                          -ResourceUrl "499b84ac-1321-427f-aa17-267ca6975798" `
-                          | Select-Object -ExpandProperty Token `
-                          | ConvertFrom-SecureString -AsPlainText `
-                          | Set-Variable -Name azdoToken
-
-        Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
-        $apiVersion = "7.1"
-        $apiUrl = "$(System.CollectionUri)_apis/distributedtask/pools?api-version=${apiVersion}"
-        Invoke-RestMethod -Uri $apiUrl `
-                          -Headers @{
-                              Accept         = "application/json"
-                              Authorization  = "Bearer $azdoToken"
-                              "Content-Type" = "application/json"
-                          } `
-                          -Method Get `
-                          | Select-Object -ExpandProperty value `
-                          | Select-Object id, name
-        
-      azurePowerShellVersion: 'latestVersion'
-      pwsh: true
