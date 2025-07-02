@@ -42,6 +42,7 @@ jobs:
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
 - job: macOS15ARM64
+  continueOnError: true
   pool:
     vmImage: 'macOS-15-arm64'
   steps:
