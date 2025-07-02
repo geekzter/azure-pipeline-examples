@@ -45,6 +45,7 @@ jobs:
   - bash: |
       echo Hello from macOS Sequia
       sw_vers
+      if /usr/bin/pgrep -q oahd; then echo 'rosetta installed'; fi
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
