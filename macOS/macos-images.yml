@@ -49,7 +49,7 @@ jobs:
       echo Hello from macOS Sequia
       uname -a
       sw_vers
-      if /usr/bin/pgrep -q oahd; then echo 'Rosetta installed'; fi
+      if /usr/bin/pgrep -q oahd; then echo 'Rosetta is installed'; else echo 'Rosetta is not installed'; fi
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
