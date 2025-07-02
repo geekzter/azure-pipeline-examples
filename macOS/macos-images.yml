@@ -14,6 +14,7 @@ jobs:
   steps:
   - bash: |
       echo Hello from macOS Ventura
+      uname -a
       sw_vers
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
@@ -24,6 +25,7 @@ jobs:
   steps:
   - bash: |
       echo Hello from macOS Sonoma
+      uname -a
       sw_vers
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
@@ -34,7 +36,21 @@ jobs:
   steps:
   - bash: |
       echo Hello from macOS Sequia
+      uname -a
       sw_vers
+  - pwsh: |
+      Write-Host "`$PSVersionTable.OS"
+      $PSVersionTable.OS
+- job: macOS15ARM64
+  continueOnError: true
+  pool:
+    vmImage: 'macOS-15-arm64'
+  steps:
+  - bash: |
+      echo Hello from macOS Sequia
+      uname -a
+      sw_vers
+      if /usr/bin/pgrep -q oahd; then echo 'Rosetta is installed'; else echo 'Rosetta is not installed'; fi
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
@@ -44,6 +60,7 @@ jobs:
   steps:
   - bash: |
       echo Hello from the latest stable macOS image available
+      uname -a
       sw_vers
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
