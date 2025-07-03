@@ -51,15 +51,13 @@ jobs:
       scriptLocation: inlineScript
       inlineScript: |
         Set-PSDebug -Trace 1
-        
-        az extension list --query "[?name=='azure-devops'].version" -o tsv | Set-Variable azdoExtensionVersion
+
+        [version]$azdoExtensionVersion = $(az extension list --query "[?name=='azure-devops'].version" -o tsv)
         if (!$azdoExtensionVersion) {
           Write-Host "Adding Azure CLI extension 'azure-devops'..."
           az extension add -n azure-devops -y
         } else {
-          New-Object -TypeName System.Version `n
-                     -ArgumentList "${{ parameters.minimumAzdoExtensionVersion }}" `
-                     | Set-Variable minimumAzdoExtensionVersion
+          [version]$minimumAzdoExtensionVersion = "${{ parameters.minimumAzdoExtensionVersion }}"
           if ($azdoExtensionVersion -lt $minimumAzdoExtensionVersion) {
             Write-Host "Updating Azure CLI extension 'azure-devops'..."
             az extension update --name azure-devops
