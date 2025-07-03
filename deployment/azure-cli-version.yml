@@ -32,30 +32,29 @@ jobs:
 - job: agent
   strategy:
     matrix:
-      # Ubuntu2004:
-      #   vmImage: 'ubuntu-22.04'
+      Ubuntu2004:
+        vmImage: 'ubuntu-22.04'
       Ubuntu2204:
         vmImage: 'ubuntu-24.04'
-      # UbuntuLatest:
-      #   vmImage: 'ubuntu-latest'
-      # Windows2022:
-      #   vmImage: 'windows-2022'
-      # Windows2025:
-      #   vmImage: 'windows-2025'
-      # WindowsLatest:
-      #   vmImage: 'windows-latest'
+      UbuntuLatest:
+        vmImage: 'ubuntu-latest'
+      Windows2022:
+        vmImage: 'windows-2022'
+      Windows2025:
+        vmImage: 'windows-2025'
+      WindowsLatest:
+        vmImage: 'windows-latest'
     maxParallel: 3
   pool:
     vmImage: $(vmImage)
   steps:
   - task: AzureCLI@2
+    displayName: 'Check Azure CLI and Azure DevOps extension versions'
     inputs:
       azureSubscription: '${{ parameters.serviceConnection }}'
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
-        Set-PSDebug -Trace 1
-
         Write-Host "Checking Azure CLI version..."
         & {$PSNativeCommandArgumentPassing = "Legacy" ;[version]$script:azCLIVersion = $(az version --query '\"azure-cli\"' -o tsv)}
         [version]$minimumAzureCLIVersion = "${{ parameters.minimumAzureCLIVersion }}"
@@ -84,4 +83,4 @@ jobs:
           }
         }
         Write-Host Azure DevOps extension: $(az extension show -n azure-devops --query version -o tsv)
-      failOnStandardError: true
+      failOnStandardError: false
