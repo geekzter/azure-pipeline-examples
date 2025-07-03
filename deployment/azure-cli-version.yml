@@ -3,6 +3,10 @@ parameters:
   displayName: Azure Service Connection Name
   type: string
   default: my-azure-subscription
+- name: minimumAzureCLIVersion
+  displayName: Minimum Azure CLI Version
+  type: string
+  default: 2.74.0
 - name: minimumAzdoExtensionVersion
   displayName: Minimum Azure DevOps Extension Version
   type: string
@@ -28,18 +32,18 @@ jobs:
 - job: agent
   strategy:
     matrix:
-      Ubuntu2004:
-        vmImage: 'ubuntu-22.04'
+      # Ubuntu2004:
+      #   vmImage: 'ubuntu-22.04'
       Ubuntu2204:
         vmImage: 'ubuntu-24.04'
-      UbuntuLatest:
-        vmImage: 'ubuntu-latest'
-      Windows2022:
-        vmImage: 'windows-2022'
-      Windows2025:
-        vmImage: 'windows-2025'
-      WindowsLatest:
-        vmImage: 'windows-latest'
+      # UbuntuLatest:
+      #   vmImage: 'ubuntu-latest'
+      # Windows2022:
+      #   vmImage: 'windows-2022'
+      # Windows2025:
+      #   vmImage: 'windows-2025'
+      # WindowsLatest:
+      #   vmImage: 'windows-latest'
     maxParallel: 3
   pool:
     vmImage: $(vmImage)
@@ -52,6 +56,21 @@ jobs:
       inlineScript: |
         Set-PSDebug -Trace 1
 
+        Write-Host "Checking Azure CLI version..."
+        & {$PSNativeCommandArgumentPassing = "Legacy" ;[version]$script:azCLIVersion = $(az version --query '\"azure-cli\"' -o tsv)}
+        [version]$minimumAzureCLIVersion = "${{ parameters.minimumAzureCLIVersion }}"
+        if ($azCLIVersion -lt $minimumAzureCLIVersion) {
+          Write-Host "Updating Azure CLI ..."
+          if ($IsLinux) {
+            curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+          } else {
+            az upgrade --yes
+          }
+          & {$PSNativeCommandArgumentPassing = "Legacy" ;[version]$script:azCLIUpdatedVersion = $(az version --query '\"azure-cli\"' -o tsv)}
+          Write-Host "##vso[task.logissue type=warning]Azure CLI version $($azCLIVersion.ToString()) is out of date (< ${{ parameters.minimumAzureCLIVersion }}) on $(vmImage), updated the extension version to $($azCLIUpdatedVersion.ToString())"
+        }
+
+        Write-Host "Checking Azure CLI extension 'azure-devops' version..."
         [version]$azdoExtensionVersion = $(az extension list --query "[?name=='azure-devops'].version" -o tsv)
         if (!$azdoExtensionVersion) {
           Write-Host "Adding Azure CLI extension 'azure-devops'..."
@@ -61,7 +80,7 @@ jobs:
           if ($azdoExtensionVersion -lt $minimumAzdoExtensionVersion) {
             Write-Host "Updating Azure CLI extension 'azure-devops'..."
             az extension update --name azure-devops
-            Write-Host "##vso[task.logissue type=warning]Azure CLI extension 'azure-devops' version $($azdoExtensionVersion.ToString()) is out of date on $(vmImage), updated the extension version to $(az extension show -n azure-devops --query version -o tsv)"
+            Write-Host "##vso[task.logissue type=warning]Azure CLI extension 'azure-devops' version $($azdoExtensionVersion.ToString()) is out of date (< ${{ parameters.minimumAzdoExtensionVersion }}) on $(vmImage), updated the extension version to $(az extension show -n azure-devops --query version -o tsv)"
           }
         }
         Write-Host Azure DevOps extension: $(az extension show -n azure-devops --query version -o tsv)
