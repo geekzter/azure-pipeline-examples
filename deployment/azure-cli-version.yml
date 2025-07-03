@@ -30,6 +30,7 @@ trigger: none
 
 jobs:
 - job: agent
+  displayName: 'Check Azure CLI and Azure DevOps extension versions'
   strategy:
     matrix:
       Ubuntu2004:
@@ -66,7 +67,7 @@ jobs:
             az upgrade --yes
           }
           & {$PSNativeCommandArgumentPassing = "Legacy" ;[version]$script:azCLIUpdatedVersion = $(az version --query '\"azure-cli\"' -o tsv)}
-          Write-Host "##vso[task.logissue type=warning]Azure CLI version $($azCLIVersion.ToString()) is out of date (< ${{ parameters.minimumAzureCLIVersion }}) on $(vmImage), updated the extension version to $($azCLIUpdatedVersion.ToString())"
+          Write-Host "##vso[task.logissue type=warning]Azure CLI version $($azCLIVersion.ToString()) is out of date (< ${{ parameters.minimumAzureCLIVersion }}) on $(vmImage), updated the CLI version to $($azCLIUpdatedVersion.ToString())"
         }
 
         Write-Host "Checking Azure CLI extension 'azure-devops' version..."
