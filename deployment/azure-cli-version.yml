@@ -28,18 +28,18 @@ jobs:
 - job: agent
   strategy:
     matrix:
-      Ubuntu20:
-        vmImage: 'ubuntu-22.04'
-      Ubuntu22:
-        vmImage: 'ubuntu-24.04'
+      # Ubuntu20:
+      #   vmImage: 'ubuntu-22.04'
+      # Ubuntu22:
+      #   vmImage: 'ubuntu-24.04'
       UbuntuLatest:
         vmImage: 'ubuntu-latest'
-      Windows2022:
-        vmImage: 'windows-2022'
-      Windows2025:
-        vmImage: 'windows-2025'
-      WindowsLatest:
-        vmImage: 'windows-latest'
+      # Windows2022:
+      #   vmImage: 'windows-2022'
+      # Windows2025:
+      #   vmImage: 'windows-2025'
+      # WindowsLatest:
+      #   vmImage: 'windows-latest'
     maxParallel: 3
   pool:
     vmImage: $(vmImage)
@@ -50,6 +50,8 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
+        Set-PSDebug -Trace 1
+        
         az extension list --query "[?name=='azure-devops'].version" -o tsv | Set-Variable azdoExtensionVersion
         if (!$azdoExtensionVersion) {
           Write-Host "Adding Azure CLI extension 'azure-devops'..."
