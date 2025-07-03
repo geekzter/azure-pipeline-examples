@@ -1,0 +1,68 @@
+parameters:
+- name: serviceConnection
+  displayName: Azure Service Connection Name
+  type: string
+  default: my-azure-subscription
+- name: minimumAzdoExtensionVersion
+  displayName: Minimum Azure DevOps Extension Version
+  type: string
+  default: 1.0.2
+
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.serviceConnection }}-$(Build.BuildId)
+
+pr:
+  branches:
+    include:
+    - '*'
+  drafts: false
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+trigger: none
+
+jobs:
+- job: agent
+  strategy:
+    matrix:
+      Ubuntu20:
+        vmImage: 'ubuntu-22.04'
+      Ubuntu22:
+        vmImage: 'ubuntu-24.04'
+      UbuntuLatest:
+        vmImage: 'ubuntu-latest'
+      Windows2022:
+        vmImage: 'windows-2022'
+      Windows2025:
+        vmImage: 'windows-2025'
+      WindowsLatest:
+        vmImage: 'windows-latest'
+    maxParallel: 3
+  pool:
+    vmImage: $(vmImage)
+  steps:
+  - task: AzureCLI@2
+    inputs:
+      azureSubscription: '${{ parameters.serviceConnection }}'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        az extension list --query "[?name=='azure-devops'].version" -o tsv | Set-Variable azdoExtensionVersion
+        if (!$azdoExtensionVersion) {
+          Write-Host "Adding Azure CLI extension 'azure-devops'..."
+          az extension add -n azure-devops -y
+        } else {
+          New-Object -TypeName System.Version `n
+                     -ArgumentList "${{ parameters.minimumAzdoExtensionVersion }}" `
+                     | Set-Variable minimumAzdoExtensionVersion
+          if ($azdoExtensionVersion -lt $minimumAzdoExtensionVersion) {
+            Write-Host "Updating Azure CLI extension 'azure-devops'..."
+            az extension update --name azure-devops
+            Write-Host "##vso[task.logissue type=warning]Azure CLI extension 'azure-devops' version $($azdoExtensionVersion.ToString()) is out of date, updated the extension version to $(az extension show -n azure-devops --query version -o tsv)"
+          }
+        }
+        Write-Host Azure DevOps extension: $(az extension show -n azure-devops --query version -o tsv)
+      failOnStandardError: true
