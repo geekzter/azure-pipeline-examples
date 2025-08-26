@@ -64,6 +64,7 @@ jobs:
       scriptType: pscore
       scriptLocation: inlineScript
       inlineScript: |
+        Set-PSDebug -Trace 2
         if (!(az extension list --query "[?name=='azure-devops'].version" -o tsv)) {
             Write-Host "Adding Azure CLI extension 'azure-devops'..."
             az extension add -n azure-devops -y
