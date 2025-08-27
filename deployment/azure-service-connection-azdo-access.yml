@@ -2,11 +2,11 @@ parameters:
 - name: serviceConnection
   displayName: Azure Service Connection Name
   type: string
-  default: my-azure-subscription
+  default: my-azuredevops-connection
 - name: serviceConnectionType
   displayName: Service Connection Type
   type: string
-  default: azureRM
+  default: azureDevOps
   values:
   - azureRM
   - azureDevOps
