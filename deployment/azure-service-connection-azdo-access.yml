@@ -11,7 +11,7 @@ parameters:
   - azureRM
   - azureDevOps
 
-name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.serviceConnectionType }}--${{ parameters.serviceConnection }}-$(Build.BuildId)
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.serviceConnectionType }}-${{ parameters.serviceConnection }}-$(Build.BuildId)
 
 pr:
   branches:
@@ -73,7 +73,6 @@ jobs:
         scriptType: pscore
         scriptLocation: inlineScript
         inlineScript: |
-          Set-PSDebug -Trace 2
           if (!(az extension list --query "[?name=='azure-devops'].version" -o tsv)) {
               Write-Host "Adding Azure CLI extension 'azure-devops'..."
               az extension add -n azure-devops -y
@@ -146,7 +145,7 @@ jobs:
         scriptType: pscore
         scriptLocation: inlineScript
         inlineScript: |
-          # Set-PSDebug -Trace 2
+          Set-PSDebug -Trace 2
           # if (!(az extension list --query "[?name=='azure-devops'].version" -o tsv)) {
           #     Write-Host "Adding Azure CLI extension 'azure-devops'..."
           #     az extension add -n azure-devops -y
@@ -180,6 +179,8 @@ jobs:
         scriptType: pscore
         scriptLocation: inlineScript
         inlineScript: |
+          Set-PSDebug -Trace 2
+
           Write-Host "`nUse Azure DevOps REST API to get Azure Pipelines health status '$(System.CollectionUri)'..."
           Write-Host "$($PSStyle.Formatting.FormatAccent)az rest --url https://status.dev.azure.com/_apis/status/health?api-version=7.1-preview.1$($PSStyle.Reset)"
           az rest --method get `
