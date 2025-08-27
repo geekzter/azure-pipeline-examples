@@ -161,13 +161,13 @@ jobs:
 
           Write-Host "`nUse Azure DevOps CLI (az devops) to list projects in the organization '$(System.CollectionUri)'..."
           Write-Host "$($PSStyle.Formatting.FormatAccent)az devops project list$($PSStyle.Reset)"
-          az devops project list --query "value[].{Name:name, Id:id}" `
-                                -o table
+          # az devops project list --query "value[].{Name:name, Id:id}" `
+          #                       -o table
     
           Write-Host "`nUse Azure DevOps CLI (az pipelines) to list pools in the organization '$(System.CollectionUri)'..."
           Write-Host "$($PSStyle.Formatting.FormatAccent)az pipelines pool list$($PSStyle.Reset)"
-          az pipelines pool list --query "[].{Id:id, Name:name}" `
-                                -o table
+          # az pipelines pool list --query "[].{Id:id, Name:name}" `
+          #                       -o table
         failOnStandardError: true
 
   - ${{ if eq(parameters.serviceConnectionType, 'azureDevOps') }}:
