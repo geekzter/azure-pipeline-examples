@@ -107,17 +107,24 @@ jobs:
         inlineScript: |
           Write-Host "`nUse Azure DevOps REST API to get Azure Pipelines health status '$(System.CollectionUri)'..."
           Write-Host "$($PSStyle.Formatting.FormatAccent)az rest --url https://status.dev.azure.com/_apis/status/health?api-version=7.1-preview.1$($PSStyle.Reset)"
+          # az rest --method get `
+          #         --url "https://status.dev.azure.com/_apis/status/health?api-version=7.1-preview.1" `
+          #         --resource 499b84ac-1321-427f-aa17-267ca6975798 `
+          #         --query "sort_by(services[?id=='Pipelines'].geographies | [], &name)" `
+          #         -o table
           az rest --method get `
                   --url "https://status.dev.azure.com/_apis/status/health?api-version=7.1-preview.1" `
-                  --resource 499b84ac-1321-427f-aa17-267ca6975798 `
                   --query "sort_by(services[?id=='Pipelines'].geographies | [], &name)" `
                   -o table
 
           Write-Host "`nObtaining access token for Service Connection identity..."
           # 499b84ac-1321-427f-aa17-267ca6975798 is the Azure DevOps resource ID
           Write-Host "$($PSStyle.Formatting.FormatAccent)az account get-access-token$($PSStyle.Reset)"
-          az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 `
-                                      --query "accessToken" `
+          # az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 `
+          #                             --query "accessToken" `
+          #                             --output tsv `
+          #                             | Set-Variable azdoToken
+          az account get-access-token --query "accessToken" `
                                       --output tsv `
                                       | Set-Variable azdoToken
 
