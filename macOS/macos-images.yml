@@ -51,7 +51,7 @@ jobs:
       echo Hello from the latest stable macOS image available
       uname -a
       sw_vers
-      sysctl -a | grep hw.mem
+      hostinfo | grep memory
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
@@ -66,7 +66,8 @@ jobs:
       echo Hello from XL macOS Tahoe
       uname -a
       sw_vers
-      sysctl -a | grep hw.mem
+      hostinfo | grep memory
+      if /usr/bin/pgrep -q oahd; then echo 'Rosetta is installed'; else echo 'Rosetta is not installed'; fi
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
