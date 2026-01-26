@@ -54,3 +54,16 @@ jobs:
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
+
+# - job: macOS26XL
+#   pool:
+#     name: 'GitHub-hosted Agents'
+#     vmImage: 'macOS-26-xl'
+#   steps:
+#   - bash: |
+#       echo Hello from macOS (XL) Tahoe
+#       uname -a
+#       sw_vers
+#   - pwsh: |
+#       Write-Host "`$PSVersionTable.OS"
+#       $PSVersionTable.OS
