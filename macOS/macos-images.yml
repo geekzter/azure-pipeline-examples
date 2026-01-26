@@ -51,7 +51,7 @@ jobs:
       echo Hello from the latest stable macOS image available
       uname -a
       sw_vers
-      sysctl -a
+      sysctl -a | grep hw.mem
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
@@ -63,10 +63,10 @@ jobs:
     vmImage: 'macOS-26'
   steps:
   - bash: |
-      echo Hello from macOS (XL) Tahoe
+      echo Hello from XL macOS Tahoe
       uname -a
       sw_vers
-      sysctl -a
+      sysctl -a | grep hw.mem
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
