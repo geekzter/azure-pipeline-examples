@@ -22,10 +22,8 @@ jobs:
         Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName
       }
 
-- job: 'Hosted'
-  displayName: 'Hosted pool'
-  pool:
-    name: 'Hosted'
+- job: 'nopool'
+  displayName: 'No pool or image specified'
   steps:
   - pwsh: |
       Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
@@ -35,29 +33,3 @@ jobs:
       if ($IsWindows) {
         Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName
       }
-
-- job: 'DefaultHosted'
-  displayName: 'DefaultHosted image'
-  pool:
-    vmImage: 'DefaultHosted'
-  steps:
-  - pwsh: |
-      Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
-      if ($IsLinux) {
-        lsb_release -d
-      }
-      if ($IsWindows) {
-        Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName
-      }
-
-# - job: 'nopool'
-#   displayName: 'No pool or image specified'
-#   steps:
-#   - pwsh: |
-#       Write-Output $PSVersionTable | Select-Object -Property OS, Platform | Format-List
-#       if ($IsLinux) {
-#         lsb_release -d
-#       }
-#       if ($IsWindows) {
-#         Get-ComputerInfo | Select-Object -ExpandProperty WindowsProductName
-#       }
