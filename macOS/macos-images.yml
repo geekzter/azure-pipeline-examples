@@ -59,8 +59,8 @@ jobs:
 - job: macOS26XL
   pool:
     name: 'GitHub-hosted Agents'
-    # vmImage: 'macOS-26-xlarge'
-    vmImage: 'macOS-26'
+    # vmImage: 'macOS-26'
+    vmImage: 'macos-26-arm64-xl'
   steps:
   - bash: |
       echo Hello from XL macOS Tahoe
