@@ -26,7 +26,7 @@ jobs:
       vmImage: 'macOS-14'
     steps:
     - bash: |
-        echo Hello from macOS Sonoma
+        echo Hello from macOS Sonoma Intel
         uname -a
         sw_vers
     - pwsh: |
@@ -38,7 +38,7 @@ jobs:
       vmImage: 'macOS-15'
     steps:
     - bash: |
-        echo Hello from macOS Sequia
+        echo Hello from macOS Sequia Intel
         uname -a
         sw_vers
     - pwsh: |
@@ -51,10 +51,22 @@ jobs:
       vmImage: 'macOS-15-arm64'
     steps:
     - bash: |
-        echo Hello from macOS Sequia
+        echo Hello from macOS Sequia arm64 limited preview
         uname -a
         sw_vers
         if /usr/bin/pgrep -q oahd; then echo 'Rosetta is installed'; else echo 'Rosetta is not installed'; fi
+    - pwsh: |
+        Write-Host "`$PSVersionTable.OS"
+        $PSVersionTable.OS
+  - job: macOS26
+    pool:
+      name: 'Azure Pipelines'
+      vmImage: 'macOS-26'
+    steps:
+    - bash: |
+        echo Hello from macOS Tahoe Intel
+        uname -a
+        sw_vers
     - pwsh: |
         Write-Host "`$PSVersionTable.OS"
         $PSVersionTable.OS
@@ -73,6 +85,21 @@ jobs:
         $PSVersionTable.OS
 
 - ${{ if or(eq(parameters.pricingModels, 'All'),eq(parameters.pricingModels, 'PAYG')) }}:
+  - job: macOS26arm64
+    pool:
+      name: 'GitHub-hosted Agents'
+      vmImage: 'macOS-26'
+      # vmImage: 'macos-26-arm64'
+    steps:
+    - bash: |
+        echo Hello from macOS Tahoe arm64
+        uname -a
+        sw_vers
+        hostinfo | grep memory
+        if /usr/bin/pgrep -q oahd; then echo 'Rosetta is installed'; else echo 'Rosetta is not installed'; fi
+    - pwsh: |
+        Write-Host "`$PSVersionTable.OS"
+        $PSVersionTable.OS
   - job: macOS26XL
     pool:
       name: 'GitHub-hosted Agents'
@@ -80,7 +107,7 @@ jobs:
       # vmImage: 'macos-26-arm64-xl'
     steps:
     - bash: |
-        echo Hello from XL macOS Tahoe
+        echo Hello from XL macOS Tahoe arm64
         uname -a
         sw_vers
         hostinfo | grep memory
