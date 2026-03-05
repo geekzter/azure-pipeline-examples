@@ -58,18 +58,18 @@ jobs:
     - pwsh: |
         Write-Host "`$PSVersionTable.OS"
         $PSVersionTable.OS
-  - job: macOS26
-    pool:
-      name: 'Azure Pipelines'
-      vmImage: 'macOS-26'
-    steps:
-    - bash: |
-        echo Hello from macOS Tahoe Intel
-        uname -a
-        sw_vers
-    - pwsh: |
-        Write-Host "`$PSVersionTable.OS"
-        $PSVersionTable.OS
+  # - job: macOS26
+  #   pool:
+  #     name: 'Azure Pipelines'
+  #     vmImage: 'macOS-26'
+  #   steps:
+  #   - bash: |
+  #       echo Hello from macOS Tahoe Intel
+  #       uname -a
+  #       sw_vers
+  #   - pwsh: |
+  #       Write-Host "`$PSVersionTable.OS"
+  #       $PSVersionTable.OS
   - job: macOSlatest
     pool:
       name: 'Azure Pipelines'
