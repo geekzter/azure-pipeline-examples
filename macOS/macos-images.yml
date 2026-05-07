@@ -58,18 +58,18 @@ jobs:
     - pwsh: |
         Write-Host "`$PSVersionTable.OS"
         $PSVersionTable.OS
-  # - job: macOS26
-  #   pool:
-  #     name: 'Azure Pipelines'
-  #     vmImage: 'macOS-26'
-  #   steps:
-  #   - bash: |
-  #       echo Hello from macOS Tahoe Intel
-  #       uname -a
-  #       sw_vers
-  #   - pwsh: |
-  #       Write-Host "`$PSVersionTable.OS"
-  #       $PSVersionTable.OS
+  - job: macOS26
+    pool:
+      name: 'Azure Pipelines'
+      vmImage: 'macOS-26'
+    steps:
+    - bash: |
+        echo Hello from macOS Tahoe Intel
+        uname -a
+        sw_vers
+    - pwsh: |
+        Write-Host "`$PSVersionTable.OS"
+        $PSVersionTable.OS
   - job: macOSlatest
     pool:
       name: 'Azure Pipelines'
@@ -88,8 +88,8 @@ jobs:
   - job: macOS26arm64
     pool:
       name: 'GitHub-hosted Agents'
-      # vmImage: 'macOS-26'
-      vmImage: 'macos-26-arm64'
+      vmImage: 'macOS-26'
+      # vmImage: 'macos-26-arm64'
     steps:
     - bash: |
         echo Hello from macOS Tahoe arm64
@@ -103,8 +103,8 @@ jobs:
   - job: macOS26XL
     pool:
       name: 'GitHub-hosted Agents'
-      # vmImage: 'macOS-26-xl'
-      vmImage: 'macos-26-arm64-xl'
+      vmImage: 'macOS-26-xl'
+      # vmImage: 'macos-26-arm64-xl'
     steps:
     - bash: |
         echo Hello from XL macOS Tahoe arm64
