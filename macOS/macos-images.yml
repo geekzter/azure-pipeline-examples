@@ -22,7 +22,7 @@ jobs:
 - ${{ if or(eq(parameters.pricingModels, 'All'),eq(parameters.pricingModels, 'Concurrency')) }}:
   - job: macOS14
     pool:
-      name: 'Azure Pipelines'
+      # name: 'Azure Pipelines'
       vmImage: 'macOS-14'
     steps:
     - bash: |
@@ -34,7 +34,7 @@ jobs:
         $PSVersionTable.OS
   - job: macOS15
     pool:
-      name: 'Azure Pipelines'
+      # name: 'Azure Pipelines'
       vmImage: 'macOS-15'
     steps:
     - bash: |
@@ -47,7 +47,7 @@ jobs:
   - job: macOS15ARM64
     continueOnError: true
     pool:
-      name: 'Azure Pipelines'
+      # name: 'Azure Pipelines'
       vmImage: 'macOS-15-arm64'
     steps:
     - bash: |
@@ -60,7 +60,7 @@ jobs:
         $PSVersionTable.OS
   - job: macOS26
     pool:
-      name: 'Azure Pipelines'
+      # name: 'Azure Pipelines'
       vmImage: 'macOS-26'
     steps:
     - bash: |
@@ -72,7 +72,7 @@ jobs:
         $PSVersionTable.OS
   - job: macOSlatest
     pool:
-      name: 'Azure Pipelines'
+      # name: 'Azure Pipelines'
       vmImage: 'macOS-latest'
     steps:
     - bash: |
@@ -87,7 +87,7 @@ jobs:
 - ${{ if or(eq(parameters.pricingModels, 'All'),eq(parameters.pricingModels, 'PAYG')) }}:
   - job: macOS26arm64
     pool:
-      name: 'GitHub-hosted Agents'
+      # name: 'GitHub-hosted Agents'
       # vmImage: 'macOS-26'
       vmImage: 'macos-26-arm64'
     steps:
@@ -102,7 +102,7 @@ jobs:
         $PSVersionTable.OS
   - job: macOS26XL
     pool:
-      name: 'GitHub-hosted Agents'
+      # name: 'GitHub-hosted Agents'
       # vmImage: 'macOS-26-xl'
       vmImage: 'macos-26-arm64-xl'
     steps:
