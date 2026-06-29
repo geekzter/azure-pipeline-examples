@@ -210,3 +210,102 @@ jobs:
                             | Select-Object -ExpandProperty value `
                             | Select-Object id, name
         failOnStandardError: true
+  - task: AzurePowerShell@5
+    displayName: 'PowerShell -> Azure DevOps REST API'
+    inputs:
+      azureSubscription: '${{ parameters.serviceConnection }}'
+      scriptType: inlineScript
+      inline: |
+        Write-Host "`nObtaining access token for Service Connection identity..."
+        # 499b84ac-1321-427f-aa17-267ca6975798 is the Azure DevOps resource ID
+        Get-AzAccessToken -AsSecureString `
+                          -ResourceUrl "499b84ac-1321-427f-aa17-267ca6975798" `
+                          | Select-Object -ExpandProperty Token `
+                          | ConvertFrom-SecureString -AsPlainText `
+                          | Set-Variable -Name azdoToken
+
+        Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
+        $apiVersion = "7.1"
+        $apiUrl = "$(System.CollectionUri)_apis/distributedtask/pools?api-version=${apiVersion}"
+        Invoke-RestMethod -Uri $apiUrl `
+                          -Headers @{
+                              Accept         = "application/json"
+                              Authorization  = "Bearer $azdoToken"
+                              "Content-Type" = "application/json"
+                          } `
+                          -Method Get `
+                          | Select-Object -ExpandProperty value `
+                          | Select-Object id, name
+        
+      azurePowerShellVersion: 'latestVersion'
+      pwsh: true
+
+  - task: AzureCLI@2
+    condition: succeededOrFailed()
+    displayName: 'Azure CLI -> DevOps CLI'
+    inputs:
+      azureSubscription: '${{ parameters.serviceConnection }}'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        Set-PSDebug -Trace 2
+        if (!(az extension list --query "[?name=='azure-devops'].version" -o tsv)) {
+            Write-Host "Adding Azure CLI extension 'azure-devops'..."
+            az extension add -n azure-devops -y
+        } else {
+            Write-Host "Updating Azure CLI extension 'azure-devops'..."
+            az extension update --name azure-devops 2>&1
+        }
+
+        Write-Host "Using logged-in Azure CLI session..."
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az devops configure$($PSStyle.Reset)"
+        az devops configure --defaults organization=$(System.CollectionUri) project=$(System.TeamProject)
+        az devops configure -l
+
+        Write-Host "`nUse Azure DevOps CLI (az devops) to list projects in the organization '$(System.CollectionUri)'..."
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az devops project list$($PSStyle.Reset)"
+        az devops project list --query "value[].{Name:name, Id:id}" `
+                               -o table
+   
+        Write-Host "`nUse Azure DevOps CLI (az pipelines) to list pools in the organization '$(System.CollectionUri)'..."
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az pipelines pool list$($PSStyle.Reset)"
+        az pipelines pool list --query "[].{Id:id, Name:name}" `
+                               -o table
+      failOnStandardError: true
+
+  - task: AzureCLI@2
+    displayName: 'Azure CLI -> Azure DevOps REST API'
+    inputs:
+      azureSubscription: '${{ parameters.serviceConnection }}'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        Write-Host "`nUse Azure DevOps REST API to get Azure Pipelines health status '$(System.CollectionUri)'..."
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az rest --url https://status.dev.azure.com/_apis/status/health?api-version=7.1-preview.1$($PSStyle.Reset)"
+        az rest --method get `
+                --url "https://status.dev.azure.com/_apis/status/health?api-version=7.1-preview.1" `
+                --resource 499b84ac-1321-427f-aa17-267ca6975798 `
+                --query "sort_by(services[?id=='Pipelines'].geographies | [], &name)" `
+                -o table
+
+        Write-Host "`nObtaining access token for Service Connection identity..."
+        # 499b84ac-1321-427f-aa17-267ca6975798 is the Azure DevOps resource ID
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az account get-access-token$($PSStyle.Reset)"
+        az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 `
+                                    --query "accessToken" `
+                                    --output tsv `
+                                    | Set-Variable azdoToken
+
+        Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
+        $apiVersion = "7.1"
+        $apiUrl = "$(System.CollectionUri)_apis/distributedtask/pools?api-version=${apiVersion}"
+        Invoke-RestMethod -Uri $apiUrl `
+                          -Headers @{
+                              Accept         = "application/json"
+                              Authorization  = "Bearer $azdoToken"
+                              "Content-Type" = "application/json"
+                          } `
+                          -Method Get `
+                          | Select-Object -ExpandProperty value `
+                          | Select-Object id, name
+      failOnStandardError: true

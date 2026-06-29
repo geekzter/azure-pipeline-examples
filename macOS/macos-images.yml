@@ -1,4 +1,14 @@
-trigger: none
+parameters:
+- name: pricingModels
+  displayName: Pricing Models
+  type: string
+  default: 'All'
+  values:
+  - All
+  - Concurrency
+  - PAYG
+
+  
 schedules:
 - cron: '0 1 * * *'
   displayName: 'Nightly build (UTC)'
@@ -6,62 +16,102 @@ schedules:
   branches:
     include:
     - main
+trigger: none
 
 jobs:
-- job: macOS13
-  pool:
-    vmImage: 'macOS-13'
-  steps:
-  - bash: |
-      echo Hello from macOS Ventura
-      uname -a
-      sw_vers
-  - pwsh: |
-      Write-Host "`$PSVersionTable.OS"
-      $PSVersionTable.OS
-- job: macOS14
-  pool:
-    vmImage: 'macOS-14'
-  steps:
-  - bash: |
-      echo Hello from macOS Sonoma
-      uname -a
-      sw_vers
-  - pwsh: |
-      Write-Host "`$PSVersionTable.OS"
-      $PSVersionTable.OS
-- job: macOS15
-  pool:
-    vmImage: 'macOS-15'
-  steps:
-  - bash: |
-      echo Hello from macOS Sequia
-      uname -a
-      sw_vers
-  - pwsh: |
-      Write-Host "`$PSVersionTable.OS"
-      $PSVersionTable.OS
-- job: macOS15ARM64
-  continueOnError: true
-  pool:
-    vmImage: 'macOS-15-arm64'
-  steps:
-  - bash: |
-      echo Hello from macOS Sequia
-      uname -a
-      sw_vers
-      if /usr/bin/pgrep -q oahd; then echo 'Rosetta is installed'; else echo 'Rosetta is not installed'; fi
-  - pwsh: |
-      Write-Host "`$PSVersionTable.OS"
-      $PSVersionTable.OS
-- job: macOSlatest
-  pool:
-    vmImage: 'macOS-latest'
-  steps:
-  - bash: |
-      echo Hello from the latest stable macOS image available
-      uname -a
-      sw_vers
-  - pwsh: |
-      Write-Host "`$PSVersionTable.OS"
-      $PSVersionTable.OS
+- ${{ if or(eq(parameters.pricingModels, 'All'),eq(parameters.pricingModels, 'Concurrency')) }}:
+  - job: macOS14
+    pool:
+      name: 'Azure Pipelines'
+      vmImage: 'macOS-14'
+    steps:
+    - bash: |
+        echo Hello from macOS Sonoma Intel
+        uname -a
+        sw_vers
+    - pwsh: |
+        Write-Host "`$PSVersionTable.OS"
+        $PSVersionTable.OS
+  - job: macOS15
+    pool:
+      name: 'Azure Pipelines'
+      vmImage: 'macOS-15'
+    steps:
+    - bash: |
+        echo Hello from macOS Sequia Intel
+        uname -a
+        sw_vers
+    - pwsh: |
+        Write-Host "`$PSVersionTable.OS"
+        $PSVersionTable.OS
+  - job: macOS15ARM64
+    continueOnError: true
+    pool:
+      name: 'Azure Pipelines'
+      vmImage: 'macOS-15-arm64'
+    steps:
+    - bash: |
+        echo Hello from macOS Sequia arm64 limited preview
+        uname -a
+        sw_vers
+        if /usr/bin/pgrep -q oahd; then echo 'Rosetta is installed'; else echo 'Rosetta is not installed'; fi
+    - pwsh: |
+        Write-Host "`$PSVersionTable.OS"
+        $PSVersionTable.OS
+  - job: macOS26
+    pool:
+      name: 'Azure Pipelines'
+      vmImage: 'macOS-26'
+    steps:
+    - bash: |
+        echo Hello from macOS Tahoe Intel
+        uname -a
+        sw_vers
+    - pwsh: |
+        Write-Host "`$PSVersionTable.OS"
+        $PSVersionTable.OS
+  - job: macOSlatest
+    pool:
+      name: 'Azure Pipelines'
+      vmImage: 'macOS-latest'
+    steps:
+    - bash: |
+        echo Hello from the latest stable macOS image available
+        uname -a
+        sw_vers
+        hostinfo | grep memory
+    - pwsh: |
+        Write-Host "`$PSVersionTable.OS"
+        $PSVersionTable.OS
+
+- ${{ if or(eq(parameters.pricingModels, 'All'),eq(parameters.pricingModels, 'PAYG')) }}:
+  - job: macOS26arm64
+    pool:
+      name: 'GitHub-hosted Agents'
+      # vmImage: 'macOS-26'
+      vmImage: 'macos-26-arm64'
+    steps:
+    - bash: |
+        echo Hello from macOS Tahoe arm64
+        uname -a
+        sw_vers
+        hostinfo | grep memory
+        if /usr/bin/pgrep -q oahd; then echo 'Rosetta is installed'; else echo 'Rosetta is not installed'; fi
+    - pwsh: |
+        Write-Host "`$PSVersionTable.OS"
+        $PSVersionTable.OS
+  - job: macOS26XL
+    pool:
+      name: 'GitHub-hosted Agents'
+      # vmImage: 'macOS-26-xl'
+      vmImage: 'macos-26-arm64-xl'
+    steps:
+    - bash: |
+        echo Hello from XL macOS Tahoe arm64
+        uname -a
+        sw_vers
+        hostinfo | grep memory
+        if /usr/bin/pgrep -q oahd; then echo 'Rosetta is installed'; else echo 'Rosetta is not installed'; fi
+    - pwsh: |
+        Write-Host "`$PSVersionTable.OS"
+        $PSVersionTable.OS
