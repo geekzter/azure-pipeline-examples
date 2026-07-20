@@ -51,7 +51,7 @@ jobs:
         Write-Host "$($PSStyle.Formatting.FormatAccent)az pipelines pool list$($PSStyle.Reset)"
         az pipelines pool list --query "[].{Id:id, Name:name}" `
                               -o table
-      failOnStandardError: true
+      failOnStandardError: false
   - task: AzureCLI@3
     displayName: 'AzureCLI@3 -> Azure DevOps REST API'
     inputs:
