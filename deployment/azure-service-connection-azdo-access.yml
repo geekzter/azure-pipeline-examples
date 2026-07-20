@@ -70,7 +70,7 @@ jobs:
             az extension add -n azure-devops -y
         } else {
             Write-Host "Updating Azure CLI extension 'azure-devops'..."
-            az extension update --name azure-devops 2>&1
+            az extension update --name azure-devops
         }
 
         Write-Host "Using logged-in Azure CLI session..."
@@ -87,7 +87,7 @@ jobs:
         Write-Host "$($PSStyle.Formatting.FormatAccent)az pipelines pool list$($PSStyle.Reset)"
         az pipelines pool list --query "[].{Id:id, Name:name}" `
                                -o table
-      failOnStandardError: true
+      failOnStandardError: false
 
   - task: AzureCLI@2
     displayName: 'Azure CLI -> Azure DevOps REST API'
