@@ -36,13 +36,6 @@ jobs:
       scriptLocation: inlineScript
       inlineScript: |
         Set-PSDebug -Trace 2
-        # if (!(az extension list --query "[?name=='azure-devops'].version" -o tsv)) {
-        #     Write-Host "Adding Azure CLI extension 'azure-devops'..."
-        #     az extension add -n azure-devops -y
-        # } else {
-        #     Write-Host "Updating Azure CLI extension 'azure-devops'..."
-        #     az extension update --name azure-devops 2>&1
-        # }
 
         Write-Host "Using logged-in Azure CLI session..."
         Write-Host "$($PSStyle.Formatting.FormatAccent)az devops configure$($PSStyle.Reset)"
