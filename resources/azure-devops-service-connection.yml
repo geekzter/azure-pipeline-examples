@@ -1,0 +1,93 @@
+parameters:
+- name: serviceConnection
+  displayName: Azure DevOps Service Connection Name
+  type: string
+  default: my-azdo-connection
+
+name: $(Date:yyyyMMdd)$(Rev:.r)-$(Build.DefinitionVersion)-$(SourceBranchName)-${{ parameters.serviceConnection }}-$(Build.BuildId)
+
+pr:
+  branches:
+    include:
+    - '*'
+  drafts: false
+schedules:
+- cron: '0 1 * * *'
+  displayName: 'Nightly build (UTC)'
+  always: 'true'
+  branches:
+    include:
+    - main
+trigger: none
+
+jobs:
+- job: agent
+  displayName: 'Use Azure Service Connection'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: AzureCLI@3
+    condition: succeededOrFailed()
+    displayName: 'AzureCLI@3 -> DevOps CLI'
+    inputs:
+      connectionType: 'azureDevOps'
+      azureDevOpsServiceConnection: '${{ parameters.serviceConnection }}'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        Set-PSDebug -Trace 2
+
+        Write-Host "Using logged-in Azure CLI session..."
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az devops configure$($PSStyle.Reset)"
+        # az devops configure --defaults organization=$(System.CollectionUri) project=$(System.TeamProject)
+        az devops configure -l 2>&1
+
+        Write-Host "`nUse Azure DevOps CLI (az devops) to list projects in the organization '$(System.CollectionUri)'..."
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az devops project list$($PSStyle.Reset)"
+        az devops project list --query "value[].{Name:name, Id:id}" `
+                              -o table
+  
+        Write-Host "`nUse Azure DevOps CLI (az pipelines) to list pools in the organization '$(System.CollectionUri)'..."
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az pipelines pool list$($PSStyle.Reset)"
+        az pipelines pool list --query "[].{Id:id, Name:name}" `
+                              -o table
+      failOnStandardError: false
+  - task: AzureCLI@3
+    displayName: 'AzureCLI@3 -> Azure DevOps REST API'
+    inputs:
+      connectionType: 'azureDevOps'
+      azureDevOpsServiceConnection: '${{ parameters.serviceConnection }}'
+      scriptType: pscore
+      scriptLocation: inlineScript
+      inlineScript: |
+        Set-PSDebug -Trace 2
+
+        Write-Host "`nUse Azure DevOps REST API to get Azure Pipelines health status '$(System.CollectionUri)'..."
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az rest --url https://status.dev.azure.com/_apis/status/health?api-version=7.1-preview.1$($PSStyle.Reset)"
+        az rest --method get `
+                --url "https://status.dev.azure.com/_apis/status/health?api-version=7.1-preview.1" `
+                --resource 499b84ac-1321-427f-aa17-267ca6975798 `
+                --query "sort_by(services[?id=='Pipelines'].geographies | [], &name)" `
+                -o table
+
+        Write-Host "`nObtaining access token for Service Connection identity..."
+        # 499b84ac-1321-427f-aa17-267ca6975798 is the Azure DevOps resource ID
+        Write-Host "$($PSStyle.Formatting.FormatAccent)az account get-access-token$($PSStyle.Reset)"
+        az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 `
+                                    --query "accessToken" `
+                                    --output tsv `
+                                    | Set-Variable azdoToken
+
+        Write-Host "`nUse token with Azure DevOps REST API to list pools in the organization '$(System.CollectionUri)'..."
+        $apiVersion = "7.1"
+        $apiUrl = "$(System.CollectionUri)_apis/distributedtask/pools?api-version=${apiVersion}"
+        Invoke-RestMethod -Uri $apiUrl `
+                          -Headers @{
+                              Accept         = "application/json"
+                              Authorization  = "Bearer $azdoToken"
+                              "Content-Type" = "application/json"
+                          } `
+                          -Method Get `
+                          | Select-Object -ExpandProperty value `
+                          | Select-Object id, name
+      failOnStandardError: true
