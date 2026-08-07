@@ -88,13 +88,13 @@ jobs:
   - job: macOS26arm64
     pool:
       name: 'GitHub-hosted Agents'
-      # vmImage: 'macOS-26'
       vmImage: 'macos-26-arm64'
     steps:
     - bash: |
         echo Hello from macOS Tahoe arm64
         uname -a
         sw_vers
+        xcodebuild -version
         hostinfo | grep memory
         if /usr/bin/pgrep -q oahd; then echo 'Rosetta is installed'; else echo 'Rosetta is not installed'; fi
     - pwsh: |
@@ -103,13 +103,43 @@ jobs:
   - job: macOS26XL
     pool:
       name: 'GitHub-hosted Agents'
-      # vmImage: 'macOS-26-xl'
       vmImage: 'macos-26-arm64-xl'
     steps:
     - bash: |
         echo Hello from XL macOS Tahoe arm64
         uname -a
         sw_vers
+        xcodebuild -version
+        hostinfo | grep memory
+        if /usr/bin/pgrep -q oahd; then echo 'Rosetta is installed'; else echo 'Rosetta is not installed'; fi
+    - pwsh: |
+        Write-Host "`$PSVersionTable.OS"
+        $PSVersionTable.OS
+  - job: xcode27
+    pool:
+      name: 'GitHub-hosted Agents'
+      vmImage: 'xcode-27'
+    steps:
+    - bash: |
+        echo Hello from XCode 27 arm64
+        uname -a
+        sw_vers
+        xcodebuild -version
+        hostinfo | grep memory
+        if /usr/bin/pgrep -q oahd; then echo 'Rosetta is installed'; else echo 'Rosetta is not installed'; fi
+    - pwsh: |
+        Write-Host "`$PSVersionTable.OS"
+        $PSVersionTable.OS
+  - job: xcode27XL
+    pool:
+      name: 'GitHub-hosted Agents'
+      vmImage: 'xcode-27-xlarge'
+    steps:
+    - bash: |
+        echo Hello from XL XCode 27 arm64
+        uname -a
+        sw_vers
+        xcodebuild -version
         hostinfo | grep memory
         if /usr/bin/pgrep -q oahd; then echo 'Rosetta is installed'; else echo 'Rosetta is not installed'; fi
     - pwsh: |
