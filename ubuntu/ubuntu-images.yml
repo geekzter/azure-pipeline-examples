@@ -47,10 +47,7 @@ jobs:
       echo Hello from Ubuntu 24.04 8 core
       lsb_release -d
       echo "# cores: $(nproc)"
-      set -x
       free -h
-      grep MemTotal /proc/meminfo
-      sudo dmidecode --type memory
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
@@ -63,11 +60,7 @@ jobs:
       echo Hello from Ubuntu 24.04 16 core
       lsb_release -d
       echo "# cores: $(nproc)"
-      echo "installed memory:"
-      set -x
       free -h
-      grep MemTotal /proc/meminfo
-      sudo dmidecode --type memory
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
