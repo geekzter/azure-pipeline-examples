@@ -66,11 +66,25 @@ jobs:
       Write-Host "Number of logical processors: $([Environment]::ProcessorCount)"
       Write-Host "Installed memory (MB): $([Math]::Round((Get-ComputerInfo).CsTotalPhysicalMemory / 1MB))"
 
-- job: 'windows2025'
+- job: 'windows20258core'
   displayName: 'windows-2025-vs2026-8-core image'
   pool:
     name: 'GitHub-hosted Agents'
     vmImage: 'windows-2025-vs2026-8-core'
+  steps:
+  - pwsh: |
+      Write-Host "(Get-ComputerInfo).WindowsProductName"
+      Get-ComputerInfo | Select-Object WindowsProductName
+      Write-Host "`$PSVersionTable.OS"
+      $PSVersionTable.OS
+      Write-Host "Number of logical processors: $([Environment]::ProcessorCount)"
+      Write-Host "Installed memory (MB): $([Math]::Round((Get-ComputerInfo).CsTotalPhysicalMemory / 1MB))"
+
+- job: 'windows202516core'
+  displayName: 'windows-2025-vs2026-16-core image'
+  pool:
+    name: 'GitHub-hosted Agents'
+    vmImage: 'windows-2025-vs2026-16-core'
   steps:
   - pwsh: |
       Write-Host "(Get-ComputerInfo).WindowsProductName"
