@@ -38,3 +38,33 @@ jobs:
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
+- job: ubuntu24048core
+  pool:
+    name: 'GitHub-hosted Agents'
+    vmImage: 'ubuntu-24.04-8-core'
+  steps:
+  - bash: |
+      echo Hello from Ubuntu 24.04
+      lsb_release -d
+      sudo dmidecode --type memory
+      free -h
+      grep MemTotal /proc/meminfo
+      sudo dmidecode --type memory
+  - pwsh: |
+      Write-Host "`$PSVersionTable.OS"
+      $PSVersionTable.OS
+- job: ubuntu240416core
+  pool:
+    name: 'GitHub-hosted Agents'
+    vmImage: 'ubuntu-24.04-16-core'
+  steps:
+  - bash: |
+      echo Hello from Ubuntu 24.04
+      lsb_release -d
+      sudo dmidecode --type memory
+      free -h
+      grep MemTotal /proc/meminfo
+      sudo dmidecode --type memory
+  - pwsh: |
+      Write-Host "`$PSVersionTable.OS"
+      $PSVersionTable.OS
