@@ -51,6 +51,8 @@ jobs:
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
+      Write-Host "Number of logical processors: $([Environment]::ProcessorCount)"
+      Write-Host "Installed memory (MB): $([Math]::Round((Get-ComputerInfo).CsTotalPhysicalMemory / 1MB))"
 - job: ubuntu240416core
   pool:
     name: 'GitHub-hosted Agents'
@@ -64,3 +66,5 @@ jobs:
   - pwsh: |
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
+      Write-Host "Number of logical processors: $([Environment]::ProcessorCount)"
+      Write-Host "Installed memory (MB): $([Math]::Round((Get-ComputerInfo).CsTotalPhysicalMemory / 1MB))"
