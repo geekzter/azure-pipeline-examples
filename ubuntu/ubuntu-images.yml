@@ -52,7 +52,7 @@ jobs:
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
       Write-Host "Number of logical processors: $([Environment]::ProcessorCount)"
-      Write-Host "Installed memory (MB): $([Math]::Round((Get-ComputerInfo).CsTotalPhysicalMemory / 1MB))"
+      Get-Content /proc/meminfo | Select-String '^Mem(Total|Available):'
 - job: ubuntu240416core
   pool:
     name: 'GitHub-hosted Agents'
@@ -67,4 +67,4 @@ jobs:
       Write-Host "`$PSVersionTable.OS"
       $PSVersionTable.OS
       Write-Host "Number of logical processors: $([Environment]::ProcessorCount)"
-      Write-Host "Installed memory (MB): $([Math]::Round((Get-ComputerInfo).CsTotalPhysicalMemory / 1MB))"
+      Get-Content /proc/meminfo | Select-String '^Mem(Total|Available):'
