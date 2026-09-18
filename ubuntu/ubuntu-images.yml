@@ -44,9 +44,10 @@ jobs:
     vmImage: 'ubuntu-24.04-8-core'
   steps:
   - bash: |
-      echo Hello from Ubuntu 24.04
+      echo Hello from Ubuntu 24.04 8 core
       lsb_release -d
-      sudo dmidecode --type memory
+      echo "# cores: $(nproc)"
+      set -x
       free -h
       grep MemTotal /proc/meminfo
       sudo dmidecode --type memory
@@ -59,9 +60,11 @@ jobs:
     vmImage: 'ubuntu-24.04-16-core'
   steps:
   - bash: |
-      echo Hello from Ubuntu 24.04
+      echo Hello from Ubuntu 24.04 16 core
       lsb_release -d
-      sudo dmidecode --type memory
+      echo "# cores: $(nproc)"
+      echo "installed memory:"
+      set -x
       free -h
       grep MemTotal /proc/meminfo
       sudo dmidecode --type memory
