@@ -8,55 +8,66 @@ schedules:
     - main
 
 jobs:
-- job: 'hosted'
-  displayName: 'Hosted pool'
-  pool:
-    name: 'Hosted'
-    vmImage: 'windows-latest'
-  steps:
-  - pwsh: |
-      Write-Host "(Get-ComputerInfo).WindowsProductName"
-      Get-ComputerInfo | Select-Object WindowsProductName
-      Write-Host "`$PSVersionTable.OS"
-      $PSVersionTable.OS
+# - job: 'hosted'
+#   displayName: 'Hosted pool'
+#   pool:
+#     name: 'Hosted'
+#     vmImage: 'windows-latest'
+#   steps:
+#   - pwsh: |
+#       Write-Host "(Get-ComputerInfo).WindowsProductName"
+#       Get-ComputerInfo | Select-Object WindowsProductName
+#       Write-Host "`$PSVersionTable.OS"
+#       $PSVersionTable.OS
 
-- job: 'hostedlatest'
-  displayName: 'Hosted pool with windows-latest'
-  pool:
-    name: 'Hosted'
-  steps:
-  - pwsh: |
-      Write-Host "(Get-ComputerInfo).WindowsProductName"
-      Get-ComputerInfo | Select-Object WindowsProductName
-      Write-Host "`$PSVersionTable.OS"
-      $PSVersionTable.OS
+# - job: 'hostedlatest'
+#   displayName: 'Hosted pool with windows-latest'
+#   pool:
+#     name: 'Hosted'
+#   steps:
+#   - pwsh: |
+#       Write-Host "(Get-ComputerInfo).WindowsProductName"
+#       Get-ComputerInfo | Select-Object WindowsProductName
+#       Write-Host "`$PSVersionTable.OS"
+#       $PSVersionTable.OS
 
-- job: 'windows2022'
-  displayName: 'windows-2022 image'
-  pool:
-    vmImage: 'windows-2022'
-  steps:
-  - pwsh: |
-      Write-Host "(Get-ComputerInfo).WindowsProductName"
-      Get-ComputerInfo | Select-Object WindowsProductName
-      Write-Host "`$PSVersionTable.OS"
-      $PSVersionTable.OS
+# - job: 'windows2022'
+#   displayName: 'windows-2022 image'
+#   pool:
+#     vmImage: 'windows-2022'
+#   steps:
+#   - pwsh: |
+#       Write-Host "(Get-ComputerInfo).WindowsProductName"
+#       Get-ComputerInfo | Select-Object WindowsProductName
+#       Write-Host "`$PSVersionTable.OS"
+#       $PSVersionTable.OS
 
-- job: 'windows2025'
-  displayName: 'windows-2025 image'
-  pool:
-    vmImage: 'windows-2025'
-  steps:
-  - pwsh: |
-      Write-Host "(Get-ComputerInfo).WindowsProductName"
-      Get-ComputerInfo | Select-Object WindowsProductName
-      Write-Host "`$PSVersionTable.OS"
-      $PSVersionTable.OS
+# - job: 'windows2025'
+#   displayName: 'windows-2025 image'
+#   pool:
+#     vmImage: 'windows-2025'
+#   steps:
+#   - pwsh: |
+#       Write-Host "(Get-ComputerInfo).WindowsProductName"
+#       Get-ComputerInfo | Select-Object WindowsProductName
+#       Write-Host "`$PSVersionTable.OS"
+#       $PSVersionTable.OS
+
+# - job: 'windowslatest'
+#   displayName: 'windows-latest image'
+#   pool:
+#     vmImage: 'windows-latest'
+#   steps:
+#   - pwsh: |
+#       Write-Host "(Get-ComputerInfo).WindowsProductName"
+#       Get-ComputerInfo | Select-Object WindowsProductName
+#       Write-Host "`$PSVersionTable.OS"
+#       $PSVersionTable.OS
 
 - job: 'windowslatest'
-  displayName: 'windows-latest image'
+  displayName: 'windows-11-vs2026-arm64'
   pool:
-    vmImage: 'windows-latest'
+    vmImage: 'windows-11-vs2026-arm64'
   steps:
   - pwsh: |
       Write-Host "(Get-ComputerInfo).WindowsProductName"
