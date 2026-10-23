@@ -8,13 +8,15 @@ schedules:
     - main
 
 variables:
-  xcodeRoot: "/Applications/Xcode_15.3.app"
+  xcodeRoot: "/Applications/Xcode_27.1_Release_Candidate.app"
 
 jobs:
 - job: xcodeSelect
   pool:
-    vmImage: 'macOS-14'
+    name: GitHub-hosted Agents
+    vmImage: 'xcode-27'
   steps:
   - bash: |
       echo '##vso[task.setvariable variable=MD_APPLE_SDK_ROOT;]'$(xcodeRoot)
       sudo xcode-select --switch $(xcodeRoot)/Contents/Developer
+      xcodebuild -version
